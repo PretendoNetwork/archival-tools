@@ -1,0 +1,3 @@
+nintendoclients==0.0.5
+anyio==3.6.2
+anynet==0.0.18
