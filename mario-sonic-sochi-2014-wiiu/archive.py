@@ -83,40 +83,6 @@ async def backend_setup():
 			await scrape() # start ripping courses
 
 async def scrape():
-	#mode = 0
-	#category = 0x0A
-	#order_param = ranking.RankingOrderParam()
-	#unique_id = 0
-	#principal_id = 0
-#
-	#order_param.offset = 0
-	#order_param.count = 1
-#
-	#result = await ranking_client.get_ranking(mode, category, order_param, unique_id, principal_id)
-	#print(len(result.data))
-	#print(vars(result.data[0]))
-	#user = result.data[0]
-	#[completed_country, completed_character] = user.groups
-	#common_data = user.common_data
-	#name_block = common_data[0x0:0x18]
-	#bpfc = common_data[0x18:]
-	#mii_data = bpfc[0x18:0x78]
-	#name = name_block.split(b'\x00\x00')[0].decode("utf-16be", "replace")
-	#print(name)
-	#print(common_data[0x18:])
-	##print(hex(completed_country))
-	#print(hex(completed_character))
-#
-	#param = datastore.DataStoreGetMetaParam()
-	#param.persistence_target.owner_id = 1783814945
-	#param.persistence_target.persistence_id = 14
-	#param.result_option = 4
-#
-	#result = await datastore_client.get_meta(param)
-	#print(vars(result))
-#
-	#exit()
-
 	events = {
 		0x0A: "Alpine Skiing Downhill",
 		0x0B: "Ski Jumping Large Hill",
