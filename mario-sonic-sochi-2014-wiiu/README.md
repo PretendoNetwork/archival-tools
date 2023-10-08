@@ -1,4 +1,4 @@
-# Mario & Sonic Rio 2016
+# Mario & Sonic Sochi 2014
 ## Download all leaderboard data for all available events
 
 ## THIS IS VERY SLOW. IT MAKES SEVERAL NEX REQUESTS AND DOWNLOADS FILES FROM AN S3 SERVER
