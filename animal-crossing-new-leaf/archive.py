@@ -1,5 +1,6 @@
 import os
 import json
+import gzip
 import anyio
 from dotenv import load_dotenv
 from nintendo.nex import backend, datastore, settings
@@ -120,8 +121,8 @@ async def process_datastore_object(obj: datastore.DataStoreMetaInfo):
 		]
 	}
 
-	with open('./objects/%d_v%d_metadata.json' % (get_object_response.data_id, object_version), 'w') as metadata_file:
-		json.dump(metadata, metadata_file, ensure_ascii=False)
+	with gzip.open('./objects/%d_v%d_metadata.json.gz' % (get_object_response.data_id, object_version), 'wb') as metadata_file:
+		metadata_file.write(json.dumps(metadata).encode('utf-8'))
 
 async def main():
 	os.makedirs('./objects', exist_ok=True)
