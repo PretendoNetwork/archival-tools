@@ -140,3 +140,4 @@ cython_debug/
 # custom
 objects
 .env
+last-checked-offset.txt
