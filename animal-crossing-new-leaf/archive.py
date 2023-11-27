@@ -121,7 +121,7 @@ async def process_datastore_object(obj: datastore.DataStoreMetaInfo):
 	}
 
 	with open('./objects/%d_v%d_metadata.json' % (get_object_response.data_id, object_version), 'w') as metadata_file:
-		json.dump(metadata, metadata_file, ensure_ascii=False, indent=4)
+		json.dump(metadata, metadata_file, ensure_ascii=False)
 
 async def main():
 	os.makedirs('./objects', exist_ok=True)
