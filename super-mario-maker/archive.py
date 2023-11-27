@@ -148,9 +148,9 @@ async def get_course_record(param: DataStoreGetCourseRecordParam) -> DataStoreGe
 	End of everything not implemented in NintendoClients
 """
 
-# Dump using https://github.com/Stary2001/nex-dissector/tree/master/get_3ds_pid_password
-NEX_USERNAME = os.getenv('NEX_3DS_USERNAME')
-NEX_PASSWORD = os.getenv('NEX_3DS_PASSWORD')
+# Dump using https://github.com/Stary2001/nex-dissector/tree/master/get_3ds_pid_password or from network dumps
+NEX_USERNAME = os.getenv('NEX_USERNAME')
+NEX_PASSWORD = os.getenv('NEX_PASSWORD')
 datastore_smm_client = None # Gets set later
 
 KNOWN_BUFFER_QUEUE_SLOTS = [ 0, 2, 3 ]
