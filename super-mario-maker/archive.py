@@ -104,12 +104,12 @@ class DataStoreGetCourseRecordResult(common.Structure):
 		stream.datetime(self.updated_time)
 
 async def get_custom_ranking_by_data_id(param: DataStoreGetCustomRankingByDataIdParam) -> rmc.RMCResponse:
-	#--- request ---
+	# * --- request ---
 	stream = streams.StreamOut(datastore_smm_client.settings)
 	stream.add(param)
 	data = await datastore_smm_client.client.request(datastore_smm_client.PROTOCOL_ID, 50, stream.get())
 
-	#--- response ---
+	# * --- response ---
 	stream = streams.StreamIn(data, datastore_smm_client.settings)
 
 	obj = rmc.RMCResponse()
@@ -119,12 +119,12 @@ async def get_custom_ranking_by_data_id(param: DataStoreGetCustomRankingByDataId
 	return obj
 
 async def get_buffer_queue(param: BufferQueueParam) -> list[bytes]:
-	#--- request ---
+	# * --- request ---
 	stream = streams.StreamOut(datastore_smm_client.settings)
 	stream.add(param)
 	data = await datastore_smm_client.client.request(datastore_smm_client.PROTOCOL_ID, 54, stream.get())
 
-	#--- response ---
+	# * --- response ---
 	stream = streams.StreamIn(data, datastore_smm_client.settings)
 
 	result = stream.list(stream.qbuffer)
@@ -132,12 +132,12 @@ async def get_buffer_queue(param: BufferQueueParam) -> list[bytes]:
 	return result
 
 async def get_course_record(param: DataStoreGetCourseRecordParam) -> DataStoreGetCourseRecordResult:
-	#--- request ---
+	# * --- request ---
 	stream = streams.StreamOut(datastore_smm_client.settings)
 	stream.add(param)
 	data = await datastore_smm_client.client.request(datastore_smm_client.PROTOCOL_ID, 72, stream.get())
 
-	#--- response ---
+	# * --- response ---
 	stream = streams.StreamIn(data, datastore_smm_client.settings)
 
 	result = stream.extract(DataStoreGetCourseRecordResult)
@@ -148,15 +148,15 @@ async def get_course_record(param: DataStoreGetCourseRecordParam) -> DataStoreGe
 	End of everything not implemented in NintendoClients
 """
 
-# Dump using https://github.com/Stary2001/nex-dissector/tree/master/get_3ds_pid_password or from network dumps
+# * Dump using https://github.com/Stary2001/nex-dissector/tree/master/get_3ds_pid_password or from network dumps
 NEX_USERNAME = os.getenv('NEX_USERNAME')
 NEX_PASSWORD = os.getenv('NEX_PASSWORD')
-datastore_smm_client = None # Gets set later
+datastore_smm_client = None # * Gets set later
 
 KNOWN_BUFFER_QUEUE_SLOTS = [ 0, 2, 3 ]
 
-# These apply to all objects at all times
-# SMM has time-specific application IDs but these don't matter here
+# * These apply to all objects at all times
+# * SMM has time-specific application IDs but these don't matter here
 KNOWN_CUSTOM_RANKING_APPLICATION_IDS = [
 	0,
 	2400,
@@ -171,7 +171,7 @@ KNOWN_CUSTOM_RANKING_APPLICATION_IDS = [
 
 KNOWN_COURSE_RECORD_SLOTS = [ 0 ]
 
-# 900000 is the first DataID in use
+# * 900000 is the first DataID in use
 last_checked_id = 900000
 last_valid_id = 900000
 
@@ -198,7 +198,7 @@ os.makedirs('./course-records', exist_ok=True)
 def is_valid_json_file(path: str) -> bool:
 	try:
 		with open(path, 'r') as json_file:
-			# Attempt to load the JSON data
+			# * Attempt to load the JSON data just to see if it's valid
 			json.load(json_file)
 			return True
 	except json.JSONDecodeError:
@@ -234,7 +234,7 @@ def should_download_object(data_id: int, expected_object_size: int, expected_obj
 	if not is_valid_json_file(metadata_path):
 		return True
 
-	return False # If nothing bails early, assume the object does not need to be redownloaded
+	return False # * If nothing bails early, assume the object does not need to be redownloaded
 
 async def download_object_buffer_queues(buffer_queues: list[dict], data_id: int, slot: int):
 	try:
@@ -249,8 +249,8 @@ async def download_object_buffer_queues(buffer_queues: list[dict], data_id: int,
 			"buffers": [buffer.hex() for buffer in response]
 		})
 	except:
-		# Eat errors
-		# SMM will throw errors if an object has no buffers in the slot
+		# * Eat errors
+		# * SMM will throw errors if an object has no buffers in the slot
 		return
 
 async def download_object_custom_ranking(custom_rankings: list[dict], data_id: int, application_id: int):
@@ -267,13 +267,13 @@ async def download_object_custom_ranking(custom_rankings: list[dict], data_id: i
 			"score": response.ranking_result[0].score
 		})
 	except:
-		# Eat errors
-		# SMM will throw errors if an object has no ranking in the application ID
+		# * Eat errors
+		# * SMM will throw errors if an object has no ranking in the application ID
 		return
 
 async def download_course_record(course_records: list[dict], data_id: int, slot: int):
-	# This is expected to fail OFTEN
-	# Only course objects have records
+	# * This is expected to fail OFTEN
+	# * Only course objects have records
 	try:
 		param = DataStoreGetCourseRecordParam()
 		param.data_id = data_id
@@ -296,8 +296,8 @@ async def download_course_record(course_records: list[dict], data_id: int, slot:
 			}
 		})
 	except:
-		# Eat errors
-		# SMM will throw errors if an object has no record in the slot
+		# * Eat errors
+		# * SMM will throw errors if an object has no record in the slot
 		return
 
 async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
@@ -312,7 +312,7 @@ async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
 	object_version = int(s3_url.split('/')[-1].split('-')[1].split('?')[0])
 
 	if not should_download_object(data_id, get_object_response.size, object_version):
-		# Object data already downloaded
+		# * Object data already downloaded
 		print("Skipping %d" % data_id)
 		return
 
@@ -402,11 +402,32 @@ async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
 	with gzip.open('./course-records/%d_v%d.json.gz' % (data_id, object_version), 'wb') as course_records_file:
 		course_records_file.write(json.dumps(course_records).encode('utf-8'))
 
+async def download_objects_chunk(valid_data_ids: list[int], data_ids: list[int]):
+	first = data_ids[0]
+	last = data_ids[-1]
+
+	print("Checking objects %d-%d" % (first, last))
+
+	param = datastore_smm.DataStoreGetMetaParam()
+	param.result_option = 0xFF
+
+	get_metas_response = await datastore_smm_client.get_metas(data_ids, param)
+	objects = [obj for obj in get_metas_response.info if obj.data_id != 0]
+
+	print("Found %d valid objects for IDs %d-%d" % (len(objects), first, last))
+
+	if len(objects) > 0:
+		# * Process all objects at once
+		async with anyio.create_task_group() as tg:
+			for obj in objects:
+				valid_data_ids.append(obj.data_id)
+				tg.start_soon(process_datastore_object, obj)
+
 async def main():
 	s = settings.default()
 	s.configure("9f2b4678", 30810)
 
-	async with backend.connect(s, "52.40.192.64", "59900") as be: # Skip NNID API
+	async with backend.connect(s, "52.40.192.64", "59900") as be: # * Skip NNID API
 		async with be.login(NEX_USERNAME, NEX_PASSWORD) as client:
 			global datastore_smm_client
 			global last_checked_id
@@ -416,27 +437,23 @@ async def main():
 
 			current_data_id = last_checked_id
 			keep_searching = True
+			chunk_size = 100
+			number_of_chunks = 20
 
 			while keep_searching:
-				data_ids = list(range(current_data_id, current_data_id+100))
-				first = data_ids[0]
-				last = data_ids[-1]
+				data_id_chunks = []
 
-				print("Checking objects %d-%d" % (first, last))
+				for i in range(number_of_chunks):
+					chunk_start_data_id = current_data_id + (i * chunk_size)
+					chunk_end_data_id = chunk_start_data_id+chunk_size
+					data_id_chunks.append(list(range(chunk_start_data_id, chunk_end_data_id)))
 
-				param = datastore_smm.DataStoreGetMetaParam()
-				param.result_option = 0xFF
+				final_chunk_last_id = data_id_chunks[-1][-1]
+				valid_data_ids = []
 
-				get_metas_response = await datastore_smm_client.get_metas(data_ids, param)
-				objects = [obj for obj in get_metas_response.info if obj.data_id != 0]
-
-				print("Found %d valid objects for IDs %d-%d" % (len(objects), first, last))
-
-				if len(objects) > 0:
-					# Process all objects at once
-					async with anyio.create_task_group() as tg:
-						for obj in objects:
-							tg.start_soon(process_datastore_object, obj)
+				async with anyio.create_task_group() as tg:
+					for data_id_chunk in data_id_chunks:
+						tg.start_soon(download_objects_chunk, valid_data_ids, data_id_chunk)
 
 				last_checked_id_file.seek(0)
 				last_checked_id_file.write(str(current_data_id))
@@ -445,17 +462,17 @@ async def main():
 				last_valid_id_file.write(str(last_valid_id))
 
 				"""
-				As of November 27th 2023, DataID 15651508 is
+				As of November 27th 2023, DataID 69693094 is
 				the last DataID in use. This may change, so
-				as a buffer we check until DataID 15700000.
-				This should be enough room, as I doubt 48492
+				as a buffer we check until DataID 69700000.
+				This should be enough room, as I doubt 6906
 				new users will join before shut down
 				"""
-				if last < 15700000:
+				if final_chunk_last_id < 69_700_000:
 					print("More objects may be available, trying new range")
-					current_data_id = last
+					current_data_id = final_chunk_last_id+1
 				else:
-					print("DataID 15700000 reached. Assuming no more objects")
+					print("DataID 69700000 reached. Assuming no more objects")
 					keep_searching = False
 
 				"""
@@ -464,7 +481,7 @@ async def main():
 				starting ID to get any new maker objects without
 				needing to check ALL objects again
 				"""
-				if len(objects) > 0 and objects[-1] != 0:
-					last_valid_id = objects[-1]
+				if len(valid_data_ids) > 0 and max(valid_data_ids) != 0:
+					last_valid_id = max(valid_data_ids)
 
 anyio.run(main)
