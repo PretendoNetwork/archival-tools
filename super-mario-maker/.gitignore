@@ -144,4 +144,5 @@ custom-rankings
 buffer-queues
 course-records
 .env
-last-checked-offset.txt
+last-checked-id.txt
+last-valid-id.txt

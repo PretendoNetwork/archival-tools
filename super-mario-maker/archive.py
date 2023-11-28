@@ -171,13 +171,23 @@ KNOWN_CUSTOM_RANKING_APPLICATION_IDS = [
 
 KNOWN_COURSE_RECORD_SLOTS = [ 0 ]
 
-if os.path.isfile('last-checked-offset.txt') and os.access('last-checked-offset.txt', os.R_OK):
-	last_checked_offset_file = open('last-checked-offset.txt', 'r+')
-	last_checked_offset = int(last_checked_offset_file.read())
+# 900000 is the first DataID in use
+last_checked_id = 900000
+last_valid_id = 900000
+
+if os.path.isfile('last-checked-id.txt') and os.access('last-checked-id.txt', os.R_OK):
+	last_checked_id_file = open('last-checked-id.txt', 'r+')
+	last_checked_id = int(last_checked_id_file.read())
 else:
-	last_checked_offset_file = open('last-checked-offset.txt', 'x+')
-	last_checked_offset_file.write("0")
-	last_checked_offset = 0
+	last_checked_id_file = open('last-checked-id.txt', 'x+')
+	last_checked_id_file.write(str(last_valid_id))
+
+if os.path.isfile('last-valid-id.txt') and os.access('last-valid-id.txt', os.R_OK):
+	last_valid_id_file = open('last-valid-id.txt', 'r+')
+	last_valid_id = int(last_valid_id_file.read())
+else:
+	last_valid_id_file = open('last-valid-id.txt', 'x+')
+	last_valid_id_file.write(str(last_valid_id))
 
 os.makedirs('./objects', exist_ok=True)
 os.makedirs('./metadata', exist_ok=True)
@@ -399,37 +409,62 @@ async def main():
 	async with backend.connect(s, "52.40.192.64", "59900") as be: # Skip NNID API
 		async with be.login(NEX_USERNAME, NEX_PASSWORD) as client:
 			global datastore_smm_client
+			global last_checked_id
+			global last_valid_id
+
 			datastore_smm_client = datastore_smm.DataStoreClientSMM(client)
 
-			search_offset = last_checked_offset
+			current_data_id = last_checked_id
 			keep_searching = True
 
 			while keep_searching:
-				print("Downloading 100 objects from offset %d" % search_offset)
+				data_ids = list(range(current_data_id, current_data_id+100))
+				first = data_ids[0]
+				last = data_ids[-1]
 
-				param = datastore_smm.DataStoreSearchParam()
-				param.result_range.offset = search_offset
-				param.result_range.size = 100 # Throws DataStore::InvalidArgument for anything higher than 100
+				print("Checking objects %d-%d" % (first, last))
+
+				param = datastore_smm.DataStoreGetMetaParam()
 				param.result_option = 0xFF
 
-				search_object_response = await datastore_smm_client.search_object(param)
-				objects = search_object_response.result
+				get_metas_response = await datastore_smm_client.get_metas(data_ids, param)
+				objects = [obj for obj in get_metas_response.info if obj.data_id != 0]
 
-				print("Found %d objects" % len(objects))
+				print("Found %d valid objects for IDs %d-%d" % (len(objects), first, last))
 
-				# Process all objects at once
-				async with anyio.create_task_group() as tg:
-					for obj in objects:
-						tg.start_soon(process_datastore_object, obj)
+				if len(objects) > 0:
+					# Process all objects at once
+					async with anyio.create_task_group() as tg:
+						for obj in objects:
+							tg.start_soon(process_datastore_object, obj)
 
-				last_checked_offset_file.seek(0)
-				last_checked_offset_file.write(str(search_offset))
+				last_checked_id_file.seek(0)
+				last_checked_id_file.write(str(current_data_id))
 
-				if len(objects) == 100:
-					print("More objects may be available, trying new offset!")
-					search_offset += len(objects)
+				last_valid_id_file.seek(0)
+				last_valid_id_file.write(str(last_valid_id))
+
+				"""
+				As of November 27th 2023, DataID 15651508 is
+				the last DataID in use. This may change, so
+				as a buffer we check until DataID 15700000.
+				This should be enough room, as I doubt 48492
+				new users will join before shut down
+				"""
+				if last < 15700000:
+					print("More objects may be available, trying new range")
+					current_data_id = last
 				else:
-					print("No more objects available!")
+					print("DataID 15700000 reached. Assuming no more objects")
 					keep_searching = False
+
+				"""
+				Store the last VALID DataID as well so that once
+				this script is done, we can use this as the new
+				starting ID to get any new maker objects without
+				needing to check ALL objects again
+				"""
+				if len(objects) > 0 and objects[-1] != 0:
+					last_valid_id = objects[-1]
 
 anyio.run(main)
