@@ -394,6 +394,7 @@ async def main():
 
 			current_timestamp = last_checked_timestamp
 			twelve_hours = 43200 # * Grab objects in 12 hour chunks
+			max_timestamp = common.DateTime.make(2024, 4, 1).value() # * Stop searching after April 1st, 2024 (official shut down)
 			keep_searching = True
 
 			while keep_searching:
@@ -421,11 +422,16 @@ async def main():
 				last_checked_timestamp_file.seek(0)
 				last_checked_timestamp_file.write(str(current_timestamp))
 
-				if len(objects) == 100:
+				last_object_upload_timestamp = objects[-1].create_time.value()
+
+				if last_object_upload_timestamp >= max_timestamp:
+					print("Max timestamp reached. Stop searching")
+					keep_searching = False
+				elif len(objects) == 100:
 					print("More objects may be available, trying new offset!")
 					# * Set new timestamp to the upload date of the last
 					# * returned object, so we don't skip any
-					current_timestamp = objects[-1].create_time.value()
+					current_timestamp = last_object_upload_timestamp
 				else:
 					print("No more objects available!")
 					keep_searching = False
