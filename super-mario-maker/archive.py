@@ -427,7 +427,7 @@ async def main():
 				if last_object_upload_timestamp >= max_timestamp:
 					print("Max timestamp reached. Stop searching")
 					keep_searching = False
-				elif len(objects) == 100:
+				elif len(objects) > 0:
 					print("More objects may be available, trying new offset!")
 					# * Set new timestamp to the upload date of the last
 					# * returned object, so we don't skip any
