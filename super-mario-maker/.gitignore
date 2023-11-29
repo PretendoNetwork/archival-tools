@@ -144,5 +144,4 @@ custom-rankings
 buffer-queues
 course-records
 .env
-last-checked-id.txt
-last-valid-id.txt
+last-checked-timestamp.txt
