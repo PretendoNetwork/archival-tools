@@ -171,23 +171,13 @@ KNOWN_CUSTOM_RANKING_APPLICATION_IDS = [
 
 KNOWN_COURSE_RECORD_SLOTS = [ 0 ]
 
-# * 900000 is the first DataID in use
-last_checked_id = 900000
-last_valid_id = 900000
-
-if os.path.isfile('last-checked-id.txt') and os.access('last-checked-id.txt', os.R_OK):
-	last_checked_id_file = open('last-checked-id.txt', 'r+')
-	last_checked_id = int(last_checked_id_file.read())
+if os.path.isfile('last-checked-timestamp.txt') and os.access('last-checked-timestamp.txt', os.R_OK):
+	last_checked_timestamp_file = open('last-checked-timestamp.txt', 'r+')
+	last_checked_timestamp = int(last_checked_timestamp_file.read())
 else:
-	last_checked_id_file = open('last-checked-id.txt', 'x+')
-	last_checked_id_file.write(str(last_valid_id))
-
-if os.path.isfile('last-valid-id.txt') and os.access('last-valid-id.txt', os.R_OK):
-	last_valid_id_file = open('last-valid-id.txt', 'r+')
-	last_valid_id = int(last_valid_id_file.read())
-else:
-	last_valid_id_file = open('last-valid-id.txt', 'x+')
-	last_valid_id_file.write(str(last_valid_id))
+	last_checked_timestamp_file = open('last-checked-timestamp.txt', 'x+')
+	last_checked_timestamp_file.write("135271087238")
+	last_checked_timestamp = 135271087238 # * 4-11-2015 15:50:06, date of first objects upload
 
 os.makedirs('./objects', exist_ok=True)
 os.makedirs('./metadata', exist_ok=True)
@@ -198,7 +188,7 @@ os.makedirs('./course-records', exist_ok=True)
 def is_valid_json_file(path: str) -> bool:
 	try:
 		with open(path, 'r') as json_file:
-			# * Attempt to load the JSON data just to see if it's valid
+			# * Attempt to load the JSON data
 			json.load(json_file)
 			return True
 	except json.JSONDecodeError:
@@ -402,27 +392,6 @@ async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
 	with gzip.open('./course-records/%d_v%d.json.gz' % (data_id, object_version), 'wb') as course_records_file:
 		course_records_file.write(json.dumps(course_records).encode('utf-8'))
 
-async def download_objects_chunk(valid_data_ids: list[int], data_ids: list[int]):
-	first = data_ids[0]
-	last = data_ids[-1]
-
-	print("Checking objects %d-%d" % (first, last))
-
-	param = datastore_smm.DataStoreGetMetaParam()
-	param.result_option = 0xFF
-
-	get_metas_response = await datastore_smm_client.get_metas(data_ids, param)
-	objects = [obj for obj in get_metas_response.info if obj.data_id != 0]
-
-	print("Found %d valid objects for IDs %d-%d" % (len(objects), first, last))
-
-	if len(objects) > 0:
-		# * Process all objects at once
-		async with anyio.create_task_group() as tg:
-			for obj in objects:
-				valid_data_ids.append(obj.data_id)
-				tg.start_soon(process_datastore_object, obj)
-
 async def main():
 	s = settings.default()
 	s.configure("9f2b4678", 30810)
@@ -430,58 +399,44 @@ async def main():
 	async with backend.connect(s, "52.40.192.64", "59900") as be: # * Skip NNID API
 		async with be.login(NEX_USERNAME, NEX_PASSWORD) as client:
 			global datastore_smm_client
-			global last_checked_id
-			global last_valid_id
-
 			datastore_smm_client = datastore_smm.DataStoreClientSMM(client)
 
-			current_data_id = last_checked_id
+			current_timestamp = last_checked_timestamp
+			twelve_hours = 43200 # * Grab objects in 12 hour chunks
 			keep_searching = True
-			chunk_size = 100
-			number_of_chunks = 20
 
 			while keep_searching:
-				data_id_chunks = []
+				start_datetime = common.DateTime(current_timestamp)
+				end_datetime = common.DateTime.fromtimestamp(common.DateTime(current_timestamp).timestamp() + twelve_hours)
 
-				for i in range(number_of_chunks):
-					chunk_start_data_id = current_data_id + (i * chunk_size)
-					chunk_end_data_id = chunk_start_data_id+chunk_size
-					data_id_chunks.append(list(range(chunk_start_data_id, chunk_end_data_id)))
+				print("Downloading next 100 objects between %s-%s" % (start_datetime, end_datetime))
 
-				final_chunk_last_id = data_id_chunks[-1][-1]
-				valid_data_ids = []
+				param = datastore_smm.DataStoreSearchParam()
+				param.created_after = start_datetime
+				param.created_before = end_datetime
+				param.result_range.size = 100 # * Throws DataStore::InvalidArgument for anything higher than 100
+				param.result_option = 0xFF
 
+				search_object_response = await datastore_smm_client.search_object(param)
+				objects = search_object_response.result
+
+				print("Found %d objects" % len(objects))
+
+				# * Process all objects at once
 				async with anyio.create_task_group() as tg:
-					for data_id_chunk in data_id_chunks:
-						tg.start_soon(download_objects_chunk, valid_data_ids, data_id_chunk)
+					for obj in objects:
+						tg.start_soon(process_datastore_object, obj)
 
-				last_checked_id_file.seek(0)
-				last_checked_id_file.write(str(current_data_id))
+				last_checked_timestamp_file.seek(0)
+				last_checked_timestamp_file.write(str(current_timestamp))
 
-				last_valid_id_file.seek(0)
-				last_valid_id_file.write(str(last_valid_id))
-
-				"""
-				As of November 27th 2023, DataID 69693094 is
-				the last DataID in use. This may change, so
-				as a buffer we check until DataID 69700000.
-				This should be enough room, as I doubt 6906
-				new users will join before shut down
-				"""
-				if final_chunk_last_id < 69_700_000:
-					print("More objects may be available, trying new range")
-					current_data_id = final_chunk_last_id+1
+				if len(objects) == 100:
+					print("More objects may be available, trying new offset!")
+					# * Set new timestamp to the upload date of the last
+					# * returned object, so we don't skip any
+					current_timestamp = objects[-1].create_time.value()
 				else:
-					print("DataID 69700000 reached. Assuming no more objects")
+					print("No more objects available!")
 					keep_searching = False
-
-				"""
-				Store the last VALID DataID as well so that once
-				this script is done, we can use this as the new
-				starting ID to get any new maker objects without
-				needing to check ALL objects again
-				"""
-				if len(valid_data_ids) > 0 and max(valid_data_ids) != 0:
-					last_valid_id = max(valid_data_ids)
 
 anyio.run(main)
