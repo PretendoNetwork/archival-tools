@@ -276,6 +276,10 @@ async def download_course_record(course_records: list[dict], data_id: int, slot:
 		# * SMM will throw errors if an object has no record in the slot
 		return
 
+async def write_compressed_json(path: str, data: dict):
+	with gzip.open(path, 'wb') as metadata_file:
+		metadata_file.write(json.dumps(data).encode('utf-8'))
+
 async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
 	param = datastore_smm.DataStorePrepareGetParam()
 	param.data_id = obj.data_id
@@ -366,17 +370,18 @@ async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
 		]
 	}
 
-	with gzip.open('./metadata/%d_v%d.json.gz' % (data_id, object_version), 'wb') as metadata_file:
-		metadata_file.write(json.dumps(metadata).encode('utf-8'))
+	files = [
+		('./metadata/%d_v%d.json.gz' % (data_id, object_version), metadata),
+		('./custom-rankings/%d_v%d.json.gz' % (data_id, object_version), custom_rankings),
+		('./buffer-queues/%d_v%d.json.gz' % (data_id, object_version), buffer_queues),
+		('./course-records/%d_v%d.json.gz' % (data_id, object_version), course_records),
+	]
 
-	with gzip.open('./custom-rankings/%d_v%d.json.gz' % (data_id, object_version), 'wb') as custom_rankings_file:
-		custom_rankings_file.write(json.dumps(custom_rankings).encode('utf-8'))
-
-	with gzip.open('./buffer-queues/%d_v%d.json.gz' % (data_id, object_version), 'wb') as buffer_queues_file:
-		buffer_queues_file.write(json.dumps(buffer_queues).encode('utf-8'))
-
-	with gzip.open('./course-records/%d_v%d.json.gz' % (data_id, object_version), 'wb') as course_records_file:
-		course_records_file.write(json.dumps(course_records).encode('utf-8'))
+	# * Write all files at once
+	async with anyio.create_task_group() as tg:
+		for f in files:
+			path, data = f
+			tg.start_soon(write_compressed_json, path, data)
 
 async def main():
 	s = settings.default()
