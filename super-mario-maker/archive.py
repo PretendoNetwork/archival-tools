@@ -277,7 +277,7 @@ async def download_course_record(course_records: list[dict], data_id: int, slot:
 		return
 
 async def write_compressed_json(path: str, data: dict):
-	with gzip.open(path, 'wb') as metadata_file:
+	with gzip.open(path, 'wb', compresslevel=6) as metadata_file:
 		metadata_file.write(json.dumps(data).encode('utf-8'))
 
 async def process_datastore_object(obj: datastore_smm.DataStoreMetaInfo):
