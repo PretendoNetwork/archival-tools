@@ -400,7 +400,7 @@ async def main():
 				start_datetime = common.DateTime(current_timestamp)
 				end_datetime = common.DateTime.fromtimestamp(common.DateTime(current_timestamp).timestamp() + twelve_hours)
 
-				print("Downloading next 100 objects between %s-%s" % (start_datetime, end_datetime))
+				print("Downloading next 100 objects between %s to %s" % (start_datetime, end_datetime))
 
 				param = datastore_smm.DataStoreSearchParam()
 				param.created_after = start_datetime
