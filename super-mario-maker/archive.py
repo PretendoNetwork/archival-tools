@@ -185,23 +185,12 @@ os.makedirs('./custom-rankings', exist_ok=True)
 os.makedirs('./buffer-queues', exist_ok=True)
 os.makedirs('./course-records', exist_ok=True)
 
-def is_valid_json_file(path: str) -> bool:
-	try:
-		with open(path, 'r') as json_file:
-			# * Attempt to load the JSON data
-			json.load(json_file)
-			return True
-	except json.JSONDecodeError:
-		return False
-	except FileNotFoundError:
-		return False
-
 def should_download_object(data_id: int, expected_object_size: int, expected_object_version: int) -> bool:
 	object_path = './objects/%d_v%d.bin' % (data_id, expected_object_version)
-	metadata_path = './metadata/%d_v%d.json' % (data_id, expected_object_version)
-	custom_rankings_path = './custom-rankings/%d_v%d.json' % (data_id, expected_object_version)
-	buffer_queues_path = './buffer-queues/%d_v%d.json' % (data_id, expected_object_version)
-	course_records_path = './course-records/%d_v%d.json' % (data_id, expected_object_version)
+	metadata_path = './metadata/%d_v%d.json.gz' % (data_id, expected_object_version)
+	custom_rankings_path = './custom-rankings/%d_v%d.json.gz' % (data_id, expected_object_version)
+	buffer_queues_path = './buffer-queues/%d_v%d.json.gz' % (data_id, expected_object_version)
+	course_records_path = './course-records/%d_v%d.json.gz' % (data_id, expected_object_version)
 
 	if not os.path.exists(object_path):
 		return True
@@ -219,9 +208,6 @@ def should_download_object(data_id: int, expected_object_size: int, expected_obj
 		return True
 
 	if os.path.getsize(object_path) != expected_object_size:
-		return True
-
-	if not is_valid_json_file(metadata_path):
 		return True
 
 	return False # * If nothing bails early, assume the object does not need to be redownloaded
