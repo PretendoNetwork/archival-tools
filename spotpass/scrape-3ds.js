@@ -36,31 +36,47 @@ async function scrape3DS(downloadBase) {
 					const files = lines.splice(2)
 
 					// * There's like 4 ways the 3DS can format these download URLs, just pray this works I guess.
-					// * Not sure any better way to do this
+					// * Not sure any better way to do this.
 					for (const file of files) {
 						const parts = file.split('\t');
 						const fileName = parts[0];
 
-						const response = await axios.get(`${NPDL_URL_BASE}/${app.app_id}/${task}/${country}/${language}/${fileName}`, {
-							responseType: 'arraybuffer',
-							validateStatus: () => {
-								return true;
-							},
-							httpsAgent
-						});
+						// * There are 4 possible formats for NPDL URLs.
+						// * This tries all of them, one after the other, from least
+						// * specific to most specific. This should result in the most
+						// * specific version of each file being downloaded, overwriting
+						// * less specific ones. Not all files work with all formats, so
+						// * we just have to try them all and pray.
+						// * This is pretty slow, but it at least should get all the data.
+						const downloadPath = `${downloadBase}/${country}/${language}/${app.app_id}/${task}/${fileName}.boss`;
 
-						if (response.status !== 200) {
-							continue;
-						}
-
-						const fileData = Buffer.from(response.data, 'binary');
-
-						fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/${fileName}.boss`, fileData);
+						await downloadContentFile(`${NPDL_URL_BASE}/${app.app_id}/${task}/${fileName}`, downloadPath);
+						await downloadContentFile(`${NPDL_URL_BASE}/${app.app_id}/${task}/${language}/${fileName}`, downloadPath);
+						await downloadContentFile(`${NPDL_URL_BASE}/${app.app_id}/${task}/${language}_${country}/${fileName}`, downloadPath);
+						await downloadContentFile(`${NPDL_URL_BASE}/${app.app_id}/${task}/${country}/${language}/${fileName}`, downloadPath);
 					}
 				}
 			}
 		}
 	}
+}
+
+async function downloadContentFile(url, downloadPath) {
+	const response = await axios.get(url, {
+		responseType: 'arraybuffer',
+		validateStatus: () => {
+			return true;
+		},
+		httpsAgent
+	});
+
+	if (response.status !== 200) {
+		return;
+	}
+
+	const fileData = Buffer.from(response.data, 'binary');
+
+	fs.writeFileSync(downloadPath, fileData);
 }
 
 module.exports = scrape3DS;
