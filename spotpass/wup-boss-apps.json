@@ -1,0 +1,422 @@
+[
+	{
+		"app_id": "WJDaV6ePVgrS0TRa",
+		"tasks": [
+			"olvinfo"
+		]
+	},
+	{
+		"app_id": "VFoY6V7u7UUq1EG5",
+		"tasks": [
+			"olvinfo",
+			"oltopic"
+		]
+	},
+	{
+		"app_id": "8MNOVprfNVAJjfCM",
+		"tasks": [
+			"olvinfo"
+		]
+	},
+	{
+		"app_id": "v1cqzWykBKUg0rHQ",
+		"tasks": [
+			"solv"
+		]
+	},
+	{
+		"app_id": "bieC9ACJlisFg5xS",
+		"tasks": [
+			"solv"
+		]
+	},
+	{
+		"app_id": "tOaQcoBLtPTgVN3Y",
+		"tasks": [
+			"solv"
+		]
+	},
+	{
+		"app_id": "HX8a16MMNn6i1z0Y",
+		"tasks": [
+			"wood1",
+			"woodBGM"
+		]
+	},
+	{
+		"app_id": "07E3nY6lAwlwrQRo",
+		"tasks": [
+			"wood1",
+			"woodBGM"
+		]
+	},
+	{
+		"app_id": "8UsM86l8xgkjFk8z",
+		"tasks": [
+			"wood1",
+			"woodBGM"
+		]
+	},
+	{
+		"app_id": "IXmFUqR2qenXfF61",
+		"tasks": [
+			"promo1",
+			"promo2",
+			"promo3",
+			"push"
+		]
+	},
+	{
+		"app_id": "BMQAm5iUVtPsJVsU",
+		"tasks": [
+			"sysmsg1",
+			"sysmsg2"
+		]
+	},
+	{
+		"app_id": "LRmanFo4Tx3kEGDp",
+		"tasks": [
+			"sysmsg1",
+			"sysmsg2"
+		]
+	},
+	{
+		"app_id": "TZr27FE8wzKiEaTO",
+		"tasks": [
+			"sysmsg1",
+			"sysmsg2"
+		]
+	},
+	{
+		"app_id": "JnIrm9c4E9JBmxBo",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "dadlI27Ww8H2d56x",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "RaPn5saabzliYrpo",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "14VFIK3rY2SP0WRE",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "RbEQ44t2AocC4rvu",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "287gv3WZdxo1QRhl",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "bb6tOEckvgZ50ciH",
+		"tasks": [
+			"optdat2",
+			"schdat2",
+			"schdata",
+			"optdata"
+		]
+	},
+	{
+		"app_id": "rjVlM7hUXPxmYQJh",
+		"tasks": [
+			"optdat2",
+			"schdat2",
+			"schdata",
+			"optdata2",
+			"schdata2",
+			"test",
+			"preport",
+			"otpdata2",
+			"scddata2",
+			"otpdat2",
+			"optdata"
+		]
+	},
+	{
+		"app_id": "zvGSM4kOrXpkKnpT",
+		"tasks": [
+			"optdat2",
+			"schdat2",
+			"schdata",
+			"optdata"
+		]
+	},
+	{
+		"app_id": "m8KJPtmPweiPuETE",
+		"tasks": [
+			"sp1_ans",
+			"sp1_rnk"
+		]
+	},
+	{
+		"app_id": "pO72Hi5uqf5yuNd8",
+		"tasks": [
+			"sp1_ans",
+			"sp1_rnk"
+		]
+	},
+	{
+		"app_id": "4m8Xme1wKgzwslTJ",
+		"tasks": [
+			"sp1_ans",
+			"sp1_rnk"
+		]
+	},
+	{
+		"app_id": "ESLqtAhxS8KQU4eu",
+		"tasks": [
+			"CHARA"
+		]
+	},
+	{
+		"app_id": "vGwChBW1ExOoHDsm",
+		"tasks": [
+			"CHARA"
+		]
+	},
+	{
+		"app_id": "IeUc4hQsKKe9rJHB",
+		"tasks": [
+			"CHARA"
+		]
+	},
+	{
+		"app_id": "4krJA4Gx3jF5nhQf",
+		"tasks": [
+			"histgrm"
+		]
+	},
+	{
+		"app_id": "9jRZEoWYLc3OG9a8",
+		"tasks": [
+			"histgrm"
+		]
+	},
+	{
+		"app_id": "VWqUTspR5YtjDjxa",
+		"tasks": [
+			"histgrm"
+		]
+	},
+	{
+		"app_id": "Ge1KtMu8tYlf4AUM",
+		"tasks": [
+			"notice1"
+		]
+	},
+	{
+		"app_id": "gycVtTzCouZmukZ6",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		]
+	},
+	{
+		"app_id": "o2Ug1pIp9Uhri6Nh",
+		"tasks": [
+			"amiibo",
+			"NEWS",
+			"friend",
+			"CONQ"
+		]
+	},
+	{
+		"app_id": "n6rAJ1nnfC1Sgcpl",
+		"tasks": [
+			"amiibo",
+			"NEWS",
+			"friend",
+			"CONQ"
+		]
+	},
+	{
+		"app_id": "CHUN6T1m7Xk4EBg4",
+		"tasks": [
+			"ptcbnws"
+		]
+	},
+	{
+		"app_id": "zyXdCW9jGdi9rjaz",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "jPHLlJr2fJyTzffp",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "YsXB6IRGSI56tPxl",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "Lbqp9Sg1i0xUzFFa",
+		"tasks": [
+			"PTS"
+		]
+	},
+	{
+		"app_id": "DwU7n0FidGrLNiOo",
+		"tasks": [
+			"boss1",
+			"boss2",
+			"boss3"
+		]
+	},
+	{
+		"app_id": "yIUkFmuGVkGP8pDb",
+		"tasks": [
+			"notice1"
+		]
+	},
+	{
+		"app_id": "v4WRObSzD7VU3dcJ",
+		"tasks": [
+			"notice1"
+		]
+	},
+	{
+		"app_id": "3zDjXIA57bSceyaw",
+		"tasks": [
+			"param"
+		]
+	},
+	{
+		"app_id": "NL38jhExI2CQqhWd",
+		"tasks": [
+			"schdata",
+			"optdata"
+		]
+	},
+	{
+		"app_id": "sE6KwEpQYyg6tdU7",
+		"tasks": [
+			"schdata"
+		]
+	},
+	{
+		"app_id": "pTKZ9q5KrCP3gBag",
+		"tasks": [
+			"schdata",
+			"optdata"
+		]
+	},
+	{
+		"app_id": "CJT88RO008LAnD51",
+		"tasks": [
+			"PE_GAK",
+			"PE_ZNG"
+		]
+	},
+	{
+		"app_id": "FyyMFzEByuQJc6sJ",
+		"tasks": [
+			"PTS"
+		]
+	},
+	{
+		"app_id": "A4yyXWKZZUToFtrt",
+		"tasks": [
+			"PTS"
+		]
+	},
+	{
+		"app_id": "HauaFQ1sPsnQ6rBj",
+		"tasks": [
+			"annouce"
+		]
+	},
+	{
+		"app_id": "qDUeFmk0Az71nHyD",
+		"tasks": [
+			"DLCINFO"
+		]
+	},
+	{
+		"app_id": "yVsSPM2E0DEOxroT",
+		"tasks": [
+			"DLCINFO"
+		]
+	},
+	{
+		"app_id": "Xw6OvZkQofQ3O8Bi",
+		"tasks": [
+			"DLCINFO"
+		]
+	},
+	{
+		"app_id": "LUQX5swEjBUPQ8nR",
+		"tasks": [
+			"OR2H000"
+		]
+	},
+	{
+		"app_id": "y4pXrgLe0JGao3No",
+		"tasks": [
+			"OR2H000"
+		]
+	},
+	{
+		"app_id": "j01mRJ9sNe00MWPC",
+		"tasks": [
+			"CHR_GAK",
+			"CHR_ZNG"
+		]
+	},
+	{
+		"app_id": "P45xuCJjERf6MNWG",
+		"tasks": [
+			"movie"
+		]
+	},
+	{
+		"app_id": "PQWAfUmDpVo0u9Fi",
+		"tasks": [
+			"Card"
+		]
+	},
+	{
+		"app_id": "8QjtffIMWFhiFpTz",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "EA9wpEnmZmeX70YS",
+		"tasks": [
+			"ADDCHR0"
+		]
+	},
+	{
+		"app_id": "Iq5CNAngvR9auXFO",
+		"tasks": [
+			"param"
+		]
+	},
+	{
+		"app_id": "ZtwtVqJkmGE2LloD",
+		"tasks": [
+			"PTS"
+		]
+	}
+]
