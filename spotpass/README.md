@@ -20,4 +20,4 @@ Content is downloaded into the `data` folder. Since BOSS content may update over
 
 An example download path would be `data/2024-01-27/GB/en/0hFlOFo7pNTU2dyE/RNG_EC1` which holds the GB-en region content for BOSS task `RNG_EC1` in application `0hFlOFo7pNTU2dyE`.
 
-Downloads brute-force the regions, these will take a while to finish downloading.
+Downloads brute-force the regions, these will take a while to finish downloading. This will create lots of duplicate data, resulting in very large archive sizes.
