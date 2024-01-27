@@ -14,48 +14,56 @@ const httpsAgent = new https.Agent({
 });
 
 async function scrapeWiiU(downloadBase) {
-	for (const country of COUNTRIES) {
-		for (const language of LANGUAGES) {
-			for (const app of apps) {
-				for (const task of app.tasks) {
-					const response = await axios.get(`${TASK_SHEET_URL_BASE}/${app.app_id}/${task}?c=${country}&l=${language}`, {
-						validateStatus: () => {
-							return true;
-						},
-						httpsAgent
-					});
+	await Promise.all(COUNTRIES.map(async (country) => {
+		await scrapeCountry(country, downloadBase);
+	}));
+}
 
-					if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('application/xml')) {
-						continue;
-					}
+async function scrapeCountry(country, downloadBase) {
+	await Promise.all(LANGUAGES.map(async (language) => {
+		await scrapeLanguage(country, language, downloadBase);
+	}));
+}
 
-					fs.ensureDirSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}`);
-					fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/tasksheet.xml`, response.data);
+async function scrapeLanguage(country, language, downloadBase) {
+	for (const app of apps) {
+		for (const task of app.tasks) {
+			const response = await axios.get(`${TASK_SHEET_URL_BASE}/${app.app_id}/${task}?c=${country}&l=${language}`, {
+				validateStatus: () => {
+					return true;
+				},
+				httpsAgent
+			});
 
-					const data = xmlParser(response.data).toObject();
+			if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('application/xml')) {
+				continue;
+			}
 
-					if (!data || !data.TaskSheet || !data.TaskSheet.Files || !data.TaskSheet.Files.File) {
-						continue;
-					}
+			fs.ensureDirSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}`);
+			fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/tasksheet.xml`, response.data);
 
-					let files = [];
+			const data = xmlParser(response.data).toObject();
 
-					if (Array.isArray(data.TaskSheet.Files.File)) {
-						files = data.TaskSheet.Files.File;
-					} else {
-						files.push(data.TaskSheet.Files.File);
-					}
+			if (!data || !data.TaskSheet || !data.TaskSheet.Files || !data.TaskSheet.Files.File) {
+				continue;
+			}
 
-					for (const file of files) {
-						const response = await axios.get(file.Url, {
-							responseType: 'arraybuffer',
-							httpsAgent
-						});
-						const fileData = Buffer.from(response.data, 'binary');
+			let files = [];
 
-						fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/${file.Filename}.boss`, fileData);
-					}
-				}
+			if (Array.isArray(data.TaskSheet.Files.File)) {
+				files = data.TaskSheet.Files.File;
+			} else {
+				files.push(data.TaskSheet.Files.File);
+			}
+
+			for (const file of files) {
+				const response = await axios.get(file.Url, {
+					responseType: 'arraybuffer',
+					httpsAgent
+				});
+				const fileData = Buffer.from(response.data, 'binary');
+
+				fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/${file.Filename}.boss`, fileData);
 			}
 		}
 	}
