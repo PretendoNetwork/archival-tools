@@ -2,8 +2,7 @@ const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
 const { create: xmlParser } = require('xmlbuilder2');
-const { COUNTRIES, LANGUAGES } = require('./constants');
-const apps = require('./wup-boss-apps.json');
+const database = require('./database');
 
 const TASK_SHEET_URL_BASE = 'https://npts.app.nintendo.net/p01/tasksheet/1';
 
@@ -14,58 +13,55 @@ const httpsAgent = new https.Agent({
 });
 
 async function scrapeWiiU(downloadBase) {
-	await Promise.all(COUNTRIES.map(async (country) => {
-		await scrapeCountry(country, downloadBase);
-	}));
+	let batch = await database.getNextBatch('wup');
+
+	while (batch.length !== 0) {
+		await Promise.all(batch.map(async (task) => {
+			await scrapeTask(downloadBase, task);
+			await database.rowProcessed(task.id);
+		}));
+
+		batch = await database.getNextBatch('wup');
+	}
 }
 
-async function scrapeCountry(country, downloadBase) {
-	await Promise.all(LANGUAGES.map(async (language) => {
-		await scrapeLanguage(country, language, downloadBase);
-	}));
-}
+async function scrapeTask(downloadBase, task) {
+	const response = await axios.get(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, {
+		validateStatus: () => {
+			return true;
+		},
+		httpsAgent
+	});
 
-async function scrapeLanguage(country, language, downloadBase) {
-	for (const app of apps) {
-		for (const task of app.tasks) {
-			const response = await axios.get(`${TASK_SHEET_URL_BASE}/${app.app_id}/${task}?c=${country}&l=${language}`, {
-				validateStatus: () => {
-					return true;
-				},
-				httpsAgent
-			});
+	if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('application/xml')) {
+		return;
+	}
 
-			if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('application/xml')) {
-				continue;
-			}
+	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, response.data);
 
-			fs.ensureDirSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}`);
-			fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/tasksheet.xml`, response.data);
+	const data = xmlParser(response.data).toObject();
 
-			const data = xmlParser(response.data).toObject();
+	if (!data || !data.TaskSheet || !data.TaskSheet.Files || !data.TaskSheet.Files.File) {
+		return;
+	}
 
-			if (!data || !data.TaskSheet || !data.TaskSheet.Files || !data.TaskSheet.Files.File) {
-				continue;
-			}
+	let files = [];
 
-			let files = [];
+	if (Array.isArray(data.TaskSheet.Files.File)) {
+		files = data.TaskSheet.Files.File;
+	} else {
+		files.push(data.TaskSheet.Files.File);
+	}
 
-			if (Array.isArray(data.TaskSheet.Files.File)) {
-				files = data.TaskSheet.Files.File;
-			} else {
-				files.push(data.TaskSheet.Files.File);
-			}
+	for (const file of files) {
+		const response = await axios.get(file.Url, {
+			responseType: 'arraybuffer',
+			httpsAgent
+		});
+		const fileData = Buffer.from(response.data, 'binary');
 
-			for (const file of files) {
-				const response = await axios.get(file.Url, {
-					responseType: 'arraybuffer',
-					httpsAgent
-				});
-				const fileData = Buffer.from(response.data, 'binary');
-
-				fs.writeFileSync(`${downloadBase}/${country}/${language}/${app.app_id}/${task}/${file.Filename}.boss`, fileData);
-			}
-		}
+		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss`, fileData);
 	}
 }
 

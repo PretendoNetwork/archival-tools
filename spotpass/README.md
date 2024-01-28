@@ -5,7 +5,32 @@
 - Install NodeJS
 - Add any missing BOSS tasks to `ctr-boss-apps.json` (3DS) and/or `wup-boss-apps.json` (Wii U)
 - `npm i`
+- Create the tasks [database](#database)
 - `node scrape`
+
+# Database
+This scraper relies on a database of BOSS tasks to archive. This is done so archiving may be done batches rather than all at once. The SQLite schema looks as follows
+
+```sql
+CREATE TABLE IF NOT EXISTS tasks (
+	id        INTEGER PRIMARY KEY,
+	platform  TEXT,
+	app_id    TEXT,
+	task      TEXT,
+	country   TEXT,
+	language  TEXT,
+	processed BOOLEAN
+)
+```
+
+The archiver pulls unprocessed rows in batches and processes them concurrently. This way the archiver may be stopped and started without losing progress and redownloading existing content. This is useful for batch archiving or in the event that the tool crashes.
+
+To build the database:
+
+- Ensure both `ctr-boss-apps.json` (3DS) and `wup-boss-apps.json` (Wii U) contain all BOSS tasks to be archived
+- `node build-database`
+
+This creates a row for every task, in every app, for every possible country and region combination. The database will be somewhat large and take some time to build, as each task needs 1,157 rows.
 
 # SpotPass/BOSS content
 SpotPass, aka BOSS, content is region specific data used by titles for title-specific tasks. There is nearly no overlap in BOSS files content between games. Because of this, each game must have all it's regions checked manually.
