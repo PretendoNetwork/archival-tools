@@ -10,7 +10,12 @@ const COUNTRIES = [
 	'UY', 'LV', 'HN', 'JM', 'TR', 'IN', 'ER', 'AW', 'NZ',
 	'EC', 'TW', 'EE', 'CN', 'SI', 'AI', 'BG', 'NI', 'IS',
 	'MQ', 'BZ', 'BA', 'MY', 'AZ', 'ZW', 'AL', 'IM', 'VG',
-	'VI', 'BM', 'GY', 'SR', 'MS', 'TC', 'BB', 'TT'
+	'VI', 'BM', 'GY', 'SR', 'MS', 'TC', 'BB', 'TT', 'AG',
+	'BS', 'DM', 'GD', 'AN', 'PY', 'KN', 'LC', 'VC', 'BW',
+	'EE', 'LS', 'LI', 'MK', 'ME', 'MZ', 'SZ', 'ZM', 'MR',
+	'ML', 'NE', 'TD', 'SD', 'DJ', 'SO', 'AD', 'GI', 'IM',
+	'JE', 'MC', 'HK', 'MO', 'ID', 'SG', 'TH', 'PH', 'AE',
+	'EG', 'OM', 'QA', 'KW', 'SY', 'BH', 'JO', 'SM', 'VA'
 ];
 
 const LANGUAGES = [
