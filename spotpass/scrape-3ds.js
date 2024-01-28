@@ -58,11 +58,31 @@ async function scrapeTask(downloadBase, task) {
 		// * This is pretty slow, but it at least should get all the data.
 		const downloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss`;
 
+		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
+
+		if (success) {
+			return;
+		}
+
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath);
+
+		if (success) {
+			return
+		}
+
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath);
+
+		if (success) {
+			return
+		}
+
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath);
+
+		if (success) {
+			return
+		}
+
 		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath);
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath);
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath);
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath);
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
 	}
 }
 
@@ -76,12 +96,14 @@ async function downloadContentFile(url, downloadPath) {
 	});
 
 	if (response.status !== 200) {
-		return;
+		return false;
 	}
 
 	const fileData = Buffer.from(response.data, 'binary');
 
 	fs.writeFileSync(downloadPath, fileData);
+
+	return true;
 }
 
 module.exports = scrape3DS;
