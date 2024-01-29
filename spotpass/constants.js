@@ -1,5 +1,4 @@
-// TODO - Are there more of these?
-
+// * All country codes, courtesy of https://www.3dbrew.org/wiki/Country_Code_List
 const COUNTRIES = [
 	'GB', 'US', 'IT', 'NL', 'DE', 'CA', 'FR', 'HU', 'CR',
 	'AU', 'BR', 'RO', 'CL', 'MX', 'RU', 'ES', 'JP', 'CZ',
@@ -19,7 +18,7 @@ const COUNTRIES = [
 ];
 
 const LANGUAGES = [
-	'en', 'it', 'de', 'fr', 'es', 'us', 'pt', 'ru', 'ja',
+	'en', 'it', 'de', 'fr', 'es', 'pt', 'ru', 'ja',
 	'nl', 'ko', 'zh', 'tw'
 ];
 
