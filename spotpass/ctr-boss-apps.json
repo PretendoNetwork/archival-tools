@@ -1,1 +1,1621 @@
-[{"app_id":"07SSacDlEHc8z0jg","tasks":["FGONLYT"]},{"app_id":"0hFlOFo7pNTU2dyE","tasks":["RNG_EC1","RNG_LS1","RNG_MD1","RNG_NT1","RNG_NT2"]},{"app_id":"10Og6tqFdXrW1Dra","tasks":["FGONLYT","news"]},{"app_id":"18ZHPbhuhUMZmLMS","tasks":["FGONLYT","news"]},{"app_id":"1dNhxKHa1kgzz0gj","tasks":["MEDA9"]},{"app_id":"2eMXT6CAAcQIYWuN","tasks":["FGONLYT","news"]},{"app_id":"2s640xAtrZGOWdq0","tasks":["JFR_LS2"]},{"app_id":"2zDwgq1t61PlMaPq","tasks":["TASK00"]},{"app_id":"3ddVFPLZpzu77yvS","tasks":["daily"]},{"app_id":"3EHaOtNKDsD3Ybk8","tasks":["FGONLYT","news"]},{"app_id":"3isXVXrb2lLqmrW0","tasks":["AL8_001"]},{"app_id":"3t2IUj3ASUzKKEHK","tasks":["TASK00"]},{"app_id":"3vveLadT8H6xKkQH","tasks":["RNG_EC1","RNG_LS1","RNG_MD1","RNG_NT1","RNG_NT2"]},{"app_id":"4LvdQ9tJBCOyHrv4","tasks":["comm","ghost","ranking"]},{"app_id":"4OBVxt1uzhPW4cGR","tasks":["BKRJ-00"]},{"app_id":"53R1vYbkfqXlqzns","tasks":["comm","ghost","ranking"]},{"app_id":"5xq3tXtlGqUd7MbV","tasks":["NEWS","amiibo"]},{"app_id":"5yLkA3wqcXruNE2N","tasks":["tmTaskA"]},{"app_id":"6jk78e80CzvtPvim","tasks":["PAINF00"]},{"app_id":"6SKM87Ll80ONzAvQ","tasks":["FGONLYT","news"]},{"app_id":"7EnMOQ6WfZSmvQgu","tasks":["FGONLYT","news"]},{"app_id":"7knOkHlr5db97LJ6","tasks":["TASK00"]},{"app_id":"7NdLNTN4iH9wEbJQ","tasks":["FGONLYT"]},{"app_id":"7vzbLQCS84rtXY0y","tasks":["FGONLYT","TDQ01"]},{"app_id":"8DeC0vBA5VDzPu8x","tasks":["AKBadd"]},{"app_id":"8DViaPfyfH1pGO91","tasks":["FGONLYT","news"]},{"app_id":"8mX4hRmZqkDHn0SE","tasks":["FGONLYT","news"]},{"app_id":"9x4m4dJwyBBlUc3g","tasks":["FGONLYT"]},{"app_id":"ac2P6aIvORxnQJwK","tasks":["FGONLYT"]},{"app_id":"adQnSUvJlXp5igaT","tasks":["FGONLYT","news"]},{"app_id":"aFMv95FiWHC3k7XV","tasks":["FGONLYT"]},{"app_id":"AWKlN4KN0rMA7Gqc","tasks":["MEDA8"]},{"app_id":"AZcAJ2Stxa9P8h7a","tasks":["SMVS_EC","SMVS_SC"]},{"app_id":"B6Iqt2r0EGU549NW","tasks":["comm","ghost","ranking"]},{"app_id":"b8RPtQj41Mw5HjoX","tasks":["FGONLYT","news"]},{"app_id":"bGoDxPNf97rXq9a5","tasks":["present"]},{"app_id":"BgyAdVTkMfLTzM0k","tasks":["FGONLYT","news"]},{"app_id":"bOMC45IF1taPnYx8","tasks":["FGONLYT"]},{"app_id":"ciTu5gGHcW767kOc","tasks":["FGONLYT"]},{"app_id":"cPYaUEX74KmPR0wF","tasks":["present"]},{"app_id":"CtfKXACbUPl8s7lk","tasks":["BGM1","BGM2","TIGER1"]},{"app_id":"cXo6TOh0AtrCzaCP","tasks":["JFR_LS2","JFR_AP2","JFR_NT1","JFR_NT2","JFR_NT3"]},{"app_id":"d4495LzgtcxUObka","tasks":["MEDA7"]},{"app_id":"DJBXc6TzoubPYfy6","tasks":["weekly"]},{"app_id":"dpwg7hD86KlFwcbk","tasks":["daily"]},{"app_id":"DUE2YwOq2m9fVsdZ","tasks":["FGONLYT"]},{"app_id":"DwQNLZT8QlZIxyAJ","tasks":["mesdat"]},{"app_id":"e4rcoYW9QTHc2whz","tasks":["FGONLYT","news"]},{"app_id":"E5myNZzoWVHdNUvY","tasks":["MEDA8"]},{"app_id":"eH6oowgSM7n662mw","tasks":["tmTaskA"]},{"app_id":"f5xYhmZvwKo4uv5A","tasks":["data"]},{"app_id":"fbAzg6nuN4hhQ3pJ","tasks":["FGONLYT","news"]},{"app_id":"fFV9HxPJR7NJRTre","tasks":["FGONLYT","news"]},{"app_id":"FNY6HPPbPj2jIErD","tasks":["Amb_eu"]},{"app_id":"fQZi0N3YlWWq07AZ","tasks":["item"]},{"app_id":"fsYqLFLQngg32A1l","tasks":["AL8_001"]},{"app_id":"G06t7Q3mkOy95nBw","tasks":["FGONLYT","news"]},{"app_id":"G4uDyFA9Yc06kV8m","tasks":["JAU"]},{"app_id":"g6DKUfhQUHKd5gZz","tasks":["FGONLYT","news"]},{"app_id":"GjTM1Bphz05wTMtO","tasks":["daily"]},{"app_id":"gOlIVAcjDpj6K1Ut","tasks":["GS6"]},{"app_id":"GQkLSOsKwIpvr8Yi","tasks":["present","patch"]},{"app_id":"GQqblssCbq6PuCyJ","tasks":["MEDA9"]},{"app_id":"guBwm9TlQvYvncKn","tasks":["horogra"]},{"app_id":"GxCs83sbgwaoL2js","tasks":["FGONLYT"]},{"app_id":"H9GUJGE1xWr9VrgG","tasks":["present"]},{"app_id":"hA0Mq0T7KQofzsFF","tasks":["AL8_001"]},{"app_id":"i9omdntnCo1GPdHA","tasks":["FGONLYT","news"]},{"app_id":"iolEjnbGp2W1ghtO","tasks":["FGONLYT","news"]},{"app_id":"iYhju0xUdEBftgzw","tasks":["FGONLYT","news"]},{"app_id":"j0ITmVqVgfUxe0O9","tasks":["data","FGONLYT","news"]},{"app_id":"J3u1c5M8Ff9Y9TyG","tasks":["FGONLYT"]},{"app_id":"j5cz6H9mjSt8wvLX","tasks":["FGONLYT","dlvexb","news","news_p"]},{"app_id":"J6la9Kj8iqTvAPOq","tasks":["data","FGONLYT","news"]},{"app_id":"j9wEm4RKrgNuaudD","tasks":["Info_00","Data","Data_00"]},{"app_id":"JfttU8Wg1iBIbbIs","tasks":["EXT0100"]},{"app_id":"JIguVGEJJOhAq2te","tasks":["TASK00"]},{"app_id":"JqhCCnj1t7Zid1SG","tasks":["FGONLYT","news"]},{"app_id":"jy95T3iOBKyGbAXl","tasks":["FGONLYT"]},{"app_id":"kb6KM6y6fQx3bOWs","tasks":["FGONLYT"]},{"app_id":"kQGzeGpga1cXwbtf","tasks":["MEDA7"]},{"app_id":"kSz44ZF73HpIb4O7","tasks":["comm","ghost","ranking"]},{"app_id":"kTnNBa7mg66E11iV","tasks":["ghost","ranking"]},{"app_id":"L1P2RB6s878vioGs","tasks":["SEED"]},{"app_id":"lg9TdjOIyCO7aUR4","tasks":["FGONLYT","news"]},{"app_id":"lhz3HfuATBPF4EdY","tasks":["ESE_CNF","ESE_NWS"]},{"app_id":"Lju5rPwt0QgXXh7Q","tasks":["AL8_001"]},{"app_id":"llh2zGNci2sULyVX","tasks":["FGONLYT"]},{"app_id":"Lw62Mz00pmT1osSJ","tasks":["FGONLYT"]},{"app_id":"lX2cH6BQVJFyjCfN","tasks":["FGONLYT","news"]},{"app_id":"Lx3bOup9RTIcePKE","tasks":["DUOINFO"]},{"app_id":"M0EKKJWDaHUDcmRr","tasks":["FGONLYT"]},{"app_id":"M7HNbBKOBj4NTTor","tasks":["FGONLYT","info"]},{"app_id":"mb2iVt7j6Wy6yxkb","tasks":["daily"]},{"app_id":"MEXh2UqOKVgJS3h3","tasks":["AKT410a"]},{"app_id":"MqPfuz5l3ptcMj23","tasks":["AL8_001"]},{"app_id":"n1cddgQeTxunOG2K","tasks":["Enquete","MiiDL"]},{"app_id":"NSWeucPFtbNNCx07","tasks":["data"]},{"app_id":"NU0xisOCz9UY0IBu","tasks":["AKT5PKG"]},{"app_id":"NXIWsA2Gm4EH219s","tasks":["FGONLYT"]},{"app_id":"OFypMD7hNCrRPthA","tasks":["TASK00"]},{"app_id":"oGD8mLvDr8YY1L9E","tasks":["FGONLYT","news"]},{"app_id":"OkqvIoTur40udixa","tasks":["FGONLYT","news"]},{"app_id":"Omwq2nEEfqZ9yo9S","tasks":["FGONLYT","news"]},{"app_id":"oPuD6PkiPpx1EFiy","tasks":["FGONLYT"]},{"app_id":"oUF988iLJo3cWLji","tasks":["FGONLYT","news"]},{"app_id":"OvbmGLZ9senvgV3K","tasks":["data","FGONLYT","news"]},{"app_id":"p1of6zTyKCnqOITZ","tasks":["Quartz0","Quartz1"]},{"app_id":"p47ZQwc3R4qAmAYD","tasks":["allhp"]},{"app_id":"p5HtkudRvY55R212","tasks":["FGONLYT","news"]},{"app_id":"PKeGb0m4S3Gv5jis","tasks":["TASK00"]},{"app_id":"PpjtFCm4bQskyBUy","tasks":["PAINF00"]},{"app_id":"PV3ljR2w0UwrQfWk","tasks":["FGONLYT","news"]},{"app_id":"PzpV1tz303wO66AD","tasks":["FGONLYT","news"]},{"app_id":"pZWhL0tyf4FMCt8r","tasks":["FGONLYT"]},{"app_id":"qAM6zmNEtT45AgUa","tasks":["Amb_jp"]},{"app_id":"qCcCCCLDwNMea0nq","tasks":["info_00","Data","Data_00"]},{"app_id":"QDlGiLVY6lFsOhV3","tasks":["boss1","boss2","boss3"]},{"app_id":"qdy7ZP05GyiwgV7L","tasks":["FGONLYT"]},{"app_id":"QfJQIU7IDmkaUuLt","tasks":["Amb_us"]},{"app_id":"qIe6CqkMDj1IaHoD","tasks":["AKT365I"]},{"app_id":"QOnECUiVKl7wigDk","tasks":["Strike1"]},{"app_id":"Qp03w0NGhViaEw4w","tasks":["FGONLYT"]},{"app_id":"RA470KStGjDbVn4O","tasks":["TASK00"]},{"app_id":"rdWhyQMMUyKavjb4","tasks":["TASK00"]},{"app_id":"rFgmDJuaHQO3TQFc","tasks":["Enquete","MiiDL"]},{"app_id":"rLNcsjO2p5oT0mqf","tasks":["FGONLYT"]},{"app_id":"RrNiKxhX1QFjyHSS","tasks":["TASK00"]},{"app_id":"rsJRb5kSxvgEazo3","tasks":["PANEL","MIIDATA","ETC","PANELLM","UPDATE"]},{"app_id":"ruVXn8rPH6AV83CV","tasks":["FGONLYT","news"]},{"app_id":"RXA1qO1PUOBzCrfe","tasks":["FGONLYT"]},{"app_id":"S1JafzaIw7C1Iia5","tasks":["FGONLYT"]},{"app_id":"s4T2rYW8ByXzSwQH","tasks":["FGONLYT","news"]},{"app_id":"s6jspRUJkQbUMWgK","tasks":["Ds2ocTk"]},{"app_id":"S7tpGELe3d0jT75J","tasks":["data","news"]},{"app_id":"sbPtwI3pQEFTPEYu","tasks":["FGONLYT"]},{"app_id":"SS47bOArh8LhftQC","tasks":["FGONLYT"]},{"app_id":"svTk7OJgceQciyt9","tasks":["data"]},{"app_id":"Sz5wLxuBiuxOV6qO","tasks":["data"]},{"app_id":"T3WjBdLsN0SbsBpB","tasks":["FGONLYT","news"]},{"app_id":"T6hDbtUyZu9yGbiN","tasks":["FGONLYT","news"]},{"app_id":"t6hwMmI9dyfj3vFa","tasks":["AL8_001"]},{"app_id":"t7svvLkl31nkcVv9","tasks":["Enquete","MiiDL"]},{"app_id":"TABYOV7qcJ3wjUlk","tasks":["g1_plus"]},{"app_id":"TegobOkDc6fN2cLL","tasks":["tmTaskA"]},{"app_id":"TkTJ7y1N7b4bvs8m","tasks":["FGONLYT","news"]},{"app_id":"TuKTMEFYh0sLS1O3","tasks":["data","news"]},{"app_id":"TVNiiigBTi1WzpnF","tasks":["TASK00"]},{"app_id":"U2ZFOVWD6LH9r4JQ","tasks":["FGONLYT"]},{"app_id":"uLrjbAsNhsH7Hc1N","tasks":["FGONLYT"]},{"app_id":"Umg3IE2TYUrKEV1D","tasks":["FGONLYT","news"]},{"app_id":"uuI82221UKkqmtbp","tasks":["basho4","basho5","sysmsg1","sysmsg2","sysmsg3","basho1","basho2","basho3"]},{"app_id":"UvNyA9yqIVj7LUml","tasks":["data","news"]},{"app_id":"uwGWP9VmceGVyTXv","tasks":["DUOINFO"]},{"app_id":"V04RWTNqtHWfOaEB","tasks":["FGONLYT"]},{"app_id":"V5zESuakCkVaRtYB","tasks":["data","news"]},{"app_id":"vCl8UPQ872Q2wzc0","tasks":["tmTaskA"]},{"app_id":"vl1QWl9Lf3FhiH8r","tasks":["DSAIBAN"]},{"app_id":"w4J4AC8GMlfdkX9c","tasks":["daily"]},{"app_id":"w8pqLFi96ZJLL6Co","tasks":["FGONLYT","news"]},{"app_id":"WaOuJFckDnqKr5sK","tasks":["FGONLYT","news"]},{"app_id":"wbyZZlvq1j2QNBXj","tasks":["daily"]},{"app_id":"wfHyw6Hj9b1UeCOd","tasks":["FGONLYT"]},{"app_id":"WNcE0vrvCCO74nPV","tasks":["ptc3nwe"]},{"app_id":"wXBTx8n5TvYbdKqD","tasks":["FGONLYT","news"]},{"app_id":"wZgX791EQIHRicOk","tasks":["FGONLYT","news"]},{"app_id":"X0sh6ppe6HabEEcI","tasks":["Info_00","Data","Data_00","Data_01"]},{"app_id":"X7wyEU7bsKuTwsw0","tasks":["FGONLYT"]},{"app_id":"xHdRFJ7H9HIm2Eu5","tasks":["SEED"]},{"app_id":"XrC4VtwZsJ3ro8sn","tasks":["FGONLYT","news"]},{"app_id":"Y49VUspi8Bd4dqV9","tasks":["FGONLYT"]},{"app_id":"y67Up0WfC3ljfqic","tasks":["SEED"]},{"app_id":"YapN7dMun6U6CVPx","tasks":["thmlist","thmtop","thmnews"]},{"app_id":"YbltplPRvEZ9620A","tasks":["present"]},{"app_id":"YCHNmojskL3NNzNp","tasks":["FGONLYT"]},{"app_id":"yj9NpW9dQjUYhN6i","tasks":["FGONLYT"]},{"app_id":"ylHLOTvdmBIaUX4H","tasks":["TASK00"]},{"app_id":"YSMWAkVsyGiCsw36","tasks":["SGS_APD"]},{"app_id":"ytEcS6DukxLYv42a","tasks":["Quartz0","Quartz1"]},{"app_id":"YzNlkoJpfJCGhJ5J","tasks":["AIROUDX"]},{"app_id":"zFRghpEL0RQSrIkZ","tasks":["FGONLYT"]},{"app_id":"ZtNvntGBgoUcf3hZ","tasks":["FGONLYT","news"]},{"app_id":"ZweaaGi5WXHt5SO2","tasks":["Quartz0","Quartz1"]},{"app_id":"Zy3Cob0dHUBuRjK3","tasks":["AL8_001"]},{"app_id":"zY73NQ2CPef4Rfvu","tasks":["FGONLYT","news"]},{"app_id":"ZzIGzz3gyLOPJUbk","tasks":["daily"]},{"app_id":"RbCdW5sw3xphZ3x7","tasks":["FGONLYT"]},{"app_id":"kdZ3BEkxoaIt2lLJ","tasks":["ORT03"]},{"app_id":"0a2LXft7kMJ39q4g","tasks":["ORT02"]},{"app_id":"6cDyiXh2nyoSmHeE","tasks":["ORT01"]},{"app_id":"Tw16Bbw3beUmN6Jd","tasks":["FGONLYT"]},{"app_id":"7b6ZRfqtEUTwJ6rj","tasks":["ORT03"]},{"app_id":"PDhvZpH361L3gmm3","tasks":["ORT02"]},{"app_id":"AOdUQg8P4dXbIC4b","tasks":["FGONLYT"]},{"app_id":"tqdef27ymLVxfSaD","tasks":["ORT01"]},{"app_id":"qEFxWy2HQ5AX7qTX","tasks":["MiiDL"]},{"app_id":"EnLW1Fe8d0AfR3mE","tasks":["NEWRABS"]},{"app_id":"lX5BwDIdDsj6RkZg","tasks":["RACHEL"]},{"app_id":"gQ3O9gb9VwvI3is6","tasks":["Data","Data_00"]},{"app_id":"Yh1oGYQ6MHHRacyR","tasks":["Data","Data_00"]},{"app_id":"qn6svwUCotEnBg24","tasks":["MiiDL"]},{"app_id":"QlZMDe93rUHQ7svF","tasks":["RACHEL"]},{"app_id":"6WLiMjiIXzGMmZ6n","tasks":["Info","Info_00"]},{"app_id":"HpRhWfgZE0SoEiJ6","tasks":["NZOffPg"]},{"app_id":"BC10cFTXc0NHTohu","tasks":["RNG_EC1","RNG_MD1"]},{"app_id":"QwyHOPV4LsvQ2I3U","tasks":["PTASK01"]},{"app_id":"7RW9z5Cb71Fpt1OE","tasks":["BGM1","TIGER1","BGM2"]},{"app_id":"TLmPhQflK0Yn6BeH","tasks":["ptc3nws"]},{"app_id":"pfQzJEaJOiPlLy3t","tasks":["MIIDATA","ETC","PANELLM","UPDATE","PANEL"]},{"app_id":"110Rzo2E1vYSfAz6","tasks":["thmtop","thmnews"]},{"app_id":"gWr4JXxb2mKTG3lq","tasks":["basho1","basho2","basho3","basho4","basho5","sysmsg1","sysmsg2","sysmsg3","basho0"]},{"app_id":"WyI1CBPmzfm2nR2f","tasks":["JFR_LS2"]},{"app_id":"h0VRqB2YEgq39zvO","tasks":["horogra"]},{"app_id":"H7btVjYWs7p5dGj6","tasks":["BREAK01","BREAK02","BREAK03"]},{"app_id":"rO34jReRezcPv4HS","tasks":["NZOffPg"]},{"app_id":"b3Gq6LF6EqE1bvKy","tasks":["FGONLYT"]},{"app_id":"OpIF7z4Uzjoww4Jw","tasks":["spnt_t","spnt_x","FGONLYT"]},{"app_id":"t9PZWHTdBZ57jYL6","tasks":["girls","GMTM","info"]},{"app_id":"vD1TyxppgptrZdfK","tasks":["BGM1","BGM2"]},{"app_id":"vgBivYesOH9RS5I8","tasks":["FGONLYT"]},{"app_id":"Slv7vHlUOfqrKMpz","tasks":["FGONLYT"]},{"app_id":"EeqptDDf7v2IL7OP","tasks":["FGONLYT"]},{"app_id":"xNwjHvSQy3aGBb4C","tasks":["patch","present"]},{"app_id":"AH3oZwrEbne6qHCO","tasks":["BGM1","BGM2","TIGER1"]},{"app_id":"tjca9oAeXj1R9EfU","tasks":["MIIDATA","ETC","PANEL","PANELLM","UPDATE"]},{"app_id":"ZBq1ITue8b9aw64j","tasks":["NEWS","amiibo","FGONLYT"]},{"app_id":"dMtiFHzm5OOf0y2O","tasks":["thmtop","thmnews","thmlist","thmdtls"]},{"app_id":"UrXSeurnxhPrq7AS","tasks":["sysmsg1","sysmsg2","sysmsg3","basho1","basho2","basho3","basho4","basho5"]},{"app_id":"Y5G9cKWHtFCre5ni","tasks":["dlvexb","news","news_p","FGONLYT"]},{"app_id":"oC02RURp92o3o6XQ","tasks":["MiiDL","Enquete"]},{"app_id":"8zLdgUwAeyD4Bn3b","tasks":["DlcInfo"]},{"app_id":"nn2h3ad9wxrX42UF","tasks":["pktrpsh"]},{"app_id":"wfGi1AUhRfVvZ2KR","tasks":["NZOffPg"]},{"app_id":"6HThIi5QlwGZNYFs","tasks":["FGONLYT"]},{"app_id":"8QjtffIMWFhiFpTz","tasks":["FGONLYT"]},{"app_id":"gfRN888w01lMrpSr","tasks":["DlcInfo"]},{"app_id":"cRFY0WFHNjPh44If","tasks":["horogra"]},{"app_id":"wkiOHAEndV3fVHOF","tasks":["spnt_t","FGONLYT"]},{"app_id":"nTik1y6PI2QheWpi","tasks":["FGONLYT"]},{"app_id":"uAiur5PJTg0lFji6","tasks":["NEWS","POSTER"]}]
+[
+	{
+		"app_id": "07SSacDlEHc8z0jg",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "0hFlOFo7pNTU2dyE",
+		"tasks": [
+			"RNG_EC1",
+			"RNG_LS1",
+			"RNG_MD1",
+			"RNG_NT1",
+			"RNG_NT2"
+		]
+	},
+	{
+		"app_id": "10Og6tqFdXrW1Dra",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "18ZHPbhuhUMZmLMS",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "1dNhxKHa1kgzz0gj",
+		"tasks": [
+			"MEDA9"
+		]
+	},
+	{
+		"app_id": "2eMXT6CAAcQIYWuN",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "2s640xAtrZGOWdq0",
+		"tasks": [
+			"JFR_LS2"
+		]
+	},
+	{
+		"app_id": "2zDwgq1t61PlMaPq",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "3ddVFPLZpzu77yvS",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "3EHaOtNKDsD3Ybk8",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "3isXVXrb2lLqmrW0",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "3t2IUj3ASUzKKEHK",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "3vveLadT8H6xKkQH",
+		"tasks": [
+			"RNG_EC1",
+			"RNG_LS1",
+			"RNG_MD1",
+			"RNG_NT1",
+			"RNG_NT2"
+		]
+	},
+	{
+		"app_id": "4LvdQ9tJBCOyHrv4",
+		"tasks": [
+			"comm",
+			"ghost",
+			"ranking"
+		]
+	},
+	{
+		"app_id": "4OBVxt1uzhPW4cGR",
+		"tasks": [
+			"BKRJ-00"
+		]
+	},
+	{
+		"app_id": "53R1vYbkfqXlqzns",
+		"tasks": [
+			"comm",
+			"ghost",
+			"ranking"
+		]
+	},
+	{
+		"app_id": "5xq3tXtlGqUd7MbV",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		]
+	},
+	{
+		"app_id": "5yLkA3wqcXruNE2N",
+		"tasks": [
+			"tmTaskA"
+		]
+	},
+	{
+		"app_id": "6jk78e80CzvtPvim",
+		"tasks": [
+			"PAINF00"
+		]
+	},
+	{
+		"app_id": "6SKM87Ll80ONzAvQ",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "7EnMOQ6WfZSmvQgu",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "7knOkHlr5db97LJ6",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "7NdLNTN4iH9wEbJQ",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "7vzbLQCS84rtXY0y",
+		"tasks": [
+			"FGONLYT",
+			"TDQ01"
+		]
+	},
+	{
+		"app_id": "8DeC0vBA5VDzPu8x",
+		"tasks": [
+			"AKBadd"
+		]
+	},
+	{
+		"app_id": "8DViaPfyfH1pGO91",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "8mX4hRmZqkDHn0SE",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "9x4m4dJwyBBlUc3g",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "ac2P6aIvORxnQJwK",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "adQnSUvJlXp5igaT",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "aFMv95FiWHC3k7XV",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "AWKlN4KN0rMA7Gqc",
+		"tasks": [
+			"MEDA8"
+		]
+	},
+	{
+		"app_id": "AZcAJ2Stxa9P8h7a",
+		"tasks": [
+			"SMVS_EC",
+			"SMVS_SC"
+		]
+	},
+	{
+		"app_id": "B6Iqt2r0EGU549NW",
+		"tasks": [
+			"comm",
+			"ghost",
+			"ranking"
+		]
+	},
+	{
+		"app_id": "b8RPtQj41Mw5HjoX",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "bGoDxPNf97rXq9a5",
+		"tasks": [
+			"present"
+		]
+	},
+	{
+		"app_id": "BgyAdVTkMfLTzM0k",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "bOMC45IF1taPnYx8",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "ciTu5gGHcW767kOc",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "cPYaUEX74KmPR0wF",
+		"tasks": [
+			"present"
+		]
+	},
+	{
+		"app_id": "CtfKXACbUPl8s7lk",
+		"tasks": [
+			"BGM1",
+			"BGM2",
+			"TIGER1"
+		]
+	},
+	{
+		"app_id": "cXo6TOh0AtrCzaCP",
+		"tasks": [
+			"JFR_LS2",
+			"JFR_AP2",
+			"JFR_NT1",
+			"JFR_NT2",
+			"JFR_NT3"
+		]
+	},
+	{
+		"app_id": "d4495LzgtcxUObka",
+		"tasks": [
+			"MEDA7"
+		]
+	},
+	{
+		"app_id": "DJBXc6TzoubPYfy6",
+		"tasks": [
+			"weekly"
+		]
+	},
+	{
+		"app_id": "dpwg7hD86KlFwcbk",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "DUE2YwOq2m9fVsdZ",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "DwQNLZT8QlZIxyAJ",
+		"tasks": [
+			"mesdat"
+		]
+	},
+	{
+		"app_id": "e4rcoYW9QTHc2whz",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "E5myNZzoWVHdNUvY",
+		"tasks": [
+			"MEDA8"
+		]
+	},
+	{
+		"app_id": "eH6oowgSM7n662mw",
+		"tasks": [
+			"tmTaskA"
+		]
+	},
+	{
+		"app_id": "f5xYhmZvwKo4uv5A",
+		"tasks": [
+			"data"
+		]
+	},
+	{
+		"app_id": "fbAzg6nuN4hhQ3pJ",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "fFV9HxPJR7NJRTre",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "FNY6HPPbPj2jIErD",
+		"tasks": [
+			"Amb_eu"
+		]
+	},
+	{
+		"app_id": "fQZi0N3YlWWq07AZ",
+		"tasks": [
+			"item"
+		]
+	},
+	{
+		"app_id": "fsYqLFLQngg32A1l",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "G06t7Q3mkOy95nBw",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "G4uDyFA9Yc06kV8m",
+		"tasks": [
+			"JAU"
+		]
+	},
+	{
+		"app_id": "g6DKUfhQUHKd5gZz",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "GjTM1Bphz05wTMtO",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "gOlIVAcjDpj6K1Ut",
+		"tasks": [
+			"GS6"
+		]
+	},
+	{
+		"app_id": "GQkLSOsKwIpvr8Yi",
+		"tasks": [
+			"present",
+			"patch"
+		]
+	},
+	{
+		"app_id": "GQqblssCbq6PuCyJ",
+		"tasks": [
+			"MEDA9"
+		]
+	},
+	{
+		"app_id": "guBwm9TlQvYvncKn",
+		"tasks": [
+			"horogra"
+		]
+	},
+	{
+		"app_id": "GxCs83sbgwaoL2js",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "H9GUJGE1xWr9VrgG",
+		"tasks": [
+			"present"
+		]
+	},
+	{
+		"app_id": "hA0Mq0T7KQofzsFF",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "i9omdntnCo1GPdHA",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "iolEjnbGp2W1ghtO",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "iYhju0xUdEBftgzw",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "j0ITmVqVgfUxe0O9",
+		"tasks": [
+			"data",
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "J3u1c5M8Ff9Y9TyG",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "j5cz6H9mjSt8wvLX",
+		"tasks": [
+			"FGONLYT",
+			"dlvexb",
+			"news",
+			"news_p",
+			"pnews"
+		]
+	},
+	{
+		"app_id": "J6la9Kj8iqTvAPOq",
+		"tasks": [
+			"data",
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "j9wEm4RKrgNuaudD",
+		"tasks": [
+			"Info_00",
+			"Data",
+			"Data_00"
+		]
+	},
+	{
+		"app_id": "JfttU8Wg1iBIbbIs",
+		"tasks": [
+			"EXT0100"
+		]
+	},
+	{
+		"app_id": "JIguVGEJJOhAq2te",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "JqhCCnj1t7Zid1SG",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "jy95T3iOBKyGbAXl",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "kb6KM6y6fQx3bOWs",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "kQGzeGpga1cXwbtf",
+		"tasks": [
+			"MEDA7"
+		]
+	},
+	{
+		"app_id": "kSz44ZF73HpIb4O7",
+		"tasks": [
+			"comm",
+			"ghost",
+			"ranking"
+		]
+	},
+	{
+		"app_id": "kTnNBa7mg66E11iV",
+		"tasks": [
+			"ghost",
+			"ranking"
+		]
+	},
+	{
+		"app_id": "L1P2RB6s878vioGs",
+		"tasks": [
+			"SEED"
+		]
+	},
+	{
+		"app_id": "lg9TdjOIyCO7aUR4",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "lhz3HfuATBPF4EdY",
+		"tasks": [
+			"ESE_CNF",
+			"ESE_NWS"
+		]
+	},
+	{
+		"app_id": "Lju5rPwt0QgXXh7Q",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "llh2zGNci2sULyVX",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "Lw62Mz00pmT1osSJ",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "lX2cH6BQVJFyjCfN",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "Lx3bOup9RTIcePKE",
+		"tasks": [
+			"DUOINFO"
+		]
+	},
+	{
+		"app_id": "M0EKKJWDaHUDcmRr",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "M7HNbBKOBj4NTTor",
+		"tasks": [
+			"FGONLYT",
+			"info"
+		]
+	},
+	{
+		"app_id": "mb2iVt7j6Wy6yxkb",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "MEXh2UqOKVgJS3h3",
+		"tasks": [
+			"AKT410a"
+		]
+	},
+	{
+		"app_id": "MqPfuz5l3ptcMj23",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "n1cddgQeTxunOG2K",
+		"tasks": [
+			"Enquete",
+			"MiiDL"
+		]
+	},
+	{
+		"app_id": "NSWeucPFtbNNCx07",
+		"tasks": [
+			"data"
+		]
+	},
+	{
+		"app_id": "NU0xisOCz9UY0IBu",
+		"tasks": [
+			"AKT5PKG"
+		]
+	},
+	{
+		"app_id": "NXIWsA2Gm4EH219s",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "OFypMD7hNCrRPthA",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "oGD8mLvDr8YY1L9E",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "OkqvIoTur40udixa",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "Omwq2nEEfqZ9yo9S",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "oPuD6PkiPpx1EFiy",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "oUF988iLJo3cWLji",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "OvbmGLZ9senvgV3K",
+		"tasks": [
+			"data",
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "p1of6zTyKCnqOITZ",
+		"tasks": [
+			"Quartz0",
+			"Quartz1"
+		]
+	},
+	{
+		"app_id": "p47ZQwc3R4qAmAYD",
+		"tasks": [
+			"allhp"
+		]
+	},
+	{
+		"app_id": "p5HtkudRvY55R212",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "PKeGb0m4S3Gv5jis",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "PpjtFCm4bQskyBUy",
+		"tasks": [
+			"PAINF00"
+		]
+	},
+	{
+		"app_id": "PV3ljR2w0UwrQfWk",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "PzpV1tz303wO66AD",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "pZWhL0tyf4FMCt8r",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "qAM6zmNEtT45AgUa",
+		"tasks": [
+			"Amb_jp"
+		]
+	},
+	{
+		"app_id": "qCcCCCLDwNMea0nq",
+		"tasks": [
+			"info_00",
+			"Data",
+			"Data_00",
+			"Data_01"
+		]
+	},
+	{
+		"app_id": "QDlGiLVY6lFsOhV3",
+		"tasks": [
+			"boss1",
+			"boss2",
+			"boss3"
+		]
+	},
+	{
+		"app_id": "qdy7ZP05GyiwgV7L",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "QfJQIU7IDmkaUuLt",
+		"tasks": [
+			"Amb_us"
+		]
+	},
+	{
+		"app_id": "qIe6CqkMDj1IaHoD",
+		"tasks": [
+			"AKT365I"
+		]
+	},
+	{
+		"app_id": "QOnECUiVKl7wigDk",
+		"tasks": [
+			"Strike1"
+		]
+	},
+	{
+		"app_id": "Qp03w0NGhViaEw4w",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "RA470KStGjDbVn4O",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "rdWhyQMMUyKavjb4",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "rFgmDJuaHQO3TQFc",
+		"tasks": [
+			"Enquete",
+			"MiiDL"
+		]
+	},
+	{
+		"app_id": "rLNcsjO2p5oT0mqf",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "RrNiKxhX1QFjyHSS",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "rsJRb5kSxvgEazo3",
+		"tasks": [
+			"PANEL",
+			"MIIDATA",
+			"ETC",
+			"PANELLM",
+			"UPDATE"
+		]
+	},
+	{
+		"app_id": "ruVXn8rPH6AV83CV",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "RXA1qO1PUOBzCrfe",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "S1JafzaIw7C1Iia5",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "s4T2rYW8ByXzSwQH",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "s6jspRUJkQbUMWgK",
+		"tasks": [
+			"Ds2ocTk"
+		]
+	},
+	{
+		"app_id": "S7tpGELe3d0jT75J",
+		"tasks": [
+			"data",
+			"news"
+		]
+	},
+	{
+		"app_id": "sbPtwI3pQEFTPEYu",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "SS47bOArh8LhftQC",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "svTk7OJgceQciyt9",
+		"tasks": [
+			"data"
+		]
+	},
+	{
+		"app_id": "Sz5wLxuBiuxOV6qO",
+		"tasks": [
+			"data"
+		]
+	},
+	{
+		"app_id": "T3WjBdLsN0SbsBpB",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "T6hDbtUyZu9yGbiN",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "t6hwMmI9dyfj3vFa",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "t7svvLkl31nkcVv9",
+		"tasks": [
+			"Enquete",
+			"MiiDL"
+		]
+	},
+	{
+		"app_id": "TABYOV7qcJ3wjUlk",
+		"tasks": [
+			"g1_plus"
+		]
+	},
+	{
+		"app_id": "TegobOkDc6fN2cLL",
+		"tasks": [
+			"tmTaskA"
+		]
+	},
+	{
+		"app_id": "TkTJ7y1N7b4bvs8m",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "TuKTMEFYh0sLS1O3",
+		"tasks": [
+			"data",
+			"news"
+		]
+	},
+	{
+		"app_id": "TVNiiigBTi1WzpnF",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "U2ZFOVWD6LH9r4JQ",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "uLrjbAsNhsH7Hc1N",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "Umg3IE2TYUrKEV1D",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "uuI82221UKkqmtbp",
+		"tasks": [
+			"basho4",
+			"basho5",
+			"sysmsg1",
+			"sysmsg2",
+			"sysmsg3",
+			"basho1",
+			"basho2",
+			"basho3",
+			"basho0"
+		]
+	},
+	{
+		"app_id": "UvNyA9yqIVj7LUml",
+		"tasks": [
+			"data",
+			"news"
+		]
+	},
+	{
+		"app_id": "uwGWP9VmceGVyTXv",
+		"tasks": [
+			"DUOINFO"
+		]
+	},
+	{
+		"app_id": "V04RWTNqtHWfOaEB",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "V5zESuakCkVaRtYB",
+		"tasks": [
+			"data",
+			"news"
+		]
+	},
+	{
+		"app_id": "vCl8UPQ872Q2wzc0",
+		"tasks": [
+			"tmTaskA"
+		]
+	},
+	{
+		"app_id": "vl1QWl9Lf3FhiH8r",
+		"tasks": [
+			"DSAIBAN"
+		]
+	},
+	{
+		"app_id": "w4J4AC8GMlfdkX9c",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "w8pqLFi96ZJLL6Co",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "WaOuJFckDnqKr5sK",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "wbyZZlvq1j2QNBXj",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "wfHyw6Hj9b1UeCOd",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "WNcE0vrvCCO74nPV",
+		"tasks": [
+			"ptc3nwe"
+		]
+	},
+	{
+		"app_id": "wXBTx8n5TvYbdKqD",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "wZgX791EQIHRicOk",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "X0sh6ppe6HabEEcI",
+		"tasks": [
+			"Info_00",
+			"Data",
+			"Data_00",
+			"Data_01"
+		]
+	},
+	{
+		"app_id": "X7wyEU7bsKuTwsw0",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "xHdRFJ7H9HIm2Eu5",
+		"tasks": [
+			"SEED"
+		]
+	},
+	{
+		"app_id": "XrC4VtwZsJ3ro8sn",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "Y49VUspi8Bd4dqV9",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "y67Up0WfC3ljfqic",
+		"tasks": [
+			"SEED"
+		]
+	},
+	{
+		"app_id": "YapN7dMun6U6CVPx",
+		"tasks": [
+			"thmlist",
+			"thmtop",
+			"thmnews"
+		]
+	},
+	{
+		"app_id": "YbltplPRvEZ9620A",
+		"tasks": [
+			"present"
+		]
+	},
+	{
+		"app_id": "YCHNmojskL3NNzNp",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "yj9NpW9dQjUYhN6i",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "ylHLOTvdmBIaUX4H",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "YSMWAkVsyGiCsw36",
+		"tasks": [
+			"SGS_APD"
+		]
+	},
+	{
+		"app_id": "ytEcS6DukxLYv42a",
+		"tasks": [
+			"Quartz0",
+			"Quartz1"
+		]
+	},
+	{
+		"app_id": "YzNlkoJpfJCGhJ5J",
+		"tasks": [
+			"AIROUDX"
+		]
+	},
+	{
+		"app_id": "zFRghpEL0RQSrIkZ",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "ZtNvntGBgoUcf3hZ",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "ZweaaGi5WXHt5SO2",
+		"tasks": [
+			"Quartz0",
+			"Quartz1"
+		]
+	},
+	{
+		"app_id": "Zy3Cob0dHUBuRjK3",
+		"tasks": [
+			"AL8_001"
+		]
+	},
+	{
+		"app_id": "zY73NQ2CPef4Rfvu",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		]
+	},
+	{
+		"app_id": "ZzIGzz3gyLOPJUbk",
+		"tasks": [
+			"daily"
+		]
+	},
+	{
+		"app_id": "RbCdW5sw3xphZ3x7",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "kdZ3BEkxoaIt2lLJ",
+		"tasks": [
+			"ORT03"
+		]
+	},
+	{
+		"app_id": "0a2LXft7kMJ39q4g",
+		"tasks": [
+			"ORT02"
+		]
+	},
+	{
+		"app_id": "6cDyiXh2nyoSmHeE",
+		"tasks": [
+			"ORT01"
+		]
+	},
+	{
+		"app_id": "Tw16Bbw3beUmN6Jd",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "7b6ZRfqtEUTwJ6rj",
+		"tasks": [
+			"ORT03"
+		]
+	},
+	{
+		"app_id": "PDhvZpH361L3gmm3",
+		"tasks": [
+			"ORT02"
+		]
+	},
+	{
+		"app_id": "AOdUQg8P4dXbIC4b",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "tqdef27ymLVxfSaD",
+		"tasks": [
+			"ORT01"
+		]
+	},
+	{
+		"app_id": "qEFxWy2HQ5AX7qTX",
+		"tasks": [
+			"MiiDL"
+		]
+	},
+	{
+		"app_id": "EnLW1Fe8d0AfR3mE",
+		"tasks": [
+			"NEWRABS"
+		]
+	},
+	{
+		"app_id": "lX5BwDIdDsj6RkZg",
+		"tasks": [
+			"RACHEL"
+		]
+	},
+	{
+		"app_id": "gQ3O9gb9VwvI3is6",
+		"tasks": [
+			"Data",
+			"Data_00"
+		]
+	},
+	{
+		"app_id": "Yh1oGYQ6MHHRacyR",
+		"tasks": [
+			"Data",
+			"Data_00"
+		]
+	},
+	{
+		"app_id": "qn6svwUCotEnBg24",
+		"tasks": [
+			"MiiDL"
+		]
+	},
+	{
+		"app_id": "QlZMDe93rUHQ7svF",
+		"tasks": [
+			"RACHEL"
+		]
+	},
+	{
+		"app_id": "6WLiMjiIXzGMmZ6n",
+		"tasks": [
+			"Info",
+			"Info_00"
+		]
+	},
+	{
+		"app_id": "HpRhWfgZE0SoEiJ6",
+		"tasks": [
+			"NZOffPg"
+		]
+	},
+	{
+		"app_id": "BC10cFTXc0NHTohu",
+		"tasks": [
+			"RNG_EC1",
+			"RNG_MD1"
+		]
+	},
+	{
+		"app_id": "QwyHOPV4LsvQ2I3U",
+		"tasks": [
+			"PTASK01"
+		]
+	},
+	{
+		"app_id": "7RW9z5Cb71Fpt1OE",
+		"tasks": [
+			"BGM1",
+			"TIGER1",
+			"BGM2"
+		]
+	},
+	{
+		"app_id": "TLmPhQflK0Yn6BeH",
+		"tasks": [
+			"ptc3nws"
+		]
+	},
+	{
+		"app_id": "pfQzJEaJOiPlLy3t",
+		"tasks": [
+			"MIIDATA",
+			"ETC",
+			"PANELLM",
+			"UPDATE",
+			"PANEL"
+		]
+	},
+	{
+		"app_id": "110Rzo2E1vYSfAz6",
+		"tasks": [
+			"thmtop",
+			"thmnews"
+		]
+	},
+	{
+		"app_id": "gWr4JXxb2mKTG3lq",
+		"tasks": [
+			"basho1",
+			"basho2",
+			"basho3",
+			"basho4",
+			"basho5",
+			"sysmsg1",
+			"sysmsg2",
+			"sysmsg3",
+			"basho0"
+		]
+	},
+	{
+		"app_id": "WyI1CBPmzfm2nR2f",
+		"tasks": [
+			"JFR_LS2"
+		]
+	},
+	{
+		"app_id": "h0VRqB2YEgq39zvO",
+		"tasks": [
+			"horogra"
+		]
+	},
+	{
+		"app_id": "H7btVjYWs7p5dGj6",
+		"tasks": [
+			"BREAK01",
+			"BREAK02",
+			"BREAK03"
+		]
+	},
+	{
+		"app_id": "rO34jReRezcPv4HS",
+		"tasks": [
+			"NZOffPg"
+		]
+	},
+	{
+		"app_id": "b3Gq6LF6EqE1bvKy",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "OpIF7z4Uzjoww4Jw",
+		"tasks": [
+			"spnt_t",
+			"spnt_x",
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "t9PZWHTdBZ57jYL6",
+		"tasks": [
+			"girls",
+			"GMTM",
+			"info"
+		]
+	},
+	{
+		"app_id": "vD1TyxppgptrZdfK",
+		"tasks": [
+			"BGM1",
+			"BGM2"
+		]
+	},
+	{
+		"app_id": "vgBivYesOH9RS5I8",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "Slv7vHlUOfqrKMpz",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "EeqptDDf7v2IL7OP",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "xNwjHvSQy3aGBb4C",
+		"tasks": [
+			"patch",
+			"present"
+		]
+	},
+	{
+		"app_id": "AH3oZwrEbne6qHCO",
+		"tasks": [
+			"BGM1",
+			"BGM2",
+			"TIGER1"
+		]
+	},
+	{
+		"app_id": "tjca9oAeXj1R9EfU",
+		"tasks": [
+			"MIIDATA",
+			"ETC",
+			"PANEL",
+			"PANELLM",
+			"UPDATE"
+		]
+	},
+	{
+		"app_id": "ZBq1ITue8b9aw64j",
+		"tasks": [
+			"NEWS",
+			"amiibo",
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "dMtiFHzm5OOf0y2O",
+		"tasks": [
+			"thmtop",
+			"thmnews",
+			"thmlist",
+			"thmdtls"
+		]
+	},
+	{
+		"app_id": "UrXSeurnxhPrq7AS",
+		"tasks": [
+			"sysmsg1",
+			"sysmsg2",
+			"sysmsg3",
+			"basho1",
+			"basho2",
+			"basho3",
+			"basho4",
+			"basho5"
+		]
+	},
+	{
+		"app_id": "Y5G9cKWHtFCre5ni",
+		"tasks": [
+			"dlvexb",
+			"news",
+			"news_p",
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "oC02RURp92o3o6XQ",
+		"tasks": [
+			"MiiDL",
+			"Enquete"
+		]
+	},
+	{
+		"app_id": "8zLdgUwAeyD4Bn3b",
+		"tasks": [
+			"DlcInfo"
+		]
+	},
+	{
+		"app_id": "nn2h3ad9wxrX42UF",
+		"tasks": [
+			"pktrpsh"
+		]
+	},
+	{
+		"app_id": "wfGi1AUhRfVvZ2KR",
+		"tasks": [
+			"NZOffPg"
+		]
+	},
+	{
+		"app_id": "6HThIi5QlwGZNYFs",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "8QjtffIMWFhiFpTz",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "gfRN888w01lMrpSr",
+		"tasks": [
+			"DlcInfo"
+		]
+	},
+	{
+		"app_id": "cRFY0WFHNjPh44If",
+		"tasks": [
+			"horogra"
+		]
+	},
+	{
+		"app_id": "wkiOHAEndV3fVHOF",
+		"tasks": [
+			"spnt_t",
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "nTik1y6PI2QheWpi",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "uAiur5PJTg0lFji6",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		]
+	},
+	{
+		"app_id": "hatYUcYm85RPNRYv",
+		"tasks": [
+			"SPA4APP"
+		]
+	},
+	{
+		"app_id": "nT8epEHh2yCVHTZk",
+		"tasks": [
+			"news",
+			"news_p"
+		]
+	}
+]
