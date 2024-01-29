@@ -1,5 +1,4 @@
-// TODO - Are there more of these?
-
+// * All country codes, courtesy of https://www.3dbrew.org/wiki/Country_Code_List
 const COUNTRIES = [
 	'GB', 'US', 'IT', 'NL', 'DE', 'CA', 'FR', 'HU', 'CR',
 	'AU', 'BR', 'RO', 'CL', 'MX', 'RU', 'ES', 'JP', 'CZ',
@@ -10,11 +9,16 @@ const COUNTRIES = [
 	'UY', 'LV', 'HN', 'JM', 'TR', 'IN', 'ER', 'AW', 'NZ',
 	'EC', 'TW', 'EE', 'CN', 'SI', 'AI', 'BG', 'NI', 'IS',
 	'MQ', 'BZ', 'BA', 'MY', 'AZ', 'ZW', 'AL', 'IM', 'VG',
-	'VI', 'BM', 'GY', 'SR', 'MS', 'TC', 'BB', 'TT'
+	'VI', 'BM', 'GY', 'SR', 'MS', 'TC', 'BB', 'TT', 'AG',
+	'BS', 'DM', 'GD', 'AN', 'PY', 'KN', 'LC', 'VC', 'BW',
+	'EE', 'LS', 'LI', 'MK', 'ME', 'MZ', 'SZ', 'ZM', 'MR',
+	'ML', 'NE', 'TD', 'SD', 'DJ', 'SO', 'AD', 'GI', 'IM',
+	'JE', 'MC', 'HK', 'MO', 'ID', 'SG', 'TH', 'PH', 'AE',
+	'EG', 'OM', 'QA', 'KW', 'SY', 'BH', 'JO', 'SM', 'VA'
 ];
 
 const LANGUAGES = [
-	'en', 'it', 'de', 'fr', 'es', 'us', 'pt', 'ru', 'ja',
+	'en', 'it', 'de', 'fr', 'es', 'pt', 'ru', 'ja',
 	'nl', 'ko', 'zh', 'tw'
 ];
 
