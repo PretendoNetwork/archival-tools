@@ -131,4 +131,5 @@ dist
 
 # custom
 data
-tasks.db
+*.db
+*.bin
