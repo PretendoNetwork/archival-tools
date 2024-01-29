@@ -40,6 +40,34 @@ Each title has a BOSS application ID associated with it. Each BOSS application c
 
 There is no simple way to know a games BOSS application ID and associated tasks without checking your network traffic. See https://pretendo.network/docs/network-dumps#spotpass for more information on how to dump your traffic. This repository contains JSON lists of known applications and tasks, but this is far from complete.
 
+# Console databases
+Both consoles have databases for storing lists of BOSS tasks. These can be used to build the JSON files by using either `read-boss-db-wiiu.js` or `read-boss-db-3ds.js` depending on your console.
+
+A BOSS task must be registered in order to appear in the database. Typically a game will register all of it's tasks once SpotPass is enabled for the game. A game may require the user to be online before asking to enable SpotPass, but this depends on the game.
+
+### Wii U BOSS database
+The Wii U stores a separate database of BOSS tasks per user. Each one must be dumped individually.
+
+- Connect to the Wii U using FTP
+- Navigate to `/storage_mlc/usr/save/system/boss`
+- Find the folder for the user you want to dump the database for
+- Dump the `task.db` file
+- Place the `task.db` file here and run `node read-boss-db-wiiu`
+
+### 3DS BOSS database
+The 3DS stores BOSS tasks in a single save file in the BOSS sysmodule.
+
+- Launch GodMode9
+- Navigate to `SYSNAND CTRNAND > data > longstring > sysdata > 00010034`
+- Open `00000000`. If your file is not named `00000000` you may still continue, though we cannot guarantee this is the correct file. If you have more than one file, repeat the following steps for each
+- Select `Mount as DISA image`
+- Press `A` to mount and enter the image
+- Select `PartitionA.bin`. If your file is not named `PartitionA.bin` you may still continue, though we cannot guarantee this is the correct file. If you have more than one file, repeat the following steps for each
+- Select `Copy to 0:/gm9/out`
+- Turn off your console and eject the SD card
+- Open your SD card on your computer and place the `sd:/gm9/out/PartitionA.bin` file here
+- Run `node read-boss-db-3ds`
+
 # Downloads
 Content is downloaded into the `data` folder. Since BOSS content may update over time, each run of the scraper is placed into it's own folder inside `data` with the name being the current date in `YYYY-MM-DD` format. Since BOSS content is region specific the following subdirectories are the country and language code. Finally, each BOSS application has it's own folder which has additional folders for each task. These folders contain the `.boss` content files, as well as a `filelist.txt` (3DS) or `tasksheet.xml` (Wii U) file depending on the console.
 
