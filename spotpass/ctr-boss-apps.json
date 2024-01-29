@@ -153,7 +153,8 @@
 	{
 		"app_id": "7NdLNTN4iH9wEbJQ",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"pnote"
 		]
 	},
 	{
@@ -282,7 +283,8 @@
 			"JFR_AP2",
 			"JFR_NT1",
 			"JFR_NT2",
-			"JFR_NT3"
+			"JFR_NT3",
+			"JFR_DLS"
 		]
 	},
 	{
@@ -1145,13 +1147,15 @@
 		"tasks": [
 			"thmlist",
 			"thmtop",
-			"thmnews"
+			"thmnews",
+			"thmdtls"
 		]
 	},
 	{
 		"app_id": "YbltplPRvEZ9620A",
 		"tasks": [
-			"present"
+			"present",
+			"patch"
 		]
 	},
 	{
@@ -1319,7 +1323,8 @@
 	{
 		"app_id": "qn6svwUCotEnBg24",
 		"tasks": [
-			"MiiDL"
+			"MiiDL",
+			"Enquete"
 		]
 	},
 	{
@@ -1463,7 +1468,8 @@
 	{
 		"app_id": "Slv7vHlUOfqrKMpz",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"horogra"
 		]
 	},
 	{
@@ -1524,7 +1530,8 @@
 			"basho2",
 			"basho3",
 			"basho4",
-			"basho5"
+			"basho5",
+			"basho0"
 		]
 	},
 	{
@@ -1589,7 +1596,8 @@
 		"app_id": "wkiOHAEndV3fVHOF",
 		"tasks": [
 			"spnt_t",
-			"FGONLYT"
+			"FGONLYT",
+			"spnt_x"
 		]
 	},
 	{
@@ -1615,7 +1623,248 @@
 		"app_id": "nT8epEHh2yCVHTZk",
 		"tasks": [
 			"news",
-			"news_p"
+			"news_p",
+			"dlvexb",
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "P2mPjVWZUv2Dw8tw",
+		"tasks": [
+			"zdltdat"
+		]
+	},
+	{
+		"app_id": "KJshB9eMGJCdvEBK",
+		"tasks": [
+			"PAINF00"
+		]
+	},
+	{
+		"app_id": "tjZ5w8RGlAKd82y0",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "GHsikcsO3zjZO8bm",
+		"tasks": [
+			"GMTM"
+		]
+	},
+	{
+		"app_id": "kIHxKNVp3BHrr9bb",
+		"tasks": [
+			"annouce"
+		]
+	},
+	{
+		"app_id": "qOBtWp4rFtI6PoPl",
+		"tasks": [
+			"JAU"
+		]
+	},
+	{
+		"app_id": "3xU3A5ONnnC5ZxG9",
+		"tasks": [
+			"task_EU"
+		]
+	},
+	{
+		"app_id": "n7KLcJdvAfV8jrr5",
+		"tasks": [
+			"MiiDL",
+			"Enquete"
+		]
+	},
+	{
+		"app_id": "ZMcgy6xtWsbsQE6P",
+		"tasks": [
+			"news_p",
+			"dlvexb",
+			"news"
+		]
+	},
+	{
+		"app_id": "x7rRVYrCfwjmpOOX",
+		"tasks": [
+			"annouce"
+		]
+	},
+	{
+		"app_id": "svHxRGPIJ2AWA5QJ",
+		"tasks": [
+			"MiiDL",
+			"Enquete"
+		]
+	},
+	{
+		"app_id": "vlru9ZBRLJNiPwcm",
+		"tasks": [
+			"ESP_NWS",
+			"ESP_CNF"
+		]
+	},
+	{
+		"app_id": "6a2i4ewtEkJhoUS0",
+		"tasks": [
+			"SN7P"
+		]
+	},
+	{
+		"app_id": "9vMstzmE8vG7XDOo",
+		"tasks": [
+			"EWP_NWS",
+			"EWP_CNF"
+		]
+	},
+	{
+		"app_id": "VCcHstgngvFjng8c",
+		"tasks": [
+			"basrao0"
+		]
+	},
+	{
+		"app_id": "gekBa3SxolnJEyXJ",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		]
+	},
+	{
+		"app_id": "AOG9w8nspw1vnerP",
+		"tasks": [
+			"london1"
+		]
+	},
+	{
+		"app_id": "AZdLFt0b2qPaChrb",
+		"tasks": [
+			"ptc3nws"
+		]
+	},
+	{
+		"app_id": "EPqObwlC8lOg12az",
+		"tasks": [
+			"NEWRABS"
+		]
+	},
+	{
+		"app_id": "ytpowavlB10VzRDI",
+		"tasks": [
+			"GS5"
+		]
+	},
+	{
+		"app_id": "bX6vTcQgC6ojhnM8",
+		"tasks": [
+			"labos01",
+			"labos02"
+		]
+	},
+	{
+		"app_id": "sKBxpm1uEGbaKj3Z",
+		"tasks": [
+			"task_EU"
+		]
+	},
+	{
+		"app_id": "d2AUo8Ku903Uz7Oy",
+		"tasks": [
+			"GS6"
+		]
+	},
+	{
+		"app_id": "h06QNObaOsEeWbLS",
+		"tasks": [
+			"JMCDLC0",
+			"JMCDLC1"
+		]
+	},
+	{
+		"app_id": "au22VYFVclQ3t3fK",
+		"tasks": [
+			"JQBE"
+		]
+	},
+	{
+		"app_id": "nw66VXNswH2IYbJk",
+		"tasks": [
+			"JJ5Z"
+		]
+	},
+	{
+		"app_id": "ClDVV1OhC2nPQfiz",
+		"tasks": [
+			"JQAE"
+		]
+	},
+	{
+		"app_id": "eD9gjUWfENOf7RX4",
+		"tasks": [
+			"SPA4APP"
+		]
+	},
+	{
+		"app_id": "Ne7L2H9zREHMz0QT",
+		"tasks": [
+			"TASK00"
+		]
+	},
+	{
+		"app_id": "asLNEQeEuHnm71Qo",
+		"tasks": [
+			"JJ5P"
+		]
+	},
+	{
+		"app_id": "KafSZFWApstWG1oT",
+		"tasks": [
+			"costume",
+			"foeevnt",
+			"info"
+		]
+	},
+	{
+		"app_id": "s6jH81JriWS8EFL4",
+		"tasks": [
+			"JJYP"
+		]
+	},
+	{
+		"app_id": "7FgFpXT7yPCI7d5K",
+		"tasks": [
+			"JJZP"
+		]
+	},
+	{
+		"app_id": "H0aS5wTwrP8xYZbj",
+		"tasks": [
+			"JJVP"
+		]
+	},
+	{
+		"app_id": "2jvsEXOhaXMEJRqU",
+		"tasks": [
+			"JJXP"
+		]
+	},
+	{
+		"app_id": "9eqERrZPrfwHsXw8",
+		"tasks": [
+			"JJ6P"
+		]
+	},
+	{
+		"app_id": "pvKf3eKlZM86SftD",
+		"tasks": [
+			"JJ7P"
+		]
+	},
+	{
+		"app_id": "Q9zLfpAkDHiIAQtD",
+		"tasks": [
+			"Z_CARD0"
 		]
 	}
 ]
