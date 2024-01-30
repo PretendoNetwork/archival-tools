@@ -49,7 +49,8 @@
 			"JFR_NT2",
 			"JFR_NT1",
 			"JFR_NT3",
-			"JFR_AP2"
+			"JFR_AP2",
+			"JFR_GM2"
 		]
 	},
 	{
@@ -90,7 +91,8 @@
 			"RNG_LS1",
 			"RNG_MD1",
 			"RNG_NT1",
-			"RNG_NT2"
+			"RNG_NT2",
+			"RNG_GM1"
 		]
 	},
 	{
@@ -537,7 +539,8 @@
 	{
 		"app_id": "kb6KM6y6fQx3bOWs",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"pnote"
 		]
 	},
 	{
@@ -1358,7 +1361,9 @@
 		"tasks": [
 			"RNG_EC1",
 			"RNG_MD1",
-			"RNG_LS1"
+			"RNG_LS1",
+			"RNG_NT1",
+			"RNG_NT2"
 		]
 	},
 	{
@@ -1421,7 +1426,8 @@
 	{
 		"app_id": "h0VRqB2YEgq39zvO",
 		"tasks": [
-			"horogra"
+			"horogra",
+			"FGONLYT"
 		]
 	},
 	{
@@ -1561,7 +1567,8 @@
 	{
 		"app_id": "8zLdgUwAeyD4Bn3b",
 		"tasks": [
-			"DlcInfo"
+			"DlcInfo",
+			"FGONLYT"
 		]
 	},
 	{
@@ -1730,7 +1737,8 @@
 	{
 		"app_id": "VCcHstgngvFjng8c",
 		"tasks": [
-			"basrao0"
+			"basrao0",
+			"basrao1"
 		]
 	},
 	{
@@ -1971,6 +1979,119 @@
 		"app_id": "cd1qe3EXYyRuEdld",
 		"tasks": [
 			"news"
+		]
+	},
+	{
+		"app_id": "dpi2G2X44RWYcFKi",
+		"tasks": [
+			"task_EU"
+		]
+	},
+	{
+		"app_id": "AQzcgnW7ozCHjk0e",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "wKrAF9Z9DXZdXZQx",
+		"tasks": [
+			"weekly"
+		]
+	},
+	{
+		"app_id": "ZzWhdXdx7bv5p8bP",
+		"tasks": [
+			"london1"
+		]
+	},
+	{
+		"app_id": "ME0gcVqjUOI7Xdz4",
+		"tasks": [
+			"IMAHERO"
+		]
+	},
+	{
+		"app_id": "dAWysFTQbZ8yEBBd",
+		"tasks": [
+			"SC3DLC0"
+		]
+	},
+	{
+		"app_id": "Bj9GROrjies5XMOa",
+		"tasks": [
+			"GS5"
+		]
+	},
+	{
+		"app_id": "65YaZF7skxsw5cdY",
+		"tasks": [
+			"GS6"
+		]
+	},
+	{
+		"app_id": "InwBEl2EEhnbr5EC",
+		"tasks": [
+			"task_US"
+		]
+	},
+	{
+		"app_id": "gfRXFtm46orJeAoe",
+		"tasks": [
+			"news",
+			"news_p"
+		]
+	},
+	{
+		"app_id": "h9yS1FDz26uNM9lj",
+		"tasks": [
+			"tg4",
+			"tg4home"
+		]
+	},
+	{
+		"app_id": "hLU6fGE4vzOsrlmw",
+		"tasks": [
+			"task_JP"
+		]
+	},
+	{
+		"app_id": "5H2IWrmjM8PiN5SV",
+		"tasks": [
+			"diibo00"
+		]
+	},
+	{
+		"app_id": "E5GjXFKIix3yGqgK",
+		"tasks": [
+			"RECOBNT"
+		]
+	},
+	{
+		"app_id": "VEPSPo1c55w9ydWV",
+		"tasks": [
+			"annouce"
+		]
+	},
+	{
+		"app_id": "sA2vpi47OPnR78Ge",
+		"tasks": [
+			"taskImg",
+			"taskID",
+			"taskFlg"
+		]
+	},
+	{
+		"app_id": "PAuBgnpL4UGBpboR",
+		"tasks": [
+			"allhp"
+		]
+	},
+	{
+		"app_id": "76cct9EjYJJ17weU",
+		"tasks": [
+			"mesdat",
+			"dat"
 		]
 	}
 ]
