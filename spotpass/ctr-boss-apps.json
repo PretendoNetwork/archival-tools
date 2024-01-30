@@ -45,7 +45,11 @@
 	{
 		"app_id": "2s640xAtrZGOWdq0",
 		"tasks": [
-			"JFR_LS2"
+			"JFR_LS2",
+			"JFR_NT2",
+			"JFR_NT1",
+			"JFR_NT3",
+			"JFR_AP2"
 		]
 	},
 	{
@@ -115,7 +119,8 @@
 		"app_id": "5xq3tXtlGqUd7MbV",
 		"tasks": [
 			"NEWS",
-			"amiibo"
+			"amiibo",
+			"FGONLYT"
 		]
 	},
 	{
@@ -854,7 +859,8 @@
 			"MIIDATA",
 			"ETC",
 			"PANELLM",
-			"UPDATE"
+			"UPDATE",
+			"LEGEND"
 		]
 	},
 	{
@@ -867,7 +873,8 @@
 	{
 		"app_id": "RXA1qO1PUOBzCrfe",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"news"
 		]
 	},
 	{
@@ -1350,7 +1357,8 @@
 		"app_id": "BC10cFTXc0NHTohu",
 		"tasks": [
 			"RNG_EC1",
-			"RNG_MD1"
+			"RNG_MD1",
+			"RNG_LS1"
 		]
 	},
 	{
@@ -1682,7 +1690,8 @@
 		"tasks": [
 			"news_p",
 			"dlvexb",
-			"news"
+			"news",
+			"FGONLYT"
 		]
 	},
 	{
@@ -1865,6 +1874,103 @@
 		"app_id": "Q9zLfpAkDHiIAQtD",
 		"tasks": [
 			"Z_CARD0"
+		]
+	},
+	{
+		"app_id": "KmJKbxqqJ1ISUDgN",
+		"tasks": [
+			"add"
+		]
+	},
+	{
+		"app_id": "rNRksUC46LBJUQps",
+		"tasks": [
+			"weekly"
+		]
+	},
+	{
+		"app_id": "HxHhUeO7QSr7fTf0",
+		"tasks": [
+			"present",
+			"patch"
+		]
+	},
+	{
+		"app_id": "p2uEU1eJqc8tFvqS",
+		"tasks": [
+			"costume",
+			"foeevnt",
+			"info"
+		]
+	},
+	{
+		"app_id": "MjQnB45RHoQhqIf4",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		]
+	},
+	{
+		"app_id": "0Fkb5zYwkA04nKYK",
+		"tasks": [
+			"MiiDL",
+			"Enquete"
+		]
+	},
+	{
+		"app_id": "CkG3Q4aOnF2ALmis",
+		"tasks": [
+			"zdltcm",
+			"zdltdat"
+		]
+	},
+	{
+		"app_id": "Fk5Tz3LAVAZ2SvqP",
+		"tasks": [
+			"task_US"
+		]
+	},
+	{
+		"app_id": "UKUcmS9e4XbCsq3x",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		]
+	},
+	{
+		"app_id": "QmLaxX884X14gr28",
+		"tasks": [
+			"task_US"
+		]
+	},
+	{
+		"app_id": "eVnDsHy7ix4xPKLs",
+		"tasks": [
+			"news"
+		]
+	},
+	{
+		"app_id": "fnCAH3KrGIl9dgSd",
+		"tasks": [
+			"FGONLYT"
+		]
+	},
+	{
+		"app_id": "Co6AOQENlqDZDWNw",
+		"tasks": [
+			"hobbit2"
+		]
+	},
+	{
+		"app_id": "dJ4hv6uMXYNhbYGJ",
+		"tasks": [
+			"MC2NWS"
+		]
+	},
+	{
+		"app_id": "cd1qe3EXYyRuEdld",
+		"tasks": [
+			"news"
 		]
 	}
 ]
