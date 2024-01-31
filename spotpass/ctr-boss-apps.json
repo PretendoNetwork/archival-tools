@@ -506,7 +506,8 @@
 	{
 		"app_id": "H9GUJGE1xWr9VrgG",
 		"tasks": [
-			"present"
+			"present",
+			"patch"
 		],
 		"title_id": "unknown"
 	},
@@ -1609,7 +1610,8 @@
 		"app_id": "110Rzo2E1vYSfAz6",
 		"tasks": [
 			"thmtop",
-			"thmnews"
+			"thmnews",
+			"thmdtls"
 		],
 		"title_id": "000400100002CC00"
 	},
@@ -1782,7 +1784,8 @@
 			"dlvexb",
 			"news",
 			"news_p",
-			"FGONLYT"
+			"FGONLYT",
+			"pnews"
 		],
 		"title_id": "0004000000086400"
 	},
@@ -2406,5 +2409,21 @@
 			"dat"
 		],
 		"title_id": "00040002000C9E01"
+	},
+	{
+		"app_id": "AcYFJX9F9mNBA34T",
+		"tasks": [
+			"CW_WEEK",
+			"CW_RGN"
+		],
+		"title_id": "000400000005C800"
+	},
+	{
+		"app_id": "ZppKDH9dFwci1xuM",
+		"tasks": [
+			"dqu5vs9",
+			"x7a9u1y"
+		],
+		"title_id": "unknown"
 	}
 ]
