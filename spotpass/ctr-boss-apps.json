@@ -1912,7 +1912,9 @@
 	{
 		"app_id": "GHsikcsO3zjZO8bm",
 		"tasks": [
-			"GMTM"
+			"GMTM",
+			"info",
+			"girls"
 		],
 		"title_id": "00040000000A9100"
 	},
@@ -2425,5 +2427,19 @@
 			"x7a9u1y"
 		],
 		"title_id": "unknown"
+	},
+	{
+		"app_id": "7mXz0DXR4b4CdD8r",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "0004000000175E00"
+	},
+	{
+		"app_id": "5XpCMVOjCHJOLeh6",
+		"tasks": [
+			"JJ6E"
+		],
+		"title_id": "0004000000079700"
 	}
 ]
