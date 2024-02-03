@@ -29,21 +29,30 @@ async function build() {
 			task      TEXT,
 			country   TEXT,
 			language  TEXT,
-			processed BOOLEAN
+			processed BOOLEAN DEFAULT FALSE,
+			UNIQUE (platform, app_id, task, country, language)
 		)
 	`);
 
-	// * Clear all records before inserting new ones
-	await database.exec('DELETE FROM tasks');
-
-	// * Generating this database actually takes quite a bit of time.
-	// * Run as much of this concurrently as possible to try and speed
-	// * things up.
 	const startTime = performance.now();
 
-	await Promise.all(COUNTRIES.map(async (country) => {
-		await insertCountry(country);
-	}));
+	const values = [];
+
+	for (const app of apps) {
+		for (const task of app.tasks) {
+			for (const country of COUNTRIES) {
+				for (const language of LANGUAGES) {
+					values.push(`("${app.platform}", "${app.app_id}", "${task}", "${country}", "${language}")`);
+				}
+			}
+		}
+	}
+
+	// * Inserting all rows at once is basically instant.
+	// * No point in filtering since this isn't user input
+	const query = `INSERT INTO tasks (platform, app_id, task, country, language) VALUES ${values.join(', ')} ON CONFLICT(platform, app_id, task, country, language) DO NOTHING`;
+
+	await database.run(query);
 
 	const endTime = performance.now();
 	const executionTime = millisecondsToString(endTime - startTime);
@@ -51,38 +60,6 @@ async function build() {
 	console.log(`Database built in ${executionTime}`);
 
 	await database.close();
-}
-
-async function insertCountry(country) {
-	await Promise.all(LANGUAGES.map(async (language) => {
-		await insertLanguage(country, language);
-	}));
-}
-
-async function insertLanguage(country, language) {
-	for (const app of apps) {
-		for (const task of app.tasks) {
-			// * Create a row for every possible task in every country/language
-			await database.run(`
-				INSERT INTO tasks (
-					platform,
-					app_id,
-					task,
-					country,
-					language,
-					processed
-				)
-				VALUES (
-					?,
-					?,
-					?,
-					?,
-					?,
-					FALSE
-				)
-			`, app.platform, app.app_id, task, country, language);
-		}
-	}
 }
 
 build();
