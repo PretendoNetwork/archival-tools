@@ -492,14 +492,16 @@
 	{
 		"app_id": "guBwm9TlQvYvncKn",
 		"tasks": [
-			"horogra"
+			"horogra",
+			"FGONLYT"
 		],
 		"title_id": "000400000011C500"
 	},
 	{
 		"app_id": "GxCs83sbgwaoL2js",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"POSTING"
 		],
 		"title_id": "unknown"
 	},
@@ -1314,7 +1316,9 @@
 	{
 		"app_id": "Y49VUspi8Bd4dqV9",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"WHALE01",
+			"WHALE02"
 		],
 		"title_id": "00040000000CF500"
 	},
@@ -2441,5 +2445,71 @@
 			"JJ6E"
 		],
 		"title_id": "0004000000079700"
+	},
+	{
+		"app_id": "Kgg1X843lmd8Qx4H",
+		"tasks": [
+			"IMAHERO"
+		],
+		"title_id": "0004000000074000"
+	},
+	{
+		"app_id": "nmU69oGizolOYGSc",
+		"tasks": [
+			"DUOINFO"
+		],
+		"title_id": "00040000000FCA00"
+	},
+	{
+		"app_id": "OXEubGVtO2scl6qt",
+		"tasks": [
+			"NEWS"
+		],
+		"title_id": "0004000000132500"
+	},
+	{
+		"app_id": "wujsRH3kkwPXc5p9",
+		"tasks": [
+			"TASK00"
+		],
+		"title_id": "0004000000179500"
+	},
+	{
+		"app_id": "xxVJpVHJVIX1unyz",
+		"tasks": [
+			"yk_news"
+		],
+		"title_id": "000400000018B000"
+	},
+	{
+		"app_id": "9bUGzV1nUl8wxkPY",
+		"tasks": [
+			"news",
+			"news_p"
+		],
+		"title_id": "0004000000198D00"
+	},
+	{
+		"app_id": "MbNeoMBork0x5U9D",
+		"tasks": [
+			"present",
+			"patch"
+		],
+		"title_id": "0004000000137D00"
+	},
+	{
+		"app_id": "wESLUfmWpm322iLC",
+		"tasks": [
+			"spnt_t",
+			"spnt_x"
+		],
+		"title_id": "00040000000A5300"
+	},
+	{
+		"app_id": "TISVjpYatgrPk9By",
+		"tasks": [
+			"weekly"
+		],
+		"title_id": "00040000001B9500"
 	}
 ]
