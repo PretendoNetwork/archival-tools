@@ -13,7 +13,8 @@
 			"RNG_LS1",
 			"RNG_MD1",
 			"RNG_NT1",
-			"RNG_NT2"
+			"RNG_NT2",
+			"RNG_GM1"
 		],
 		"title_id": "00040000001A2D00"
 	},
@@ -1061,7 +1062,8 @@
 	{
 		"app_id": "svTk7OJgceQciyt9",
 		"tasks": [
-			"data"
+			"data",
+			"news"
 		],
 		"title_id": "unknown"
 	},
@@ -1744,7 +1746,8 @@
 			"ETC",
 			"PANEL",
 			"PANELLM",
-			"UPDATE"
+			"UPDATE",
+			"LEGEND"
 		],
 		"title_id": "0004001000022800"
 	},
@@ -2511,5 +2514,27 @@
 			"weekly"
 		],
 		"title_id": "00040000001B9500"
+	},
+	{
+		"app_id": "JK6188WXQQi46VGk",
+		"tasks": [
+			"dqu5vs9",
+			"x7a9u1y"
+		],
+		"title_id": "0004000000192F00"
+	},
+	{
+		"app_id": "r8bumkFVkPoNhc9c",
+		"tasks": [
+			"boss1"
+		],
+		"title_id": "00040000000E6700"
+	},
+	{
+		"app_id": "INTHvj3cbPjeXOIp",
+		"tasks": [
+			"NEWPACK"
+		],
+		"title_id": "00040000001B7400"
 	}
 ]
