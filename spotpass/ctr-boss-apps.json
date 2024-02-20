@@ -14,7 +14,8 @@
 			"RNG_MD1",
 			"RNG_NT1",
 			"RNG_NT2",
-			"RNG_GM1"
+			"RNG_GM1",
+			"RNG_AP1"
 		],
 		"title_id": "00040000001A2D00"
 	},
@@ -647,7 +648,8 @@
 		"app_id": "kTnNBa7mg66E11iV",
 		"tasks": [
 			"ghost",
-			"ranking"
+			"ranking",
+			"comm"
 		],
 		"title_id": "unknown"
 	},
@@ -1197,7 +1199,8 @@
 	{
 		"app_id": "V04RWTNqtHWfOaEB",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"BNMCASI"
 		],
 		"title_id": "00040000000EA900"
 	},
@@ -1639,7 +1642,11 @@
 	{
 		"app_id": "WyI1CBPmzfm2nR2f",
 		"tasks": [
-			"JFR_LS2"
+			"JFR_LS2",
+			"JFR_NT1",
+			"JFR_NT2",
+			"JFR_NT3",
+			"JFR_AP2"
 		],
 		"title_id": "unknown"
 	},
@@ -2270,7 +2277,8 @@
 	{
 		"app_id": "Co6AOQENlqDZDWNw",
 		"tasks": [
-			"hobbit2"
+			"hobbit2",
+			"hobbit1"
 		],
 		"title_id": "0004000000106200"
 	},
@@ -2536,5 +2544,70 @@
 			"NEWPACK"
 		],
 		"title_id": "00040000001B7400"
+	},
+	{
+		"app_id": "yYddhP0UtHK9WfXf",
+		"tasks": [
+			"item"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "oRUi0TW540yJfcFI",
+		"tasks": [
+			"KRKJ001"
+		],
+		"title_id": "0004000000165400"
+	},
+	{
+		"app_id": "YTCRfaHNkqkyAoR0",
+		"tasks": [
+			"sflower",
+			"sflocal"
+		],
+		"title_id": "0004000000036F00"
+	},
+	{
+		"app_id": "eOywu80lc2iSQrGQ",
+		"tasks": [
+			"JJ7E"
+		],
+		"title_id": "0004000000079800"
+	},
+	{
+		"app_id": "Bjlq1Q32KdkSazF0",
+		"tasks": [
+			"TASK00"
+		],
+		"title_id": "0004000000179700"
+	},
+	{
+		"app_id": "fY56qJDdLSRY1zwh",
+		"tasks": [
+			"news"
+		],
+		"title_id": "00040000000F7D00"
+	},
+	{
+		"app_id": "wkGEp5JKVH1sHK4j",
+		"tasks": [
+			"NEWRABS"
+		],
+		"title_id": "0004000000055400"
+	},
+	{
+		"app_id": "zXfHuj8k9mgzKrpM",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		],
+		"title_id": "0004000000196500"
+	},
+	{
+		"app_id": "gaM5Hqp8XiLyp3pU",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000008CD00"
 	}
 ]
