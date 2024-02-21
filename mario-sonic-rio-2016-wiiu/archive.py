@@ -297,6 +297,18 @@ async def scrape():
 			rankings = result.data
 
 			for user in rankings:
+				ranking_entry = {
+					"pid": entry.pid,
+					"unique_id": entry.unique_id,
+					"rank": entry.rank,
+					"category": entry.category,
+					"score": entry.score,
+					"groups": entry.groups,
+					"param": entry.param,
+					"common_data": base64.b64encode(entry.common_data).decode("utf-8"),
+					"update_time": entry.update_time.standard_datetime().isoformat(),
+				}
+
 				'''
 				The player can change their character and country at will.
 				As such, the character and country the player was using at
@@ -412,7 +424,8 @@ async def scrape():
 						"music_tracks": music_tracks,
 						"stamps": stamps
 					},
-					"unknown_common_data": unknown_common_data.hex()
+					"unknown_common_data": unknown_common_data.hex(),
+					"ranking_raw": ranking_entry
 				}
 
 				leaderboard.append(user_data)
