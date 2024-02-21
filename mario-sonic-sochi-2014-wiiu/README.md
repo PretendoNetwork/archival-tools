@@ -36,6 +36,7 @@ The format of a ranking object is as follows:
 - `best_run.id` - DataStore DataID for the users best run. 0 if no best run available. Contains unknown data
 - `best_run.created` - Time the users best run was updated in DataStore. Empty string if no best run available
 - `best_run.updated` - Time the users best run was updated in DataStore. Empty string if no best run available
+- `ranking_raw` - The raw ranking data as sent by the server
 
 Example:
 
