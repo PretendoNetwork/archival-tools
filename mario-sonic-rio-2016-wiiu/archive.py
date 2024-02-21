@@ -299,15 +299,15 @@ async def scrape():
 
 			for user in rankings:
 				ranking_entry = {
-					"pid": entry.pid,
-					"unique_id": entry.unique_id,
-					"rank": entry.rank,
-					"category": entry.category,
-					"score": entry.score,
-					"groups": entry.groups,
-					"param": entry.param,
-					"common_data": base64.b64encode(entry.common_data).decode("utf-8"),
-					"update_time": entry.update_time.standard_datetime().isoformat(),
+					"pid": user.pid,
+					"unique_id": user.unique_id,
+					"rank": user.rank,
+					"category": user.category,
+					"score": user.score,
+					"groups": user.groups,
+					"param": user.param,
+					"common_data": base64.b64encode(user.common_data).decode("utf-8"),
+					"update_time": user.update_time.standard_datetime().isoformat(),
 				}
 
 				if ranking_entry in seen_rankings:
