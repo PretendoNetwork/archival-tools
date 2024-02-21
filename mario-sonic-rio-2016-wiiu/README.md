@@ -1,4 +1,4 @@
-# Mario & Sonic Rio 2016
+# Mario & Sonic Rio 2016 (Wii U)
 ## Download all leaderboard data for all available events
 
 # Usage
