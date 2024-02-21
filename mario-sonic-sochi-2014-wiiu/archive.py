@@ -231,6 +231,7 @@ async def scrape():
 		remaining = result.total
 
 		leaderboard = []
+		seen_rankings = []
 
 		principal_id = result.data[0].pid
 
@@ -255,6 +256,21 @@ async def scrape():
 			rankings = result.data
 
 			for user in rankings:
+				ranking_entry = {
+					"pid": user.pid,
+					"unique_id": user.unique_id,
+					"rank": user.rank,
+					"category": user.category,
+					"score": user.score,
+					"groups": user.groups,
+					"param": user.param,
+					"common_data": base64.b64encode(user.common_data).decode("utf-8")
+				}
+
+				if ranking_entry in seen_rankings:
+					# * Ignore duplicates
+					continue
+
 				[completed_country, completed_character] = user.groups
 
 				common_data = user.common_data
@@ -332,9 +348,9 @@ async def scrape():
 
 				leaderboard.append(user_data)
 				principal_id = user.pid
-
-			offset += len(rankings)
-			remaining -= len(rankings)
+				offset += 1
+				remaining -= 1
+				seen_rankings.append(ranking_entry)
 
 		print("Writing ./data/rankings/{0}.json.gz".format(category))
 		leaderboard_data = json.dumps(leaderboard)
