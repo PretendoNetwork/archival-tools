@@ -336,6 +336,7 @@ async def scrape():
 				name_block = common_data[0x0:0x30]
 				mii_data = common_data[0x30:0x90]
 				metadata = common_data[0x90:0xB0] # Unknown what use the rest of the data after this is
+				unknown_common_data = common_data[0xB0:]
 
 				name = name_block.split(b'\x00')[0].decode("utf-8", "replace")
 
@@ -410,7 +411,8 @@ async def scrape():
 						"mii_wear": mii_wear,
 						"music_tracks": music_tracks,
 						"stamps": stamps
-					}
+					},
+					"unknown_common_data": unknown_common_data.hex()
 				}
 
 				leaderboard.append(user_data)
