@@ -358,7 +358,7 @@ async def scrape():
 		await write_to_file("./data/rankings/{0}.json.gz".format(category), leaderboard_data.encode("utf-8"))
 
 async def write_to_file(path, data):
-	with gzip.open(path, "w", compresslevel=9) as f:       # 4. fewer bytes (i.e. gzip)
+	with gzip.open(path, "w", compresslevel=9) as f:
 		f.write(data)
 
 anyio.run(main)
