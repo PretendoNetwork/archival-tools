@@ -236,18 +236,6 @@ async def scrape():
 		0x4F: "New Zealand", # This is a guess based on the flag order in Sochi 2014
 	}
 
-	leaderboards = {
-		"RhythmicGynmastics": [],
-		"BMX": [],
-		"Equestrian": [],
-		"100m": [],
-		"Archery": [],
-		"TripleJump": [],
-		"Swimming": [],
-		"JavelinThrow": [],
-		"4x100mRelay": [],
-	}
-
 	'''
 	Subset of events. Not all events
 	have a leaderboard
@@ -283,6 +271,7 @@ async def scrape():
 		total = result.total
 		remaining = result.total
 
+		leaderboard = []
 		leaderboard_name = events[category].replace(" ", "")
 
 		principal_id = result.data[0].pid
@@ -424,14 +413,14 @@ async def scrape():
 					}
 				}
 
-				leaderboards[leaderboard_name].append(user_data)
+				leaderboard.append(user_data)
 				principal_id = user.pid
 
 			offset += len(rankings)
 			remaining -= len(rankings)
 
 		print("Writing ./data/{0}/rankings.json.gz".format(category))
-		leaderboard_data = json.dumps(leaderboards[leaderboard_name])
+		leaderboard_data = json.dumps(leaderboard)
 		os.makedirs("./data/{0}".format(category), exist_ok=True)
 		await write_to_file("./data/{0}/rankings.json.gz".format(category), leaderboard_data.encode("utf-8"))
 
