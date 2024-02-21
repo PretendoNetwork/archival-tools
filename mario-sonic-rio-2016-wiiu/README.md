@@ -54,6 +54,8 @@ The format of a ranking object is as follows:
 - `collectables.mii_wear` - Number of Mii wear the user has collected
 - `collectables.music_tracks` - Number of music tracks the user has collected
 - `collectables.stamps` - Number of stamps the user has collected
+- `unknown_common_data` - The unknown section of the rankings common data
+- `ranking_raw` - The raw ranking data as sent by the server
 
 Example:
 
