@@ -273,6 +273,7 @@ async def scrape():
 
 		leaderboard = []
 		leaderboard_name = events[category].replace(" ", "")
+		seen_rankings = []
 
 		principal_id = result.data[0].pid
 
@@ -308,6 +309,10 @@ async def scrape():
 					"common_data": base64.b64encode(entry.common_data).decode("utf-8"),
 					"update_time": entry.update_time.standard_datetime().isoformat(),
 				}
+
+				if ranking_entry in seen_rankings:
+					# * Ignore duplicates
+					continue
 
 				'''
 				The player can change their character and country at will.
@@ -430,9 +435,9 @@ async def scrape():
 
 				leaderboard.append(user_data)
 				principal_id = user.pid
-
-			offset += len(rankings)
-			remaining -= len(rankings)
+				offset += 1
+				remaining -= 1
+				seen_rankings.append(ranking_entry)
 
 		print("Writing ./data/{0}/rankings.json.gz".format(category))
 		leaderboard_data = json.dumps(leaderboard)
