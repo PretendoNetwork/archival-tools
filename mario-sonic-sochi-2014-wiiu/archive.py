@@ -316,7 +316,8 @@ async def scrape():
 						"id": user.param,
 						"created": "",
 						"updated": "",
-					}
+					},
+					"ranking_raw": ranking_entry
 				}
 
 				'''
