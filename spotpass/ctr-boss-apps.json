@@ -58,7 +58,11 @@
 			"JFR_NT1",
 			"JFR_NT3",
 			"JFR_AP2",
-			"JFR_GM2"
+			"JFR_GM2",
+			"JFR_DNT",
+			"JFR_DLS",
+			"JFR_DAP",
+			"JFR_DGM"
 		],
 		"title_id": "0004000000051700"
 	},
@@ -1974,7 +1978,8 @@
 	{
 		"app_id": "x7rRVYrCfwjmpOOX",
 		"tasks": [
-			"annouce"
+			"annouce",
+			"FGONLYT"
 		],
 		"title_id": "0004000000163100"
 	},
@@ -2609,5 +2614,26 @@
 			"NadlTsk"
 		],
 		"title_id": "000400000008CD00"
+	},
+	{
+		"app_id": "LJ569qrUUTcV5MWa",
+		"tasks": [
+			"JJZE"
+		],
+		"title_id": "0004000000079A00"
+	},
+	{
+		"app_id": "LvMjVLZITq73RRfN",
+		"tasks": [
+			"JJXE"
+		],
+		"title_id": "0004000000079B00"
+	},
+	{
+		"app_id": "8Urw573qCWPTMHt1",
+		"tasks": [
+			"JJVE"
+		],
+		"title_id": "0004000000079D00"
 	}
 ]
