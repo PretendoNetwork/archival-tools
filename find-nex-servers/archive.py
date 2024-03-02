@@ -56,12 +56,6 @@ def range_test_access_key(i, syn_packet, host, port, title_id, num_tested_queue,
 
 		if number_key_base % 1000000 == 0:
 			num_tested_queue.put(1000000)
-			#cur = time.perf_counter()
-			#print('Tested %d in %f seconds' % (number_key_base, cur - begin))
-
-			#if thread_variables.done:
-			#	# End processing
-			#	break
 
 		string_key = hex(number_key)[2:].rjust(8, '0')
 		if test_access_key(string_key, syn_packet):
@@ -73,8 +67,6 @@ def range_test_access_key(i, syn_packet, host, port, title_id, num_tested_queue,
 			list_file.close()
 
 			print(entry)
-			#thread_variables.possible_access_keys.add(string_key)
-			#thread_variables.done = True
 
 			found_key.value = ("%s" % string_key).encode()
 
@@ -104,21 +96,6 @@ def print_number_tested(num_tested_queue):
 		
 
 async def main():
-	#	nas = nnas.NNASClient()
-	#	nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
-	#	nas.set_title(0x0005000010100600, 16)
-	#	nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
-	#
-	#	access_token = await nas.login(USERNAME, PASSWORD)
-	#
-	#	nex_token = await nas.get_nex_token(access_token.token, 0x10100600)
-	#
-	#	s = settings.default()
-	#	s.configure('0f037f64', 30001)
-	#	async with backend.connect(s, nex_token.host, nex_token.port) as be:
-	#		async with be.login(str(nex_token.pid), nex_token.password) as client:
-	#			print("Connected to 0005000010100600")
-	
 	if sys.argv[1] == "get_access_keys":
 		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
 		nex_wiiu_games = requests.get('https://kinnay.github.io/data/nexwiiu.json').json()['games']
@@ -138,13 +115,6 @@ async def main():
 
 		# Checked games
 		checked_games = set()
-
-		#nex_games = [{
-		#	'aid': 0x000500001010EB00,
-		#	'av': 64,
-		#	'nex': [[3, 5, 4]]
-		#}]
-		#possible_access_keys = set(['0f037f64'])
 
 		for game in nex_games:
 			print("Attempting " + hex(game['aid'])[2:].upper())
@@ -174,8 +144,6 @@ async def main():
 				print(hex(game['aid'])[2:].upper() + " not connectable")
 				checked_games.add((game['aid'], nex_version))
 				continue
-
-			#print(hex(game['aid'])[2:], title_version, hex(game['aid'])[-8:], nex_version)
 
 			# Fake key to get SYN packet
 			s = settings.default()
@@ -252,16 +220,6 @@ async def main():
 							break
 
 					if not done:
-						#class ThreadVariables:
-						#	def __init__(self):
-						#		self.begin = time.perf_counter()
-						#		self.num_tested = 0
-						#		self.done = False
-						#		self.file_writing_lock = threading.Lock()
-						#		self.list_file = list_file
-						#		self.possible_access_keys = possible_access_keys
-						#thread_variables = ThreadVariables()
-
 						# Run everything in processes
 						num_tested_queue = Queue()
 
@@ -278,12 +236,6 @@ async def main():
 
 						if found_key.value:
 							possible_access_keys.add(found_key.value.decode("utf-8"))
-
-						#with ThreadPoolExecutor(max_workers=4) as executor:
-						#	submissions = [executor.submit(range_test_access_key, i, thread_variables, deepcopy(syn_packet)) for i in range(0, 4)]
-						#	concurrent.futures.wait(submissions)
-
-						#num_tested = 0
 				else:
 					print("No SYN packet found")
 
