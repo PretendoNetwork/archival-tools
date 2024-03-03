@@ -96,19 +96,22 @@
 	{
 		"app_id": "dadlI27Ww8H2d56x",
 		"tasks": [
-			"news"
+			"news",
+			"plyrepo"
 		]
 	},
 	{
 		"app_id": "RaPn5saabzliYrpo",
 		"tasks": [
-			"news"
+			"news",
+			"plyrepo"
 		]
 	},
 	{
 		"app_id": "14VFIK3rY2SP0WRE",
 		"tasks": [
-			"news"
+			"news",
+			"plyrepo"
 		]
 	},
 	{
@@ -161,21 +164,24 @@
 		"app_id": "m8KJPtmPweiPuETE",
 		"tasks": [
 			"sp1_ans",
-			"sp1_rnk"
+			"sp1_rnk",
+			"sp1_evt"
 		]
 	},
 	{
 		"app_id": "pO72Hi5uqf5yuNd8",
 		"tasks": [
 			"sp1_ans",
-			"sp1_rnk"
+			"sp1_rnk",
+			"sp1_evt"
 		]
 	},
 	{
 		"app_id": "4m8Xme1wKgzwslTJ",
 		"tasks": [
 			"sp1_ans",
-			"sp1_rnk"
+			"sp1_rnk",
+			"sp1_evt"
 		]
 	},
 	{
@@ -224,7 +230,9 @@
 		"app_id": "gycVtTzCouZmukZ6",
 		"tasks": [
 			"NEWS",
-			"amiibo"
+			"amiibo",
+			"friend",
+			"CONQ"
 		]
 	},
 	{
@@ -311,7 +319,8 @@
 	{
 		"app_id": "sE6KwEpQYyg6tdU7",
 		"tasks": [
-			"schdata"
+			"schdata",
+			"optdata"
 		]
 	},
 	{
@@ -429,6 +438,55 @@
 		"app_id": "5iKeqk6fQq3wwfgy",
 		"tasks": [
 			"OR2H000"
+		]
+	},
+	{
+		"app_id": "rvI5oS5jSZ0aLpeo",
+		"tasks": [
+			"demo1"
+		]
+	},
+	{
+		"app_id": "R5WU9gZtFShZlf6j",
+		"tasks": [
+			"movie",
+			"Histo"
+		]
+	},
+	{
+		"app_id": "78QqMzbyBbwEpzVg",
+		"tasks": [
+			"Tvars"
+		]
+	},
+	{
+		"app_id": "I8IZTXQyDnUnFo77",
+		"tasks": [
+			"Tvars"
+		]
+	},
+	{
+		"app_id": "XcawL2u1CU624gg3",
+		"tasks": [
+			"histgrm"
+		]
+	},
+	{
+		"app_id": "uNRNThGetHLXasV9",
+		"tasks": [
+			"param"
+		]
+	},
+	{
+		"app_id": "MBOU6MNVQRdTT1QA",
+		"tasks": [
+			"param"
+		]
+	},
+	{
+		"app_id": "zBlJpj2pXcFeJYJI",
+		"tasks": [
+			"param"
 		]
 	}
 ]
