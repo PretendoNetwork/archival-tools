@@ -342,7 +342,10 @@
 			"JFR_NT1",
 			"JFR_NT2",
 			"JFR_NT3",
-			"JFR_DLS"
+			"JFR_DLS",
+			"JFR_DNT",
+			"JFR_DAP",
+			"JFR_DGM"
 		],
 		"title_id": "0004000000051800"
 	},
@@ -1591,7 +1594,8 @@
 			"RNG_MD1",
 			"RNG_LS1",
 			"RNG_NT1",
-			"RNG_NT2"
+			"RNG_NT2",
+			"RNG_GM1"
 		],
 		"title_id": "00040000001A2C00"
 	},
@@ -1625,7 +1629,8 @@
 			"ETC",
 			"PANELLM",
 			"UPDATE",
-			"PANEL"
+			"PANEL",
+			"LEGEND"
 		],
 		"title_id": "0004001000020800"
 	},
@@ -1662,7 +1667,11 @@
 			"JFR_NT2",
 			"JFR_NT3",
 			"JFR_AP2",
-			"JFR_GM2"
+			"JFR_GM2",
+			"JFR_DNT",
+			"JFR_DLS",
+			"JFR_DAP",
+			"JFR_DGM"
 		],
 		"title_id": "0004000000051600"
 	},
@@ -3142,5 +3151,67 @@
 			"MO4000"
 		],
 		"title_id": "00040000000FB400"
+	},
+	{
+		"app_id": "huaVwH8vmGDlynY5",
+		"tasks": [
+			"0000001"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "gQdtAv8S5QqhAMq6",
+		"tasks": [
+			"news",
+			"FGONLYT"
+		],
+		"title_id": "00040000000F8000"
+	},
+	{
+		"app_id": "TPqWmZW8y6NEWz9N",
+		"tasks": [
+			"comm",
+			"ranking",
+			"ghost"
+		],
+		"title_id": "000400000008B500"
+	},
+	{
+		"app_id": "4813nyO3ACQf2cwz",
+		"tasks": [
+			"item"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "sk1jvwem58tprBkZ",
+		"tasks": [
+			"costume",
+			"foeevnt",
+			"info"
+		],
+		"title_id": "0004000000032000"
+	},
+	{
+		"app_id": "crLAF7DBkd3coa3v",
+		"tasks": [
+			"SPA4APP"
+		],
+		"title_id": "0004000000030500"
+	},
+	{
+		"app_id": "9DLWs8Zl50qCaWxp",
+		"tasks": [
+			"JMCDLC0",
+			"JMCDLC1"
+		],
+		"title_id": "0004000000040200"
+	},
+	{
+		"app_id": "gzPtSkOPonlun2Ug",
+		"tasks": [
+			"SC3DLC0"
+		],
+		"title_id": "0004000000173B00"
 	}
 ]
