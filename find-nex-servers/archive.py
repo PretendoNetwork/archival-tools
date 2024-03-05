@@ -93,8 +93,6 @@ def print_number_tested(num_tested_queue):
 		cur = time.perf_counter()
 		print('Tested %d in %f seconds' % (num_tested, cur - begin))
 
-		
-
 async def main():
 	if sys.argv[1] == "get_access_keys":
 		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
@@ -336,6 +334,157 @@ async def main():
 		nex_json = open("nexwiiu.json", "w")
 		nex_json.write(json.dumps(new_list, indent=4))
 		nex_json.close()
+
+	if sys.argv[1] == "get_nonworking":
+		f = open('nexwiiu.json')
+		nex_wiiu_games_tested = json.load(f)["games"]
+		f.close()
+
+		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
+		up_to_date_title_versions = requests.get('https://raw.githubusercontent.com/PretendoNetwork/archival-tools/master/idbe/title-versions.json').json()
+
+		# Get NEX games not tested
+		nex_games = []
+		seen_nex_games = set()
+		for game in wiiu_games:
+			if game['nex'] and len([g for g in nex_wiiu_games_tested if g['aid'] == game['aid']]) == 0 and not game['aid'] in seen_nex_games:
+				# This server connects to NEX
+				nex_games.append(game)
+				seen_nex_games.add(game['aid'])
+
+		# get possible access keys
+		possible_access_keys = set()
+		for game in nex_wiiu_games_tested:
+			possible_access_keys.add(game['key'])
+
+		for game in nex_games:
+			name = [g for g in wiiu_games if g['aid'] == game['aid']][0]["longname"].replace('\n', ' ')
+			print("Attempting " + hex(game['aid'])[2:].upper() + " " + name)
+
+			nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+
+			# Kinnay JSON is not up to date
+			title_version = max(up_to_date_title_versions[hex(game['aid'])[2:].upper().rjust(16, "0")])
+
+			nas = nnas.NNASClient()
+			nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+			nas.set_title(game['aid'], title_version)
+			nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
+
+			access_token = await nas.login(USERNAME, PASSWORD)
+
+			# Guess game server IDs
+			guess_game_server_id = int(hex(game['aid'])[-8:], 16)
+
+			nex_token = None
+			try:
+				nex_token = await nas.get_nex_token(access_token.token, guess_game_server_id)
+			except nnas.NNASError:
+				list_file = open("failedlist.txt", "a", encoding="utf-8")
+				list_file.write(hex(game['aid'])[2:].upper() + " " + str(name) + " failed get_nex_token\n")
+				list_file.flush()
+				list_file.close()
+				continue
+
+			# Fake key to get SYN packet
+			s = settings.default()
+			s.configure("aaaaaaaa", nex_version)
+
+			# Firstly, obtain one SYN packet
+			syn_packet = SynPacket()
+			syn_packet_lock = threading.Lock()
+			syn_packet_lock.acquire()
+
+			# WiiU is UDP
+			# WiiU is UDP
+			async with udp.connect(nex_token.host, nex_token.port) as socket:
+				async with util.create_task_group() as group:
+					transport = prudp.PRUDPClientTransport(s, socket, group)
+
+					async def process_incoming():
+						while True:
+							data = await transport.socket.recv()
+
+							with util.catch(Exception):
+								packets = transport.packet_encoder.decode(data)
+								for packet in packets:
+									if packet.type == prudp.TYPE_SYN:
+										syn_packet.packet = packet
+										syn_packet.syn_packet_options = transport.packet_encoder.encode_options(packet)
+										syn_packet.syn_packet_header = transport.packet_encoder.encode_header(packet, len(syn_packet.syn_packet_options))
+										syn_packet.syn_packet_payload = packet.payload
+										syn_packet.syn_packet_signature = packet.signature
+									else:
+										await transport.process_packet(packet)
+
+					transport.group.start_soon(process_incoming)
+
+					client = prudp.PRUDPClient(s, transport, s["prudp.version"])
+					with transport.ports.bind(client, type=10) as local_port:
+						client.bind(socket.local_address(), local_port, 10)
+						client.connect(socket.remote_address(), 1, 10)
+
+						async with client:
+							client.scheduler = scheduler.Scheduler(group)
+							client.scheduler.start()
+
+							client.resend_timeout = 0.05
+							client.resend_limit = 0
+
+							try:
+								await client.send_syn()
+								await client.handshake_event.wait()
+
+								if client.state == prudp.STATE_CONNECTED:
+									None
+
+								syn_packet_lock.release()
+							except RuntimeError:
+								None
+
+				syn_packet_lock.acquire()
+				syn_packet_lock.release()
+
+				done = False
+				if syn_packet.syn_packet_header:
+					print(hex(game['aid'])[2:].upper() + " " + str(name) + " succeeded send_syn")
+
+					# First test known keys
+					for string_key in possible_access_keys:
+						if test_access_key(string_key, syn_packet):
+							entry = '%s, %s, %s, %s, (%d)' % (hex(game['aid'])[2:].upper().rjust(16, "0"), hex(game['aid'])[-8:].upper(), string_key, nex_token.host, nex_token.port)
+
+							list_file = open("list.txt", "a")
+							list_file.write('%s\n' % entry)
+							list_file.flush()
+							list_file.close()
+
+							print(entry)
+							done = True
+							break
+
+					if not done:
+						# Run everything in processes
+						num_tested_queue = Queue()
+
+						found_key_lock = Lock()
+						found_key = Array('c', 10, lock = found_key_lock)
+
+						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(8)]
+						# Queue for printing number tested
+						processes.append(Process(target=print_number_tested, args=(num_tested_queue,)))
+						for p in processes:
+							p.start()
+						for p in processes:
+							p.join()
+
+						if found_key.value:
+							possible_access_keys.add(found_key.value.decode("utf-8"))
+				else:
+					list_file = open("failedlist.txt", "a", encoding="utf-8")
+					list_file.write(hex(game['aid'])[2:].upper() + " " + str(name) + " failed send_syn\n")
+					list_file.flush()
+					list_file.close()
 
 
 if __name__ == '__main__':
