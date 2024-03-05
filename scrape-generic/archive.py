@@ -105,6 +105,11 @@ def print_categories(num_processes, found_queue, num_tested_queue):
 		except queue.Empty:
 			None
 
+def print_and_log(text, f):
+	print(text)
+	f.write("%s\n" % text)
+	f.flush()
+
 async def main():
 	con = sqlite3.connect("ranking.db")
 	cur = con.cursor()
@@ -137,13 +142,33 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 	rank INTEGER NOT NULL,
 	data BLOB
 )""")
+	cur.execute("""
+CREATE TABLE IF NOT EXISTS ranking_meta (
+	game TEXT NOT NULL,
+	id TEXT NOT NULL,
+	pid TEXT NOT NULL,
+	rank INTEGER NOT NULL,
+	data_id INTEGER,
+	owner_id INTEGER,
+	size INTEGER,
+	name TEXT,
+	data_type INTEGER,
+	meta_binary BLOB,
+	-- TODO add permisions
+	create_time INTEGER,
+	update_time INTEGER
+	-- TODO add tags
+	-- TODO add ratings
+)""")
 	
 	f = open('../find-nex-servers/nexwiiu.json')
 	nex_wiiu_games = json.load(f)["games"]
 	f.close()
 
+	log_file = open("log.txt", "a")
+
 	for i, game in enumerate(nex_wiiu_games):
-		print("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i, len(nex_wiiu_games)))
+		print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i, len(nex_wiiu_games)), log_file)
 
 		nas = nnas.NNASClient()
 		nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
@@ -156,7 +181,7 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 
 		nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
 
-		pretty_game_id = hex(game['aid'])[2:].upper()
+		pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
 
 		"""
 		# Run everything in processes
@@ -188,7 +213,7 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 				valid_categories = []
 				num_tested = 0
 
-				for category in range(1000):
+				for category in range(10000):
 					try:
 						order_param = ranking.RankingOrderParam()
 						order_param.offset = 0
@@ -203,19 +228,38 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 
 						# No exception, this is a valid category
 						valid_categories.append(category)
-						print("Found category %d" % category)
+						print_and_log("Found category %d" % category, log_file)
 					except Exception:
 						None
 
 					num_tested += 1
 
 					if num_tested % 10 == 0:
-						print("Tested %d categories" % num_tested)
+						print_and_log("Tested %d categories" % num_tested, log_file)
 
 				for category in valid_categories:
 					last_rank_seen = 0
 					num_ranks_seen = 0
 					last_pid_seen = None
+
+					# One request to get first PID, just in case offset based fails on first request
+					try:
+						order_param = ranking.RankingOrderParam()
+						order_param.offset = 0
+						order_param.count = 1
+
+						rankings = await ranking_client.get_ranking(
+							ranking.RankingMode.GLOBAL, # Get the global leaderboard
+							category,
+							order_param,
+							0, 0
+						)
+
+						last_pid_seen = rankings.data[0].pid
+					except Exception as e:
+							# Protocol is likely incorrect
+							print_and_log("Issue with %s at category %d: %s" % (game["name"].replace('\n', ' '), category, str(e)), log_file)
+							break
 
 					# Try offset
 					cur_offset = 0
@@ -243,6 +287,18 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 
 							for entry in rankings.data:
 								if entry.param:
+									try:
+										get_meta_param = datastore.DataStoreGetMetaParam()
+										get_meta_param.data_id = entry.param
+
+										result = await store.get_meta(get_meta_param)
+
+										if result:
+											con.executemany("INSERT INTO ranking_meta (game, id, pid, rank, data_id, owener_id, size, name, data_type, meta_binary, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+												[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, result.data_id, result.owner_id, result.size, result.name, result.data_type, result.meta_binary, result.create_time, result.update_time)])
+									except Exception:
+										print_and_log("Could not download meta param for %d" % entry.rank, log_file)
+
 									get_param = datastore.DataStorePrepareGetParam()
 									get_param.data_id = entry.param
 
@@ -254,31 +310,24 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 										con.executemany("INSERT INTO ranking_param_data (game, id, pid, rank, data) values (?, ?, ?, ?, ?)",
 											[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, response.body)])
 									else:
-										print("Could not download param for %d" % entry.rank)
+										print_and_log("Could not download param for %d" % entry.rank, log_file)
 
 							last_rank_seen = rankings.data[-1].rank
 							last_pid_seen = rankings.data[-1].pid
 							num_ranks_seen += len(rankings.data)
 
-							print("Have %d out of %d for %s (%d out of %d)" % (num_ranks_seen, rankings.total, game["name"].replace('\n', ' '), i, len(nex_wiiu_games)))
+							print_and_log("Have %d out of %d for %s (%d out of %d)" % (num_ranks_seen, rankings.total, game["name"].replace('\n', ' '), i, len(nex_wiiu_games)), log_file)
 
 							if finish_after_this_one:
 								break
 
 							cur_offset += len(rankings.data)
 						except RMCError:
-							# This codepath does not appear to exist
 							break
-							"""
-							# Decrease offset_interval by 1 and try again
-							finish_after_this_one = True
-							offset_interval -= 1
-
-							print("Decreasing interval to %d" % offset_interval)
-
-							if offset_interval == 0:
-								break
-							"""
+						except Exception as e:
+							# Protocol is likely incorrect
+							print_and_log("Issue with %s at category %d: %s" % (game["name"].replace('\n', ' '), category, str(e)), log_file)
+							break
 
 					# For games that limit to 1000 try mode = 1 approach (around specific player)
 					while True:
@@ -301,7 +350,6 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 							if len(rankings.data) == 0:
 								break
 
-							# Have to subtract offset_interval from ranking for some reason (likely because this player is rank 255 or something)
 							con.executemany("INSERT INTO ranking (game, id, pid, rank, category, score, param, data, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 								[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, entry.category, entry.score, str(entry.param), entry.common_data, entry.update_time) for entry in rankings.data])
 							con.executemany("INSERT INTO ranking_group (game, id, pid, rank, ranking_group, ranking_index) values (?, ?, ?, ?, ?, ?)",
@@ -310,6 +358,18 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 
 							for entry in rankings.data:
 								if entry.param:
+									try:
+										get_meta_param = datastore.DataStoreGetMetaParam()
+										get_meta_param.data_id = entry.param
+
+										result = await store.get_meta(get_meta_param)
+
+										if result:
+											con.executemany("INSERT INTO ranking_meta (game, id, pid, rank, data_id, owener_id, size, name, data_type, meta_binary, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+												[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, result.data_id, result.owner_id, result.size, result.name, result.data_type, result.meta_binary, result.create_time, result.update_time)])
+									except Exception:
+										print_and_log("Could not download meta param for %d" % entry.rank, log_file)
+									
 									get_param = datastore.DataStorePrepareGetParam()
 									get_param.data_id = entry.param
 
@@ -321,15 +381,21 @@ CREATE TABLE IF NOT EXISTS ranking_param_data (
 										con.executemany("INSERT INTO ranking_param_data (game, id, pid, rank, data) values (?, ?, ?, ?, ?)",
 											[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, response.body)])
 									else:
-										print("Could not download param for %d" % entry.rank)
+										print_and_log("Could not download param for %d" % entry.rank, log_file)
 
 							last_rank_seen = rankings.data[-1].rank
 							last_pid_seen = rankings.data[-1].pid
 							num_ranks_seen += len(rankings.data)
 
-							print("Have %d out of %d for %s (%d out of %d)" % (num_ranks_seen, rankings.total, game["name"].replace('\n', ' '), i, len(nex_wiiu_games)))
+							print_and_log("Have %d out of %d for %s (%d out of %d)" % (num_ranks_seen, rankings.total, game["name"].replace('\n', ' '), i, len(nex_wiiu_games)), log_file)
 						except RMCError:
 							break
+						except Exception as e:
+							# Protocol is likely incorrect
+							print_and_log("Issue with %s at category %d: %s" % (game["name"].replace('\n', ' '), category, str(e)), log_file)
+							break
+
+	log_file.close()
 
 if __name__ == '__main__':
 	anyio.run(main)
