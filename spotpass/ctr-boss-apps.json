@@ -345,7 +345,8 @@
 			"JFR_DLS",
 			"JFR_DNT",
 			"JFR_DAP",
-			"JFR_DGM"
+			"JFR_DGM",
+			"JFR_GM2"
 		],
 		"title_id": "0004000000051800"
 	},
@@ -599,7 +600,8 @@
 		"tasks": [
 			"Info_00",
 			"Data",
-			"Data_00"
+			"Data_00",
+			"Data_01"
 		],
 		"title_id": "0004000000176E00"
 	},
@@ -1393,7 +1395,8 @@
 	{
 		"app_id": "YSMWAkVsyGiCsw36",
 		"tasks": [
-			"SGS_APD"
+			"SGS_APD",
+			"SGS_INF"
 		],
 		"title_id": "00040000000F5100"
 	},
@@ -2885,7 +2888,8 @@
 	{
 		"app_id": "HfTkA7wv9Xq7uCba",
 		"tasks": [
-			"MO3000"
+			"MO3000",
+			"MO3001"
 		],
 		"title_id": "00040000000A9800"
 	},
@@ -3014,7 +3018,8 @@
 	{
 		"app_id": "VEC7I57wA8AL2D5C",
 		"tasks": [
-			"MO2000"
+			"MO2000",
+			"MO2001"
 		],
 		"title_id": "00040000000B6300"
 	},
@@ -3213,5 +3218,33 @@
 			"SC3DLC0"
 		],
 		"title_id": "0004000000173B00"
+	},
+	{
+		"app_id": "J8jLC3PD2ERSNrmK",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000008CC00"
+	},
+	{
+		"app_id": "HEMBJCoTyLKjm9pU",
+		"tasks": [
+			"weekly"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "OTjVevatduCI863l",
+		"tasks": [
+			"news"
+		],
+		"title_id": "00040000000F7B00"
+	},
+	{
+		"app_id": "NiAJFnn4fyAAiggq",
+		"tasks": [
+			"PTASK01"
+		],
+		"title_id": "unknown"
 	}
 ]
