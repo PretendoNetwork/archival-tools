@@ -251,6 +251,7 @@ async def scrape():
 
 			order_param.offset = 0
 			order_param.count = 0xFF # Max we can do in one go
+			order_param.order_calc = 1 # * Ordinal (1234) rankings. Prevents duplicate ranking positions (no ties)
 
 			result = await ranking_client.get_ranking(mode, category, order_param, unique_id, principal_id)
 			rankings = result.data
