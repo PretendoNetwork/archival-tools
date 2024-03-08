@@ -2534,7 +2534,8 @@
 		"app_id": "9bUGzV1nUl8wxkPY",
 		"tasks": [
 			"news",
-			"news_p"
+			"news_p",
+			"FGONLYT"
 		],
 		"title_id": "0004000000198D00"
 	},
@@ -2767,7 +2768,8 @@
 		"tasks": [
 			"INFITEM",
 			"INFEVT",
-			"INFPUB"
+			"INFPUB",
+			"FGONLYT"
 		],
 		"title_id": "0004000000182F00"
 	},
@@ -3246,5 +3248,44 @@
 			"PTASK01"
 		],
 		"title_id": "unknown"
+	},
+	{
+		"app_id": "oHl1Ay3RPWlWngp3",
+		"tasks": [
+			"task_JP"
+		],
+		"title_id": "0004000000030B00"
+	},
+	{
+		"app_id": "V3xe0ZHtBxzJwJtL",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "v5fxzRdEaBW5ujTi",
+		"tasks": [
+			"JFR_NT1",
+			"JFR_NT2",
+			"JFR_NT3",
+			"JFR_LS2",
+			"JFR_AP2"
+		],
+		"title_id": "00040000000CC900"
+	},
+	{
+		"app_id": "OjI5Ysd6x9mFk22c",
+		"tasks": [
+			"zdltdat"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "99qH2qwTlJy9XDKs",
+		"tasks": [
+			"task_KR"
+		],
+		"title_id": "0004000000030F00"
 	}
 ]
