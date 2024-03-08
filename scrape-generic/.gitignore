@@ -1,3 +1,4 @@
 .env
 ranking*.db
+ranking*.db-journal
 log*.txt

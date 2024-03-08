@@ -111,9 +111,15 @@ def print_and_log(text, f):
 	f.write("%s\n" % text)
 	f.flush()
 
+def timestamp_if_not_null(t):
+	if t:
+		return t.timestamp()
+	else:
+		return t
+
 async def add_rankings(rankings, pretty_game_id, has_datastore, store, con, log_file):
 	con.executemany("INSERT INTO ranking (game, id, pid, rank, category, score, param, data, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, entry.category, entry.score, str(entry.param), entry.common_data, entry.update_time) for entry in rankings.data])
+		[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, entry.category, entry.score, str(entry.param), entry.common_data, timestamp_if_not_null(entry.update_time)) for entry in rankings.data])
 	con.executemany("INSERT INTO ranking_group (game, pid, rank, ranking_group, ranking_index) values (?, ?, ?, ?, ?)",
 		[(pretty_game_id, str(entry.pid), entry.rank, group, i) for entry in rankings.data for i, group in enumerate(entry.groups)])
 	con.commit()
@@ -121,33 +127,55 @@ async def add_rankings(rankings, pretty_game_id, has_datastore, store, con, log_
 	if has_datastore:
 		for entry in rankings.data:
 			if entry.param:
+				result = None
 				try:
 					get_meta_param = datastore.DataStoreGetMetaParam()
 					get_meta_param.data_id = entry.param
-					get_meta_param.persistence_target.persistence_id = entry.pid
+					get_meta_param.persistence_target.owner_id = entry.pid
 
 					result = await store.get_meta(get_meta_param)
 
 					if result:
-						con.executemany("INSERT INTO ranking_meta (game, pid, rank, data_id, owener_id, size, name, data_type, meta_binary, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-							[(pretty_game_id, str(entry.pid), entry.rank, result.data_id, result.owner_id, result.size, result.name, result.data_type, result.meta_binary, result.create_time, result.update_time)])
+						con.execute("INSERT INTO ranking_meta (game, pid, rank, data_id, size, name, data_type, meta_binary, create_time, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+							(pretty_game_id, str(entry.pid), entry.rank, result.data_id, result.size, result.name, result.data_type, result.meta_binary, timestamp_if_not_null(result.create_time), timestamp_if_not_null(result.update_time)))
 				except Exception as e:
 					print_and_log("Could not download meta param for %d: %s" % (entry.rank, ''.join(traceback.TracebackException.from_exception(e).format())), log_file)
 
-				try:
-					get_param = datastore.DataStorePrepareGetParam()
-					get_param.data_id = entry.param
-					get_param.persistence_target.persistence_id = entry.pid
+				if result and result.size > 0:
+					try:
+						get_param = datastore.DataStorePrepareGetParam()
+						get_param.data_id = entry.param
+						get_param.persistence_target.owner_id = entry.pid
+	
+						req_info = await store.prepare_get_object(get_param)
+						headers = {header.key: header.value for header in req_info.headers}
+						response = await http.get(req_info.url, headers=headers)
+						response.raise_if_error()
+	
+						con.execute("INSERT INTO ranking_param_data (game, pid, rank, data) values (?, ?, ?, ?)",
+							(pretty_game_id, str(entry.pid), entry.rank, response.body))
+					except Exception as e:
+						print_and_log("Could not download param for %d: %s" % (entry.rank, ''.join(traceback.TracebackException.from_exception(e).format())), log_file)
 
-					req_info = await store.prepare_get_object(get_param)
-					headers = {header.key: header.value for header in req_info.headers}
-					response = await http.get(req_info.url, headers=headers)
-					response.raise_if_error()
+# NintendoClients does not implement this properly
+def new_RankingRankData_load(self, stream, version):
+	self.pid = stream.pid()
+	self.unique_id = stream.u64()
+	self.rank = stream.u32()
+	self.category = stream.u32()
+	self.score = stream.u32()
+	self.groups = stream.list(stream.u8)
+	self.param = stream.u64()
+	self.common_data = stream.buffer()
+	if version >= 1:
+		self.update_time = stream.datetime()
 
-					con.executemany("INSERT INTO ranking_param_data (game, pid, rank, data) values (?, ?, ?, ?)",
-						[(pretty_game_id, str(entry.pid), entry.rank, response.body)])
-				except Exception as e:
-					print_and_log("Could not download param for %d: %s" % (entry.rank, ''.join(traceback.TracebackException.from_exception(e).format())), log_file)
+# Gets rid of the "unexpected version" warning
+def new_RankingRankData_max_version(self, settings):
+	return 1
+
+ranking.RankingRankData.load = new_RankingRankData_load
+ranking.RankingRankData.max_version = new_RankingRankData_max_version
 
 async def main():
 	con = sqlite3.connect("ranking.db")
@@ -185,7 +213,6 @@ CREATE TABLE IF NOT EXISTS ranking_meta (
 	pid TEXT NOT NULL,
 	rank INTEGER NOT NULL,
 	data_id INTEGER,
-	owner_id INTEGER,
 	size INTEGER,
 	name TEXT,
 	data_type INTEGER,
@@ -208,6 +235,12 @@ CREATE TABLE IF NOT EXISTS ranking_meta (
 	for i, game in enumerate(nex_wiiu_games):
 		print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i, len(nex_wiiu_games)), log_file)
 
+		pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
+
+		# If anything already exists for this game ignore
+		if len(cur.execute("SELECT rank FROM ranking WHERE game = ? LIMIT 1", (pretty_game_id,)).fetchall()) > 0:
+			continue
+
 		nas = nnas.NNASClient()
 		nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
 		nas.set_title(game["aid"], game["av"])
@@ -218,8 +251,6 @@ CREATE TABLE IF NOT EXISTS ranking_meta (
 		nex_token = await nas.get_nex_token(access_token.token, game["id"])
 
 		nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
-
-		pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
 
 		# Check if nexds is loaded
 		has_datastore = bool([g for g in wiiu_games if g['aid'] == game['aid']][0]['nexds'])
