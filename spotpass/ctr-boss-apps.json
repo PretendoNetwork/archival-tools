@@ -2830,7 +2830,8 @@
 		"app_id": "kRlrRG3XMEZShz9a",
 		"tasks": [
 			"BGM1",
-			"BGM2"
+			"BGM2",
+			"TIGER1"
 		],
 		"title_id": "0004001000028900"
 	},
@@ -2881,7 +2882,9 @@
 	{
 		"app_id": "CU4vwXZB68V4M5dd",
 		"tasks": [
-			"girls"
+			"girls",
+			"info",
+			"GMTM"
 		],
 		"title_id": "000400000005D100"
 	},
@@ -2910,7 +2913,8 @@
 	{
 		"app_id": "RjlyCZV4WuOMLhdI",
 		"tasks": [
-			"dqu5vs9"
+			"dqu5vs9",
+			"x7a9u1y"
 		],
 		"title_id": "00040000000E9000"
 	},
@@ -3294,6 +3298,21 @@
 		"title_id": "0004000000030F00"
 	},
 	{
+		"app_id": "7Fqa3EZYYlvKEh5v",
+		"tasks": [
+			"JQ5J"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "4r5wpBYnaf6rldJ3",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "00040000000F7E00"
+	},
+	{
 		"app_id": "3ERCXw1170g54UBs",
 		"tasks": [
 			"JC9K"
@@ -3306,9 +3325,67 @@
 			"MIIDATA",
 			"PANEL",
 			"PANELLM",
-			"LEGEND"
+			"LEGEND",
+			"UPDATE"
 		],
 		"title_id": "0004001000027800"
+	},
+	{
+		"app_id": "hMwDQ4myueRLe1J9",
+		"tasks": [
+			"JZ8J"
+		],
+		"title_id": "0004000000092E00"
+	},
+	{
+		"app_id": "L7j0ivgZfXSskmmY",
+		"tasks": [
+			"JMCDLC0",
+			"JMCDLC1"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "CAsKat7WKddnAZX3",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		],
+		"title_id": "000400000019F600"
+	},
+	{
+		"app_id": "S8m7Nskf5LDHOAFr",
+		"tasks": [
+			"INFITEM",
+			"INFEVT",
+			"INFPUB"
+		],
+		"title_id": "0004000000182E00"
+	},
+	{
+		"app_id": "s9byficX77gemj2B",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "hXDTHQ4WSEmdUHmH",
+		"tasks": [
+			"NEWS",
+			"POSTER"
+		],
+		"title_id": "000400000012D800"
+	},
+	{
+		"app_id": "txq0HfojeCsTXwdB",
+		"tasks": [
+			"PANELLM",
+			"MIIDATA",
+			"PANEL",
+			"LEGEND"
+		],
+		"title_id": "0004001000028800"
 	},
 	{
 		"app_id": "v77n3f1JniCBO6DY",
@@ -3325,10 +3402,45 @@
 		"title_id": "0004000000105E00"
 	},
 	{
+		"app_id": "x6bxVnGPunxrUEvR",
+		"tasks": [
+			"SN2J"
+		],
+		"title_id": "00040000000B9700"
+	},
+	{
+		"app_id": "oYzBvnIepXcRAWB8",
+		"tasks": [
+			"weekly"
+		],
+		"title_id": "0004000000155D00"
+	},
+	{
+		"app_id": "wSajRGAQdY6dffMd",
+		"tasks": [
+			"JJGJ"
+		],
+		"title_id": "000400000006C500"
+	},
+	{
+		"app_id": "riNWIl9p0ZdQORe5",
+		"tasks": [
+			"london1"
+		],
+		"title_id": "0004000000095700"
+	},
+	{
 		"app_id": "IGctFNjjb8E1TONI",
 		"tasks": [
 			"FGONLYT"
 		],
 		"title_id": "000400000018F100"
+	},
+	{
+		"app_id": "XT7XAO9p7C9Rfvvx",
+		"tasks": [
+			"JQZJ"
+		],
+		"title_id": "unknown"
 	}
 ]
