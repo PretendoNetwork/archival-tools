@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
 const apps = require('./ctr-boss-apps.json');
 
-const NPDL_REGEX = /npdl\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/nsa\/([A-z0-9]{16})\/(\w*)/g;
+const REGEX = /(?:npdl|npfl)\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/(?:nsa|filelist)\/([A-z0-9]{16})\/(\w*)/g;
 
 const db = fs.readFileSync('./partitionA.bin', {
 	encoding: 'utf8'
 });
-const matches = [...db.matchAll(NPDL_REGEX)];
+const matches = [...db.matchAll(REGEX)];
 
 const appsLengthBefore = apps.length;
 let newTasks = 0;
