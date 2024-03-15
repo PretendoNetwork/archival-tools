@@ -13,7 +13,7 @@ const COUNTRIES = [
 	'LI', 'MK', 'ME', 'MZ', 'SZ', 'ZM', 'MR', 'ML', 'NE', 'TD',
 	'SD', 'DJ', 'SO', 'AD', 'GI', 'JE', 'MC', 'HK', 'MO', 'ID',
 	'SG', 'TH', 'PH', 'AE', 'EG', 'OM', 'QA', 'KW', 'SY', 'BH',
-	'JO', 'SM'
+	'JO', 'SM', 'GG'
 ];
 
 const LANGUAGES = [
