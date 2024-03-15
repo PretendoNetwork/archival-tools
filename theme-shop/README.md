@@ -1,5 +1,10 @@
 # Nintendo 3DS Theme Shop
 
+## Prerequisites
+* Python
+* libcurl
+* 3DS Common Prod Cert from any 3DS system
+* boot9.bin from any 3DS system
 ## Usage
 
 1. Create `.env` and fill in the path leading to your 3DS common prod cert and the path leading to `boot9`. It should look something like this:
