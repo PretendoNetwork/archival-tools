@@ -2,6 +2,11 @@
 
 ## Usage
 
-Create `.env` and fill in the path leading to your 3DS common prod cert. It should look like this: `CTR_PROD_3=/path/to/your/3ds_common_cert.pem`
+1. Create `.env` and fill in the path leading to your 3DS common prod cert and the path leading to `boot9`. It should look something like this:
 
-Run `python3 download.py`
+```
+CTR_PROD_3=/path/to/your/3ds_common_cert.pem
+BOOT9_PATH=/path/to/your/boot9.bin
+```
+2. Run `pip install -r requirements.txt` to install dependencies
+3. Run `python3 download.py`
