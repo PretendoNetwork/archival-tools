@@ -2,7 +2,7 @@
 
 ## Prerequisites
 * Python
-* libcurl
+* libcurl 7.19.0 or greater
 * 3DS Common Prod Cert from any 3DS system
 * boot9.bin from any 3DS system
 ## Usage
