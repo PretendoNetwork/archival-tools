@@ -630,7 +630,8 @@
 	{
 		"app_id": "jy95T3iOBKyGbAXl",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"pnote"
 		],
 		"title_id": "00040000000CF900"
 	},
@@ -3456,5 +3457,41 @@
 			"FGONLYT"
 		],
 		"title_id": "0004000000137800"
+	},
+	{
+		"app_id": "iR1A5X1wiLEkSynO",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		],
+		"title_id": "0004000000167C00"
+	},
+	{
+		"app_id": "24XiNVrAmhfjS82s",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "0004000000137700"
+	},
+	{
+		"app_id": "S2OgfKUn0ZVKpO2G",
+		"tasks": [
+			"NL00001"
+		],
+		"title_id": "000400000004DC00"
+	},
+	{
+		"app_id": "drVvdr4bzLr25i9t",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "00040000001A0000"
+	},
+	{
+		"app_id": "l3gOdKu5CZ45zxTk",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000009AD00"
 	}
 ]
