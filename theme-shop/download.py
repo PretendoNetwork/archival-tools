@@ -77,19 +77,19 @@ def parse_filelist(path: str) -> list[FileListEntry]:
 		f.seek(2, SEEK_CUR)
 		actual_data = f.read().decode("utf-8")
 
-	# first verify the sha1 checksum of the data
+	# * first verify the sha1 checksum of the data
 	checksum = hashlib.sha1(actual_data.encode("utf-8")).digest()
 	if checksum != sha1_hash:
 		raise Exception(f"hash mismatch, expected {sha1_hash.hex()} but got {checksum.hex()} instead")
 
-	lines = actual_data.rstrip("\r\n").split("\r\n") # CRLF? really?
+	lines = actual_data.rstrip("\r\n").split("\r\n") # * CRLF? really?
 	expected_content_len = int(lines[0].lstrip(" "))
 	lines = lines[1:]
 
 	if not lines:
 		return []
 
-	# verify that the file is of correct size
+	# * verify that the file is of correct size
 	if actualsize != expected_content_len:
 		raise Exception(f"File is incomplete; expected size is {expected_content_len}, got {actualsize} instead")
 
@@ -99,9 +99,9 @@ def align(x: int, y: int) -> int:
 	return (x + y - 1) & ~(y - 1)
 
 class ThmTopCategory:
-	name: str # utf-16 name, wchar[96] (192 bytes)
-	category_id: int # u32
-	unknown_id: int # u32
+	name: str # * utf-16 name, wchar[96] (192 bytes)
+	category_id: int # * u32
+	unknown_id: int # * u32
 	image_descriptor: tuple[int, int]
 
 	def __init__(self) -> None:
@@ -129,15 +129,15 @@ class ThmTopCategory:
 class ThmTopFile:
 	basefile: BOSSFile
 
-	version: int # u8
-	topimg_count: int # u8
-	home_theme_category_count: int # u8, amount of theme categories with icons that are shown when theme shop is opened
-	all_theme_category_count: int # u8, amount of theme categories (without icons) that are shown when user presses "show more"
-	all_theme_category_offset: int # u32
+	version: int # * u8
+	topimg_count: int # * u8
+	home_theme_category_count: int # * u8, amount of theme categories with icons that are shown when theme shop is opened
+	all_theme_category_count: int # * u8, amount of theme categories (without icons) that are shown when user presses "show more"
+	all_theme_category_offset: int # * u32
 
-	unk_int2: int # u64 seems to be 0x1 for USA, and 0x2 for JPN, EUR, not sure what this is, doesn't affect data, maybe changes something when rendering on a 3ds
+	unk_int2: int # * u64 seems to be 0x1 for USA, and 0x2 for JPN, EUR, not sure what this is, doesn't affect data, maybe changes something when rendering on a 3ds
 
-	topimg_descriptors: list[tuple[int, int]] # these are pointing to the JPEG images shown on the top screen
+	topimg_descriptors: list[tuple[int, int]] # * these are pointing to the JPEG images shown on the top screen
 	"""
 	tuple of (size, offset)
 	"""
@@ -178,11 +178,11 @@ class ThmTopFile:
 
 			self.all_theme_categories = []
 
-			# so, this is possible somehow
+			# * so, this is possible somehow
 			if self.all_theme_category_count == 0:
 				return
 
-			# must seek to the last category icon's end offset here, and align by 16, to get to the entire category list
+			# * must seek to the last category icon's end offset here, and align by 16, to get to the entire category list
 			s = self.home_theme_categories[-1].image_descriptor
 			allcategory_off = align(s[1] + s[0], 16)
 			payload.seek(allcategory_off)
@@ -291,7 +291,7 @@ for region, boss_id in BOSS_IDS.items():
 	for country in COUNTRIES:
 		for language in LANGUAGES:
 			for i in range(10):
-				# we'll do like 10 max because there is no way in hell there will be more than 2000 themes in any given region
+				# * we'll do like 10 max because there is no way in hell there will be more than 2000 themes in any given region
 				q.append(create_all_theme_detail_indata(region, boss_id, country, language, i))
 			q.append(create_thmtop_indata(region, boss_id, country, language))
 
@@ -320,8 +320,8 @@ for region in BOSS_IDS:
 				for thmdtls_filelist in thmdtls_filelists:
 					filelist = parse_filelist(thmdtls_filelist)
 					for filelist_entry in filelist:
-						# item code 1 and item code 2 are identical in all cases i tested
-						# however just to be safe, if they are differing, add them separately
+						# * item code 1 and item code 2 are identical in all cases i tested
+						# * however just to be safe, if they are differing, add them separately
 
 						q.append(create_single_theme_detail_indata(region, BOSS_IDS[region], country, language, filelist_entry.itemcode_1))
 						if filelist_entry.itemcode_1 != filelist_entry.itemcode_2:
