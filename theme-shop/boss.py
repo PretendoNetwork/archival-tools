@@ -13,7 +13,7 @@ class BOSSHeader:
 	magic: str
 	magic_num: int
 	filesize: int
-	unk_int: int # BE bytes (well not BE but read as BE), does not seem to be a date
+	unk_int: int # * BE bytes (well not BE but read as BE), does not seem to be a date
 	reserved: int
 	padding: int
 	content_header_hash_type: int
@@ -105,7 +105,7 @@ class BOSSFile:
 			if siz < self.header.filesize:
 				raise Exception(f"incomplete boss file. expected {self.header.filesize} bytes but for {siz} bytes instead")
 
-			encrypted_payload = f.read() # read remaining encrypted data
+			encrypted_payload = f.read() # * read remaining encrypted data
 
 		ce = CryptoEngine()
 		iv = self.header.initial_iv_bytes_part + b'\x00\x00\x00\x01'
