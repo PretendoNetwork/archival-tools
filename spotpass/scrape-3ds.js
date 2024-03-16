@@ -57,6 +57,7 @@ async function scrapeTask(downloadBase, task) {
 		// * we just have to try them all and pray.
 		// * This is pretty slow, but it at least should get all the data.
 		const downloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss`;
+		const headersPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss_headers.txt`;
 
 		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
 
@@ -102,6 +103,7 @@ async function downloadContentFile(url, downloadPath) {
 	const fileData = Buffer.from(response.data, 'binary');
 
 	fs.writeFileSync(downloadPath, fileData);
+	fs.writeFileSync(headersPath, response.headers);
 
 	return true;
 }
