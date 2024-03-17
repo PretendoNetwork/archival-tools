@@ -101,7 +101,7 @@ async function downloadContentFile(url, downloadPath, headersPath) {
 	}
 
 	const fileData = Buffer.from(response.data, 'binary');
-	var headersString = JSON.stringify(response.headers, null, 2);
+	const headersString = JSON.stringify(response.headers, null, 2);
 
 	fs.writeFileSync(downloadPath, fileData);
 	fs.writeFileSync(headersPath, headersString);
