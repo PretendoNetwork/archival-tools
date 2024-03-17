@@ -57,36 +57,37 @@ async function scrapeTask(downloadBase, task) {
 		// * we just have to try them all and pray.
 		// * This is pretty slow, but it at least should get all the data.
 		const downloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss`;
+		const headersPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss_headers.txt`;
 
-		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
+		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
 			return;
 		}
 
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
 			return
 		}
 
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
 			return
 		}
 
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
 			return
 		}
 
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath);
+		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
 	}
 }
 
-async function downloadContentFile(url, downloadPath) {
+async function downloadContentFile(url, downloadPath, headersPath) {
 	const response = await axios.get(url, {
 		responseType: 'arraybuffer',
 		validateStatus: () => {
@@ -100,8 +101,10 @@ async function downloadContentFile(url, downloadPath) {
 	}
 
 	const fileData = Buffer.from(response.data, 'binary');
+	const headersString = JSON.stringify(response.headers, null, 2);
 
 	fs.writeFileSync(downloadPath, fileData);
+	fs.writeFileSync(headersPath, headersString);
 
 	return true;
 }
