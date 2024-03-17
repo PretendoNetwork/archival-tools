@@ -60,8 +60,10 @@ async function scrapeTask(downloadBase, task) {
 			httpsAgent
 		});
 		const fileData = Buffer.from(response.data, 'binary');
+		const headersString = JSON.stringify(response.headers, null, 2);
 
 		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss`, fileData);
+		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss_headers.txt`, headersString);
 	}
 }
 
