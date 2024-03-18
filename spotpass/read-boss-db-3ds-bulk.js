@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const apps = require('./ctr-boss-apps.json');
 const path = require('path');
 
-const NPDL_REGEX = /(?:npdl|npfl)\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/(?:nsa|filelist)\/([A-z0-9]{16})\/(\w*)/g;
+const NPDL_REGEX = /(?:(?:npdl|npfl)\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/)?(?:nsa|filelist)\/([A-z0-9]{16})\/(\w*)/g;
 //const NPDL_REGEX = /\/([A-z0-9]{16})\/(\w*)/g;
 
 const directoryPath = './ctr_dumps/'; // Replace this with the path to your directory
