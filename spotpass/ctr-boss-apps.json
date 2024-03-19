@@ -383,7 +383,8 @@
 	{
 		"app_id": "DwQNLZT8QlZIxyAJ",
 		"tasks": [
-			"mesdat"
+			"mesdat",
+			"dat"
 		],
 		"title_id": "0004000000107C00"
 	},
@@ -2788,7 +2789,8 @@
 	{
 		"app_id": "im5wnzidQQs5uoKe",
 		"tasks": [
-			"mesdat"
+			"mesdat",
+			"dat"
 		],
 		"title_id": "unknown"
 	},
