@@ -37,11 +37,9 @@ async function findTask(task) {
 
 	if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('text/plain')) {
 		return;
-	}
-    else
+	} else {
         	for (const app of apps) {
         		if (app.app_id === task.app_id) {
-        			found = true;
         			if (!app.tasks.includes(TASK_SEARCH)) {
         				app.tasks.push(TASK_SEARCH);
 						fs.writeJSONSync('./ctr-boss-apps.json', apps, {
@@ -50,6 +48,7 @@ async function findTask(task) {
         			}
         		}
         	}
+	}
 }
 
 async function find() {
