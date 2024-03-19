@@ -37,7 +37,7 @@ async function findTask(task) {
 
 	if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('text/plain')) {
 		return;
-	} else {
+	}
         	for (const app of apps) {
         		if (app.app_id === task.app_id) {
         			if (!app.tasks.includes(TASK_SEARCH)) {
@@ -48,7 +48,6 @@ async function findTask(task) {
         			}
         		}
         	}
-	}
 }
 
 async function find() {
