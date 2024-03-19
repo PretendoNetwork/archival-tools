@@ -2,7 +2,6 @@ const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
 const database = require('./database');
-const buildDatabase = require('./build-database');
 const apps = require('./ctr-boss-apps.json');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
@@ -15,6 +14,7 @@ const httpsAgent = new https.Agent({
 });
 
 async function check3DS() {
+	await database.connect();
 	let batch = await database.getNextBatch('ctr');
 
 	while (batch.length !== 0) {
@@ -50,13 +50,11 @@ async function findTask(task) {
 }
 
 async function find() {
-	await database.connect();
 	await check3DS();
 	fs.writeJSONSync('./ctr-boss-apps.json', apps, {
 		spaces: '\t'
 	});
 	await database.close();
-	await buildDatabase();
 }
 
 find();
