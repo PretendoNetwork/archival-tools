@@ -44,6 +44,9 @@ async function findTask(task) {
         			found = true;
         			if (!app.tasks.includes(TASK_SEARCH)) {
         				app.tasks.push(TASK_SEARCH);
+						fs.writeJSONSync('./ctr-boss-apps.json', apps, {
+							spaces: '\t'
+						});
         			}
         		}
         	}
@@ -51,9 +54,6 @@ async function findTask(task) {
 
 async function find() {
 	await check3DS();
-	fs.writeJSONSync('./ctr-boss-apps.json', apps, {
-		spaces: '\t'
-	});
 	await database.close();
 }
 
