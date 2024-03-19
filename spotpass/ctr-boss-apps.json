@@ -383,7 +383,8 @@
 	{
 		"app_id": "DwQNLZT8QlZIxyAJ",
 		"tasks": [
-			"mesdat"
+			"mesdat",
+			"dat"
 		],
 		"title_id": "0004000000107C00"
 	},
@@ -1956,7 +1957,8 @@
 	{
 		"app_id": "tjZ5w8RGlAKd82y0",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000001B2700"
 	},
@@ -2060,7 +2062,8 @@
 		"app_id": "gekBa3SxolnJEyXJ",
 		"tasks": [
 			"NEWS",
-			"POSTER"
+			"POSTER",
+			"FGONLYT"
 		],
 		"title_id": "000400000016A100"
 	},
@@ -2786,7 +2789,8 @@
 	{
 		"app_id": "im5wnzidQQs5uoKe",
 		"tasks": [
-			"mesdat"
+			"mesdat",
+			"dat"
 		],
 		"title_id": "unknown"
 	},
@@ -3009,7 +3013,9 @@
 	{
 		"app_id": "gSU6Tz36YEQi4zCC",
 		"tasks": [
-			"mesdat"
+			"mesdat",
+			"dat",
+			"mesdat2"
 		],
 		"title_id": "00040000000C9E00"
 	},
@@ -3624,5 +3630,29 @@
 			"lucky01"
 		],
 		"title_id": "000400000008C800"
+	},
+	{
+		"app_id": "SDIA7fBPxg6X01AW",
+		"tasks": [
+			"PANEL",
+			"MIIDATA",
+			"LEGEND",
+			"PANELLM"
+		],
+		"title_id": "0004001000026800"
+	},
+	{
+		"app_id": "oUTbEtsyaJ7Fzx4h",
+		"tasks": [
+			"JJYJ"
+		],
+		"title_id": "000400000006B600"
+	},
+	{
+		"app_id": "ZwMc34IYS96zWJRD",
+		"tasks": [
+			"news"
+		],
+		"title_id": "00040000000F7F00"
 	}
 ]
