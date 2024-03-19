@@ -18,7 +18,7 @@ const apps = [
 	})
 ];
 
-async function build() {
+async function buildDatabase() {
 	await database.connect();
 
 	await database.exec(`
@@ -62,4 +62,6 @@ async function build() {
 	await database.close();
 }
 
-build();
+buildDatabase();
+
+module.exports = buildDatabase;
