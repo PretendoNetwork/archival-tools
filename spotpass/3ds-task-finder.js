@@ -20,7 +20,6 @@ async function check3DS() {
 	while (batch.length !== 0) {
 		await Promise.all(batch.map(async (task) => {
 			await findTask(task);
-			await database.rowProcessed(task.id);
 		}));
 
 		batch = await database.getNextBatch('ctr');
