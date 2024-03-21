@@ -3651,7 +3651,8 @@
 	{
 		"app_id": "2qmhIndG8vluZoEO",
 		"tasks": [
-			"lucky01"
+			"lucky01",
+			"lucky03"
 		],
 		"title_id": "000400000008C800"
 	},
@@ -3679,5 +3680,34 @@
 			"FGONLYT"
 		],
 		"title_id": "00040000000F7F00"
+	},
+	{
+		"app_id": "4mMi9ll6zFrSftt9",
+		"tasks": [
+			"JQ4J"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "MSN04ONcEZyPL5dW",
+		"tasks": [
+			"SPEJ"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "2hZYkL2D64eCrTzg",
+		"tasks": [
+			"MESSAGE"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "FMhu53ZtDLnz2ZZ1",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		],
+		"title_id": "0004000000168600"
 	}
 ]
