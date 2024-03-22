@@ -47,10 +47,6 @@ async function main() {
 					}
 				}
 			}
-
-//			if (taskFound) {
-//				break;
-//			}
 		}
 	}
 }
