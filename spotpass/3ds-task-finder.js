@@ -1,61 +1,75 @@
 const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
-const database = require('./database');
+const { COUNTRIES, LANGUAGES } = require('./constants');
 const apps = require('./ctr-boss-apps.json');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
-const TASK_SEARCH = ['FGONLYT', 'news', 'data', 'TASK00', '0000001'] // * For this example, I'm using some common task names that are present in many games, but there are other ways this can be used, such as for matching tasks across different regions for a single game.
+const TASKS = ['FGONLYT', 'news', 'data', 'TASK00', '0000001']; // * For this example, I'm using some common task names that are present in many games, but there are other ways this can be used, such as for matching tasks across different regions for a single game.
 
 const httpsAgent = new https.Agent({
 	rejectUnauthorized: false,
-	cert: fs.readFileSync('./certs/wiiu-common.crt'), // * Hey, it works lol
+	cert: fs.readFileSync('./certs/wiiu-common.crt'),
 	key: fs.readFileSync('./certs/wiiu-common.key'),
 });
 
-async function check3DS() {
-	await database.connect();
-	let batch = await database.getNextBatch('ctr');
+async function main() {
+	for (const app of apps) {
+		for (const task of TASKS) {
+			// * Skip the task if the app already has it
+			let titleHasTask = false;
+			for (const appTask of app.tasks) {
+				if (task.toLowerCase() == appTask.toLowerCase()) {
+					console.log(`task ${task} already exists for app id ${app.app_id} (breaking)`);
+					titleHasTask = true;
+					break;
+				}
+			}
 
-	while (batch.length !== 0) {
-		await Promise.all(batch.map(async (task) => {
-			await findTask(task);
-			await database.rowProcessed(task.id);
-		}));
+			if (titleHasTask) {
+				continue;
+			}
 
-		batch = await database.getNextBatch('ctr');
-	}
-}
+			// * Most BOSS apps are region-agnostic, but some require
+			// * specific combinations. Try every country/language
+			// * combination until a task is found
+			let taskFound = true;
+			for (const country of COUNTRIES) {
+				for (const language of LANGUAGES) {
+					if (await taskExists(app, task, country, language)) {
+						console.log(`task ${task} found for app id ${app.app_id}`);
+						app.tasks.push(task);
+						await fs.writeJSONSync('./ctr-boss-apps.json', apps, {
+							spaces: '\t'
+						});
 
-async function findTask(task) {
-	for (const TASK of TASK_SEARCH) {
-		const response = await axios.get(`${NPFL_URL_BASE}/${task.app_id}/${TASK}?c=${task.country}&l=${task.language}`, {
-			validateStatus: () => {
-				return true;
-			},
-			httpsAgent
-		});
+						taskFound = true;
+						break;
+					}
+				}
+			}
 
-		if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('text/plain')) {
-			return;
+			if (taskFound) {
+				break;
+			}
 		}
-	    for (const app of apps) {
-	    	if (app.app_id === task.app_id) {
-	    		if (!app.tasks.includes(TASK)) {
-	    			app.tasks.push(TASK);
-					fs.writeJSONSync('./ctr-boss-apps.json', apps, {
-						spaces: '\t'
-					});
-	    		}
-	    	}
-	    }
 	}
 }
 
+async function taskExists(app, task, country, language) {
+	const response = await axios.get(`${NPFL_URL_BASE}/${app.app_id}/${task}?c=${country}&l=${language}`, {
+		validateStatus: () => {
+			console.log(`${app.app_id}, ${task}, ${country}, ${language}`)
+			return true;
+		},
+		httpsAgent
+	});
 
-async function find() {
-	await check3DS();
-	await database.close();
+	if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('text/plain')) {
+		return false;
+	}
+
+	return true;
 }
 
-find();
+main();
