@@ -20,7 +20,6 @@ async function main() {
 			let titleHasTask = false;
 			for (const appTask of app.tasks) {
 				if (task.toLowerCase() == appTask.toLowerCase()) {
-					console.log(`task ${task} already exists for app id ${app.app_id} (breaking)`);
 					titleHasTask = true;
 					break;
 				}
@@ -37,7 +36,7 @@ async function main() {
 			for (const country of COUNTRIES) {
 				for (const language of LANGUAGES) {
 					if (await taskExists(app, task, country, language)) {
-						console.log(`task ${task} found for app id ${app.app_id}`);
+						console.log(`Task ${task} found for app id ${app.app_id}`);
 						app.tasks.push(task);
 						await fs.writeJSONSync('./ctr-boss-apps.json', apps, {
 							spaces: '\t'
@@ -59,7 +58,6 @@ async function main() {
 async function taskExists(app, task, country, language) {
 	const response = await axios.get(`${NPFL_URL_BASE}/${app.app_id}/${task}?c=${country}&l=${language}`, {
 		validateStatus: () => {
-			console.log(`${app.app_id}, ${task}, ${country}, ${language}`)
 			return true;
 		},
 		httpsAgent
