@@ -33,7 +33,7 @@ async function main() {
 			// * specific combinations. Try every country/language
 			// * combination until a task is found
 			let taskFound = true;
-			for (const country of COUNTRIES) {
+			check_locales: for (const country of COUNTRIES) {
 				for (const language of LANGUAGES) {
 					if (await taskExists(app, task, country, language)) {
 						console.log(`Task ${task} found for app id ${app.app_id}`);
@@ -43,14 +43,14 @@ async function main() {
 						});
 
 						taskFound = true;
-						break;
+						break check_locales;
 					}
 				}
 			}
 
-			if (taskFound) {
-				break;
-			}
+//			if (taskFound) {
+//				break;
+//			}
 		}
 	}
 }
