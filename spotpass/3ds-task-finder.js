@@ -32,7 +32,6 @@ async function main() {
 			// * Most BOSS apps are region-agnostic, but some require
 			// * specific combinations. Try every country/language
 			// * combination until a task is found
-			let taskFound = true;
 			check_locales: for (const country of COUNTRIES) {
 				for (const language of LANGUAGES) {
 					if (await taskExists(app, task, country, language)) {
@@ -41,8 +40,6 @@ async function main() {
 						await fs.writeJSONSync('./ctr-boss-apps.json', apps, {
 							spaces: '\t'
 						});
-
-						taskFound = true;
 						break check_locales;
 					}
 				}
