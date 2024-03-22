@@ -5,7 +5,7 @@ const { COUNTRIES, LANGUAGES } = require('./constants');
 const apps = require('./wup-boss-apps.json');
 
 const TASK_SHEET_URL_BASE = 'https://npts.app.nintendo.net/p01/tasksheet/1';
-const TASKS = ['olvinfo', 'news', 'param']; // * For this example, I'm using some task names that are present in Wii U games. Due to the limited information available about what BOSS tasks are on Wii U, these may or may not actually be common.
+const TASKS = ['news', 'param']; // * For this example, I'm using some task names that are present in Wii U games. Due to the limited information available about what BOSS tasks are on Wii U, these may or may not actually be common.
 
 const httpsAgent = new https.Agent({
 	rejectUnauthorized: false,
