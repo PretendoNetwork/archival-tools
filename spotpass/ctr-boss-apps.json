@@ -618,7 +618,8 @@
 	{
 		"app_id": "JIguVGEJJOhAq2te",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"FGONLYT"
 		],
 		"title_id": "00040000001A2B00"
 	},
@@ -863,7 +864,8 @@
 	{
 		"app_id": "p47ZQwc3R4qAmAYD",
 		"tasks": [
-			"allhp"
+			"allhp",
+			"FGONLYT"
 		],
 		"title_id": "unknown"
 	},
@@ -934,7 +936,8 @@
 		"tasks": [
 			"boss1",
 			"boss2",
-			"boss3"
+			"boss3",
+			"FGONLYT"
 		],
 		"title_id": "0004000000101200"
 	},
@@ -1162,7 +1165,8 @@
 	{
 		"app_id": "TVNiiigBTi1WzpnF",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"FGONLYT"
 		],
 		"title_id": "00040000001C6800"
 	},
@@ -1943,7 +1947,8 @@
 	{
 		"app_id": "P2mPjVWZUv2Dw8tw",
 		"tasks": [
-			"zdltdat"
+			"zdltdat",
+			"FGONLYT"
 		],
 		"title_id": "000400000017EA00"
 	},
@@ -2277,7 +2282,8 @@
 		"app_id": "CkG3Q4aOnF2ALmis",
 		"tasks": [
 			"zdltcm",
-			"zdltdat"
+			"zdltdat",
+			"FGONLYT"
 		],
 		"title_id": "000400000017EB00"
 	},
@@ -2307,7 +2313,8 @@
 	{
 		"app_id": "eVnDsHy7ix4xPKLs",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "000400000019A900"
 	},
@@ -2329,7 +2336,8 @@
 	{
 		"app_id": "dJ4hv6uMXYNhbYGJ",
 		"tasks": [
-			"MC2NWS"
+			"MC2NWS",
+			"FGONLYT"
 		],
 		"title_id": "000400000018AF00"
 	},
@@ -2379,7 +2387,8 @@
 	{
 		"app_id": "dAWysFTQbZ8yEBBd",
 		"tasks": [
-			"SC3DLC0"
+			"SC3DLC0",
+			"FGONLYT"
 		],
 		"title_id": "000400000016F200"
 	},
@@ -2418,7 +2427,8 @@
 		"app_id": "h9yS1FDz26uNM9lj",
 		"tasks": [
 			"tg4",
-			"tg4home"
+			"tg4home",
+			"FGONLYT"
 		],
 		"title_id": "00040000000B4A00"
 	},
@@ -2434,21 +2444,24 @@
 		"tasks": [
 			"diibo00",
 			"diibo02",
-			"diibo01"
+			"diibo01",
+			"FGONLYT"
 		],
 		"title_id": "00040000000B4700"
 	},
 	{
 		"app_id": "E5GjXFKIix3yGqgK",
 		"tasks": [
-			"RECOBNT"
+			"RECOBNT",
+			"FGONLYT"
 		],
 		"title_id": "0004000000099700"
 	},
 	{
 		"app_id": "VEPSPo1c55w9ydWV",
 		"tasks": [
-			"annouce"
+			"annouce",
+			"FGONLYT"
 		],
 		"title_id": "0004000000157B00"
 	},
@@ -2537,7 +2550,8 @@
 	{
 		"app_id": "xxVJpVHJVIX1unyz",
 		"tasks": [
-			"yk_news"
+			"yk_news",
+			"FGONLYT"
 		],
 		"title_id": "000400000018B000"
 	},
@@ -2562,7 +2576,8 @@
 		"app_id": "wESLUfmWpm322iLC",
 		"tasks": [
 			"spnt_t",
-			"spnt_x"
+			"spnt_x",
+			"FGONLYT"
 		],
 		"title_id": "00040000000A5300"
 	},
@@ -2584,7 +2599,8 @@
 	{
 		"app_id": "r8bumkFVkPoNhc9c",
 		"tasks": [
-			"boss1"
+			"boss1",
+			"FGONLYT"
 		],
 		"title_id": "00040000000E6700"
 	},
@@ -2634,7 +2650,8 @@
 	{
 		"app_id": "fY56qJDdLSRY1zwh",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F7D00"
 	},
@@ -2649,7 +2666,8 @@
 		"app_id": "zXfHuj8k9mgzKrpM",
 		"tasks": [
 			"NEWS",
-			"POSTER"
+			"POSTER",
+			"FGONLYT"
 		],
 		"title_id": "0004000000196500"
 	},
@@ -2699,7 +2717,8 @@
 	{
 		"app_id": "zd1wgUFX5L74rQjK",
 		"tasks": [
-			"Notice"
+			"Notice",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F1F00"
 	},
@@ -3164,7 +3183,8 @@
 	{
 		"app_id": "rS9N1JsddhwfKlVp",
 		"tasks": [
-			"SC3DLC0"
+			"SC3DLC0",
+			"FGONLYT"
 		],
 		"title_id": "000400000014DF00"
 	},
@@ -3241,7 +3261,8 @@
 	{
 		"app_id": "gzPtSkOPonlun2Ug",
 		"tasks": [
-			"SC3DLC0"
+			"SC3DLC0",
+			"FGONLYT"
 		],
 		"title_id": "0004000000173B00"
 	},
@@ -3262,7 +3283,8 @@
 	{
 		"app_id": "OTjVevatduCI863l",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F7B00"
 	},
@@ -3303,7 +3325,8 @@
 	{
 		"app_id": "OjI5Ysd6x9mFk22c",
 		"tasks": [
-			"zdltdat"
+			"zdltdat",
+			"FGONLYT"
 		],
 		"title_id": "unknown"
 	},
@@ -3480,7 +3503,8 @@
 		"app_id": "iR1A5X1wiLEkSynO",
 		"tasks": [
 			"NEWS",
-			"amiibo"
+			"amiibo",
+			"FGONLYT"
 		],
 		"title_id": "0004000000167C00"
 	},
@@ -3627,7 +3651,8 @@
 	{
 		"app_id": "2qmhIndG8vluZoEO",
 		"tasks": [
-			"lucky01"
+			"lucky01",
+			"lucky03"
 		],
 		"title_id": "000400000008C800"
 	},
@@ -3651,8 +3676,38 @@
 	{
 		"app_id": "ZwMc34IYS96zWJRD",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F7F00"
+	},
+	{
+		"app_id": "4mMi9ll6zFrSftt9",
+		"tasks": [
+			"JQ4J"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "MSN04ONcEZyPL5dW",
+		"tasks": [
+			"SPEJ"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "2hZYkL2D64eCrTzg",
+		"tasks": [
+			"MESSAGE"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "FMhu53ZtDLnz2ZZ1",
+		"tasks": [
+			"NEWS",
+			"amiibo"
+		],
+		"title_id": "0004000000168600"
 	}
 ]
