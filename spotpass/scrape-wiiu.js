@@ -53,7 +53,7 @@ async function scrapeTask(downloadBase, task) {
 	} else {
 		files.push(data.TaskSheet.Files.File);
 	}
-	let titleID = data.TaskSheet.TitleId;
+	let titleID = data.TaskSheet.TitleId.toUpperCase();
 
 	for (const file of files) {
 		const response = await axios.get(file.Url, {
