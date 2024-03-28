@@ -2,9 +2,11 @@ const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
 const database = require('./database');
+const { create: xmlParser } = require('xmlbuilder2');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
 const NPDL_URL_BASE = 'https://npdl.cdn.nintendowifi.net/p01/nsa';
+const TASK_SHEET_URL_BASE = 'https://npts.app.nintendo.net/p01/tasksheet/1';
 
 const httpsAgent = new https.Agent({
 	rejectUnauthorized: false,
@@ -25,7 +27,7 @@ async function scrape3DS(downloadBase) {
 	}
 }
 
-async function scrapeTask(downloadBase, task) {
+async function scrapeTask(downloadBase, task, titleID) {
 	const response = await axios.get(`${NPFL_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, {
 		validateStatus: () => {
 			return true;
@@ -43,13 +45,13 @@ async function scrapeTask(downloadBase, task) {
 	const lines = response.data.split('\r\n').filter(line => line);
 	const files = lines.splice(2)
 
-	// * There's like 4 ways the 3DS can format these download URLs, just pray this works I guess.
+	// * There's like 5 ways the 3DS can format these download URLs, just pray this works I guess.
 	// * Not sure any better way to do this.
 	for (const file of files) {
 		const parts = file.split('\t');
 		const fileName = parts[0];
 
-		// * There are 4 possible formats for NPDL URLs.
+		// * There are 5 possible formats for NPDL URLs.
 		// * This tries all of them, one after the other, from least
 		// * specific to most specific. This should result in the most
 		// * specific version of each file being downloaded, overwriting
@@ -58,32 +60,43 @@ async function scrapeTask(downloadBase, task) {
 		// * This is pretty slow, but it at least should get all the data.
 		const downloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss`;
 		const headersPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss_headers.txt`;
+		const tasksheetDownloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`;
+
+		var titleID = await downloadTasksheet(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, tasksheetDownloadPath, titleID);
 
 		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${titleID},${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			return;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${titleID},${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			return
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${titleID},${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			return
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${titleID},${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			return
 		}
 
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
+
+		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${titleID},${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+		}
 	}
 }
 
@@ -107,6 +120,35 @@ async function downloadContentFile(url, downloadPath, headersPath) {
 	fs.writeFileSync(headersPath, headersString);
 
 	return true;
+}
+
+async function downloadTasksheet(url, tasksheetDownloadPath) {
+	const response = await axios.get(url, {
+		httpsAgent
+	});
+
+	if (response.status !== 200) {
+		titleID = "unknown"
+		return titleID;
+	}
+
+	const tasksheetData = Buffer.from(response.data, 'binary');
+	fs.writeFileSync(tasksheetDownloadPath, tasksheetData);
+
+	if (response.headers['content-type'] || response.headers['content-type'].startsWith('application/xml')) {
+		const xml = xmlParser(response.data).toObject();
+		getTitleID(xml);
+		return titleID;
+	}
+}
+
+async function getTitleID(xml) {
+	if (!xml || !xml.TaskSheet || !xml.TaskSheet.TitleId) {
+		titleID = "unknown";
+		return titleID;
+	}
+	titleID = xml.TaskSheet.TitleId.toUpperCase();
+	return titleID;
 }
 
 module.exports = scrape3DS;
