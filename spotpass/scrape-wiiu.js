@@ -53,6 +53,7 @@ async function scrapeTask(downloadBase, task) {
 	} else {
 		files.push(data.TaskSheet.Files.File);
 	}
+	let titleID = data.TaskSheet.TitleId;
 
 	for (const file of files) {
 		const response = await axios.get(file.Url, {
@@ -63,6 +64,7 @@ async function scrapeTask(downloadBase, task) {
 		const headersString = JSON.stringify(response.headers, null, 2);
 
 		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss`, fileData);
+		fs.appendFile('scrape_data_wiiu.csv', (`${titleID},${task.app_id},${task.task},${file.Filename},${task.country},${task.language}\n`));
 		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss_headers.txt`, headersString);
 	}
 }
