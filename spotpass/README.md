@@ -2,9 +2,9 @@
 ## Download all known SpotPass/BOSS content
 
 # Usage
-- Install NodeJS
+- Install NodeJS v18 or newer. If you're on Ubuntu or something and running an ancient version of node that comes with it by default (run `node -v` to see what version you have), figure it out and get the new one.
 - Add any missing BOSS tasks to `ctr-boss-apps.json` (3DS) and/or `wup-boss-apps.json` (Wii U)
-- `npm i`
+- `npm i` to install dependencies.
 - Create the tasks [database](#database)
 - `node scrape`
 
@@ -33,7 +33,7 @@ To build the database:
 This creates a row for every task, in every app, for every possible country and region combination. The database will be somewhat large and take some time to build, as each task needs 1,157 rows.
 
 # SpotPass/BOSS content
-SpotPass, aka BOSS, content is region specific data used by titles for title-specific tasks. There is nearly no overlap in BOSS files content between games. Because of this, each game must have all it's regions checked manually.
+SpotPass, aka BOSS, content is region specific data used by titles for title-specific tasks. There is nearly no overlap in BOSS files content between games. Because of this, each game must have all its regions checked manually.
 
 # Tasks
 Each title has a BOSS application ID associated with it. Each BOSS application can register a number of tasks, and these tasks download the content/files. For example, Super Mario Maker uses the application ID `vGwChBW1ExOoHDsm` for the US region. This application uses a task named `CHARA`, which downloads the costumes used in game.
@@ -69,7 +69,7 @@ The 3DS stores BOSS tasks in a single save file in the BOSS sysmodule.
 - Run `node read-boss-db-3ds`
 
 # Downloads
-Content is downloaded into the `data` folder. Since BOSS content may update over time, each run of the scraper is placed into it's own folder inside `data` with the name being the current date in `YYYY-MM-DD` format. Since BOSS content is region specific the following subdirectories are the country and language code. Finally, each BOSS application has it's own folder which has additional folders for each task. These folders contain the `.boss` content files, as well as a `filelist.txt` (3DS) or `tasksheet.xml` (Wii U) file depending on the console.
+Content is downloaded into the `data` folder. Since BOSS content may update over time, each run of the scraper is placed into it's own folder inside `data` with the name being the current date in `YYYY-MM-DD` format. Since BOSS content is region specific the following subdirectories are the country and language code. Finally, each BOSS application has it's own folder which has additional folders for each task. These folders contain the `.boss` content files, as well as a `filelist.txt` (3DS) or `tasksheet.xml` (Wii U) file depending on the console. Content files will also be accompanied by a `headers.txt` containing additional data such as modification timestamp.
 
 An example download path would be `data/2024-01-27/GB/en/0hFlOFo7pNTU2dyE/RNG_EC1` which holds the GB-en region content for BOSS task `RNG_EC1` in application `0hFlOFo7pNTU2dyE`.
 
