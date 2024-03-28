@@ -137,7 +137,7 @@ async function downloadTasksheet(url, tasksheetDownloadPath) {
 
 	if (response.headers['content-type'] || response.headers['content-type'].startsWith('application/xml')) {
 		const xml = xmlParser(response.data).toObject();
-		await getTitleID(xml);
+		titleID = await getTitleID(xml);
 		return titleID;
 	}
 }
