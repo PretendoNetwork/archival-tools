@@ -1,5 +1,5 @@
 .env
-ranking*.db
-ranking*.db-journal
-log*.txt
+*.db
+*.db-journal
+*.txt
 *.7z
