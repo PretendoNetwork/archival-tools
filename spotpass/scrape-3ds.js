@@ -43,13 +43,13 @@ async function scrapeTask(downloadBase, task) {
 	const lines = response.data.split('\r\n').filter(line => line);
 	const files = lines.splice(2)
 
-	// * There's like 4 ways the 3DS can format these download URLs, just pray this works I guess.
+	// * There's like 5 ways the 3DS can format these download URLs, just pray this works I guess.
 	// * Not sure any better way to do this.
 	for (const file of files) {
 		const parts = file.split('\t');
 		const fileName = parts[0];
 
-		// * There are 4 possible formats for NPDL URLs.
+		// * There are 5 possible formats for NPDL URLs.
 		// * This tries all of them, one after the other, from least
 		// * specific to most specific. This should result in the most
 		// * specific version of each file being downloaded, overwriting
