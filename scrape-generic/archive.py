@@ -375,6 +375,12 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 						try:
 							data_id, owner_id = entry
 
+							log_lock.acquire()
+							log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+							print_and_log("Start %d" % data_id, log_file)
+							log_file.close()
+							log_lock.release()
+
 							async def get_req_info():
 								async with backend.connect(s, host, port) as be:
 									async with be.login(str(pid), password) as client:
@@ -382,21 +388,20 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 
 										get_param = datastore.DataStorePrepareGetParam()
 										get_param.data_id = data_id
-										get_param.persistence_target.owner_id = owner_id
 
 										req_info = await store.prepare_get_object(get_param)
 										headers = {header.key: header.value for header in req_info.headers}
 
-										return (req_info, headers)
+										return (req_info.url, req_info, headers)
 
-							req_info, headers = await retry_if_rmc_error(get_req_info)
+							url, req_info, headers = await retry_if_rmc_error(get_req_info)
 							
 							response = await http.get(req_info.url, headers=headers)
 							response.raise_if_error()
 
 							# TODO store the headers too
-							con.execute("INSERT INTO datastore_data (game, data_id, data) values (?, ?, ?)",
-								(pretty_game_id, data_id, response.body))
+							con.execute("INSERT INTO datastore_data (game, data_id, url, data) values (?, ?, ?, ?)",
+								(pretty_game_id, data_id, url, response.body))
 							con.commit()
 
 							log_lock.acquire()
@@ -406,7 +411,10 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 							log_lock.release()
 						except RMCError as e:
 							# Usually nintendo.nex.common.RMCError: Ranking::NotFound, ignore
-							None							
+							print(e)
+							con.execute("INSERT INTO datastore_data (game, data_id, error) values (?, ?, ?)",
+								(pretty_game_id, data_id, str(e)))
+							con.commit()
 				except queue.Empty:
 					None
 
@@ -426,64 +434,141 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 			max_queryable = 100
 
-			start_timestamp = common.DateTime.fromtimestamp(0).value()
 			last_seen_data_ids = set()
 
+			async def get_initial_data():
+				async with backend.connect(s, host, port) as be:
+					async with be.login(str(pid), password) as client:
+						store = datastore.DataStoreClient(client)
+
+						param = datastore.DataStoreSearchParam()
+						param.result_range.offset = 0
+						param.result_range.size = 1
+						param.result_option = 0xFF
+						res = await store.search_object(param)
+
+						last_data_id = None
+						if len(res.result) > 0:
+							last_data_id = res.result[0].data_id
+
+						late_time = None
+						late_data_id = None
+						timestamp = int(time.time())
+						while True:
+							# Try to find reasonable time going back, starting at current time
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(timestamp)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
+
+							if len(res.result) > 0:
+								late_time = res.result[0].create_time
+								late_data_id = res.result[0].data_id
+								break
+							elif timestamp > 1325401200:
+								# Take off 1 month
+								timestamp -= 2629800
+							else:
+								# Otherwise timestamp is less than 2012, give up
+								break
+
+
+						return (last_data_id, late_time, late_data_id)
+
+			last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
+
+			if last_data_id is None:
+				done_flag.value = True
+				return
+
+			log_lock.acquire()
+			log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+			print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+			log_file.close()
+			log_lock.release()
+
+			have_seen_late_data_id = False
+
 			while True:
+				log_lock.acquire()
+				log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+				print_and_log("Starting at %d" % last_data_id, log_file)
+				log_file.close()
+				log_lock.release()
+
 				async def get_res():
 					async with backend.connect(s, host, port) as be:
 						async with be.login(str(pid), password) as client:
 							store = datastore.DataStoreClient(client)
 
-							param = datastore.DataStoreSearchParam()
-							param.created_after = common.DateTime(start_timestamp)
-							param.created_before = common.DateTime.fromtimestamp(2145942000)
-							param.result_range.size = max_queryable
+							param = datastore.DataStoreGetMetaParam()
 							param.result_option = 0xFF
-							res = await store.search_object(param)
+							res = await store.get_metas(list(range(last_data_id, last_data_id + max_queryable)), param)
 
 							return res
 
 				res = await retry_if_rmc_error(get_res)
 
-				if len(res.result) == 0:
-					# End here
-					break
-				else:
-					entries = list(filter(lambda x: x.data_id not in last_seen_data_ids, res.result))
+				# Remove invalid
+				entries = [entry for i, entry in enumerate(res.info) if res.results[i].is_success()]
 
-					if len(entries) == 0:
-						# No new, end
+				if len(entries) == 0:
+					if have_seen_late_data_id:
+						# End here
+						log_lock.acquire()
+						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+						print_and_log("Finished with metas", log_file)
+						log_file.close()
+						log_lock.release()
 						break
+				else:
+					last_data_id = entries[-1].data_id + 1
+					entries_filtered = list(filter(lambda x: x.data_id not in last_seen_data_ids, entries))
+
+					if len(entries_filtered) == 0:
+						# No new, end
+						log_lock.acquire()
+						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+						print_and_log("Num entries raw %d Num entries filtered %d" % (len(entries), len(entries_filtered)), log_file)
+						log_file.close()
+						log_lock.release()
+						break
+					else:
+						start_timestamp = common.DateTime.fromtimestamp(entries[-1].create_time.timestamp() - 1).value()
+
+						if entries[-1].data_id >= late_data_id:
+							# Have seen late entry, can now end if haven't seen anything
+							have_seen_late_data_id = True
+
+						log_lock.acquire()
+						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+						print_and_log("Num entries raw %d Num entries filtered %d Last time %s" % (len(entries), len(entries_filtered), str(common.DateTime(start_timestamp))), log_file)
+						log_file.close()
+						log_lock.release()
 
 					# Send these metas off to a open process
-					metas_to_send = [(item.data_id, item.owner_id) for item in entries]
+					metas_to_send = [(item.data_id, item.owner_id) for item in entries_filtered if item.size > 0]
 					metas_queue.put(metas_to_send)
 
 					con.executemany("INSERT INTO datastore_meta (game, data_id, owner_id, size, name, data_type, meta_binary, permission, delete_permission, create_time, update_time, period, status, referred_count, refer_data_id, flag, referred_time, expire_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 						[(pretty_game_id, entry.data_id, str(entry.owner_id), entry.size, entry.name, entry.data_type, entry.meta_binary, entry.permission.permission, entry.delete_permission.permission,
 	   						timestamp_if_not_null(entry.create_time), 
 							timestamp_if_not_null(entry.update_time), entry.period, entry.status, entry.referred_count, entry.refer_data_id, entry.flag,
-							timestamp_if_not_null(entry.referred_time), timestamp_if_not_null(entry.expire_time)) for entry in entries])
+							timestamp_if_not_null(entry.referred_time), timestamp_if_not_null(entry.expire_time)) for entry in entries_filtered])
 					con.executemany("INSERT INTO datastore_meta_tag (game, data_id, tag) values (?, ?, ?)",
-						[(pretty_game_id, entry.data_id, tag) for entry in entries for tag in entry.tags])
+						[(pretty_game_id, entry.data_id, tag) for entry in entries_filtered for tag in entry.tags])
 					con.executemany("INSERT INTO datastore_meta_rating (game, data_id, slot, total_value, count, initial_value) values (?, ?, ?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, rating.slot, rating.info.total_value, rating.info.count, rating.info.initial_value) for entry in entries for rating in entry.ratings])
+						[(pretty_game_id, entry.data_id, rating.slot, rating.info.total_value, rating.info.count, rating.info.initial_value) for entry in entries_filtered for rating in entry.ratings])
 					con.executemany("INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, 0, str(recipient)) for entry in entries for recipient in entry.permission.recipients])
+						[(pretty_game_id, entry.data_id, 0, str(recipient)) for entry in entries_filtered for recipient in entry.permission.recipients])
 					con.executemany("INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, 1, str(recipient)) for entry in entries for recipient in entry.delete_permission.recipients])
+						[(pretty_game_id, entry.data_id, 1, str(recipient)) for entry in entries_filtered for recipient in entry.delete_permission.recipients])
 					con.commit()
 
-					start_timestamp = common.DateTime.fromtimestamp(res.result[-1].create_time.timestamp() - 1).value()
+					last_seen_data_ids = set([item.data_id for item in entries])
 
-					log_lock.acquire()
-					log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-					print_and_log("Last time is %s" % str(common.DateTime(start_timestamp)), log_file)
-					log_file.close()
-					log_lock.release()
-
-					last_seen_data_ids = set([item.data_id for item in res.result])
+				last_data_id += max_queryable
 
 			done_flag.value = True
 		except Exception as e:
@@ -1209,6 +1294,8 @@ async def main():
 	CREATE TABLE IF NOT EXISTS datastore_data (
 		game TEXT,
 		data_id INTEGER,
+		error TEXT,
+		url TEXT,
 		data BLOB
 	)""")
 		cur.execute("""
@@ -1220,7 +1307,7 @@ async def main():
 	)""")
 
 		f = open('../find-nex-servers/nexwiiu.json')
-		nex_wiiu_games = json.load(f)["games"][13:]
+		nex_wiiu_games = json.load(f)["games"]
 		f.close()
 
 		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
@@ -1276,6 +1363,8 @@ async def main():
 							return await search_works(store)
 
 				if await retry_if_rmc_error(does_search_work):
+					print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
+
 					num_threads = 32
 
 					log_lock = Lock()
@@ -1291,6 +1380,9 @@ async def main():
 						p.start()
 					for p in processes:
 						p.join()
+
+				else:
+					print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
 
 		log_file.close()
 
