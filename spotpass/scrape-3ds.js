@@ -61,25 +61,25 @@ async function scrapeTask(downloadBase, task) {
 		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
 
 		if (success) {
-			return;
+			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath);
 
 		if (success) {
-			return
+			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath);
 
 		if (success) {
-			return
+			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath);
 
 		if (success) {
-			return
+			continue;
 		}
 
 		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath);
