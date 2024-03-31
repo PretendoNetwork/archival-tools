@@ -169,9 +169,11 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 		offset_interval = 255
 		if num_ranks_seen >= rankings.total:
+			log_lock.acquire()
 			log_file = open(RANKING_LOG, "a", encoding="utf-8")
 			print_and_log("Stopping category %d, already finished" % category, log_file)
 			log_file.close()
+			log_lock.release()
 		elif num_ranks_seen == 0:
 			# Try offset
 			cur_offset = 0
@@ -371,6 +373,13 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 
 				try:
 					entries = metas_queue.get(block=False)
+
+					log_lock.acquire()
+					log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+					print_and_log("Start download of %d entries" % len(entries), log_file)
+					log_file.close()
+					log_lock.release()
+
 					for entry in entries:
 						try:
 							data_id, owner_id = entry
@@ -422,6 +431,8 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 					break
 		except Exception as e:
 			print(e)
+
+		con.close()
 	anyio.run(run)
 
 def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, password, pretty_game_id, metas_queue, done_flag):
@@ -480,6 +491,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 			if last_data_id is None:
 				done_flag.value = True
+				con.close()
 				return
 
 			log_lock.acquire()
@@ -513,6 +525,10 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 				# Remove invalid
 				entries = [entry for i, entry in enumerate(res.info) if res.results[i].is_success()]
 
+				if last_data_id + max_queryable - 1 >= late_data_id:
+					# Have seen late entry, can now end if haven't seen anything
+					have_seen_late_data_id = True
+
 				if len(entries) == 0:
 					if have_seen_late_data_id:
 						# End here
@@ -523,56 +539,40 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 						log_lock.release()
 						break
 				else:
-					last_data_id = entries[-1].data_id + 1
-					entries_filtered = list(filter(lambda x: x.data_id not in last_seen_data_ids, entries))
+					start_timestamp = common.DateTime.fromtimestamp(entries[-1].create_time.timestamp() - 1).value()
 
-					if len(entries_filtered) == 0:
-						# No new, end
-						log_lock.acquire()
-						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-						print_and_log("Num entries raw %d Num entries filtered %d" % (len(entries), len(entries_filtered)), log_file)
-						log_file.close()
-						log_lock.release()
-						break
-					else:
-						start_timestamp = common.DateTime.fromtimestamp(entries[-1].create_time.timestamp() - 1).value()
-
-						if entries[-1].data_id >= late_data_id:
-							# Have seen late entry, can now end if haven't seen anything
-							have_seen_late_data_id = True
-
-						log_lock.acquire()
-						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-						print_and_log("Num entries raw %d Num entries filtered %d Last time %s" % (len(entries), len(entries_filtered), str(common.DateTime(start_timestamp))), log_file)
-						log_file.close()
-						log_lock.release()
-
+					log_lock.acquire()
+					log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+					print_and_log("Num entries raw %d Num entries filtered %d Last time %s" % (len(entries), len(entries), str(common.DateTime(start_timestamp))), log_file)
+					log_file.close()
+					log_lock.release()
+					
 					# Send these metas off to a open process
-					metas_to_send = [(item.data_id, item.owner_id) for item in entries_filtered if item.size > 0]
+					metas_to_send = [(item.data_id, item.owner_id) for item in entries if item.size > 0]
 					metas_queue.put(metas_to_send)
 
 					con.executemany("INSERT INTO datastore_meta (game, data_id, owner_id, size, name, data_type, meta_binary, permission, delete_permission, create_time, update_time, period, status, referred_count, refer_data_id, flag, referred_time, expire_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 						[(pretty_game_id, entry.data_id, str(entry.owner_id), entry.size, entry.name, entry.data_type, entry.meta_binary, entry.permission.permission, entry.delete_permission.permission,
 	   						timestamp_if_not_null(entry.create_time), 
 							timestamp_if_not_null(entry.update_time), entry.period, entry.status, entry.referred_count, entry.refer_data_id, entry.flag,
-							timestamp_if_not_null(entry.referred_time), timestamp_if_not_null(entry.expire_time)) for entry in entries_filtered])
+							timestamp_if_not_null(entry.referred_time), timestamp_if_not_null(entry.expire_time)) for entry in entries])
 					con.executemany("INSERT INTO datastore_meta_tag (game, data_id, tag) values (?, ?, ?)",
-						[(pretty_game_id, entry.data_id, tag) for entry in entries_filtered for tag in entry.tags])
+						[(pretty_game_id, entry.data_id, tag) for entry in entries for tag in entry.tags])
 					con.executemany("INSERT INTO datastore_meta_rating (game, data_id, slot, total_value, count, initial_value) values (?, ?, ?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, rating.slot, rating.info.total_value, rating.info.count, rating.info.initial_value) for entry in entries_filtered for rating in entry.ratings])
+						[(pretty_game_id, entry.data_id, rating.slot, rating.info.total_value, rating.info.count, rating.info.initial_value) for entry in entries for rating in entry.ratings])
 					con.executemany("INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, 0, str(recipient)) for entry in entries_filtered for recipient in entry.permission.recipients])
+						[(pretty_game_id, entry.data_id, 0, str(recipient)) for entry in entries for recipient in entry.permission.recipients])
 					con.executemany("INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
-						[(pretty_game_id, entry.data_id, 1, str(recipient)) for entry in entries_filtered for recipient in entry.delete_permission.recipients])
+						[(pretty_game_id, entry.data_id, 1, str(recipient)) for entry in entries for recipient in entry.delete_permission.recipients])
 					con.commit()
-
-					last_seen_data_ids = set([item.data_id for item in entries])
 
 				last_data_id += max_queryable
 
 			done_flag.value = True
 		except Exception as e:
 			print(''.join(traceback.TracebackException.from_exception(e).format()))
+
+		con.close()
 	anyio.run(run)
 
 def print_and_log(text, f):
@@ -654,6 +654,7 @@ async def add_rankings(category, s, host, port, pid, password, log_lock, ranking
 					if result.size > 0:
 						con.execute("INSERT INTO ranking_param_data (game, pid, rank, category, data) values (?, ?, ?, ?, ?)",
 							(pretty_game_id, str(entry.pid), entry.rank, category, response.body))
+					con.commit()
 
 	con.executemany("INSERT INTO ranking (game, id, pid, rank, category, score, param, data, update_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		[(pretty_game_id, str(entry.unique_id), str(entry.pid), entry.rank, entry.category, entry.score, str(entry.param), entry.common_data, timestamp_if_not_null(entry.update_time)) for entry in rankings.data])
