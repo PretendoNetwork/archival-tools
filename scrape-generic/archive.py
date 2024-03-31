@@ -15,11 +15,13 @@ import threading
 import time
 import sqlite3
 from multiprocessing import Process, Lock, Queue, Array, Value
+import multiprocessing
 import json
 import queue
 import traceback
 import asyncio
 import gzip
+import httpx
 
 import logging
 logging.basicConfig(level=logging.FATAL)
@@ -392,6 +394,8 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 							log_file.close()
 							log_lock.release()
 
+							start = time.perf_counter()
+
 							async def get_req_info():
 								async with backend.connect(s, host, port) as be:
 									async with be.login(str(pid), password) as client:
@@ -406,18 +410,18 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 										return (req_info.url, req_info, headers)
 
 							url, req_info, headers = await retry_if_rmc_error(get_req_info)
-							
-							response = await http.get(req_info.url, headers=headers)
-							response.raise_if_error()
+
+							async with httpx.AsyncClient() as client:
+								response = await client.get("https://%s" % req_info.url, headers=headers, timeout=(60 * 10))
 
 							# TODO store the headers too
 							con.execute("INSERT INTO datastore_data (game, data_id, url, data) values (?, ?, ?, ?)",
-								(pretty_game_id, data_id, url, gzip.compress(response.body)))
+								(pretty_game_id, data_id, url, gzip.compress(response.content)))
 							con.commit()
 
 							log_lock.acquire()
 							log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-							print_and_log("Downloaded %d" % data_id, log_file)
+							print_and_log("Downloaded %d in %f seconds" % (data_id, time.perf_counter() - start), log_file)
 							log_file.close()
 							log_lock.release()
 
@@ -426,11 +430,13 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 							con.execute("INSERT INTO datastore_data (game, data_id, error) values (?, ?, ?)",
 								(pretty_game_id, data_id, str(e)))
 							con.commit()
+						except httpx.TimeoutException as e:
+							print(e)
+							con.execute("INSERT INTO datastore_data (game, data_id, error) values (?, ?, ?)",
+								(pretty_game_id, data_id, str(e)))
+							con.commit()
 				except queue.Empty:
-					None
-
-				with done_flag.get_lock():
-					if bool(done_flag.value) and metas_queue.empty():
+					if bool(done_flag.value):
 						break
 		except Exception as e:
 			print(e)
@@ -447,8 +453,6 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 			con = sqlite3.connect(DATASTORE_DB, timeout=3600)
 
 			max_queryable = 100
-
-			last_seen_data_ids = set()
 
 			async def get_initial_data():
 				async with backend.connect(s, host, port) as be:
@@ -503,8 +507,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 			last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
 
 			if last_data_id is None:
-				with done_flag.get_lock():
-					done_flag.value = True
+				done_flag.value = True
 				con.close()
 				return
 
@@ -546,6 +549,8 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 				if len(entries) == 0:
 					if have_seen_late_data_id:
 						# End here
+						done_flag.value = True
+
 						log_lock.acquire()
 						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
 						print_and_log("Finished with metas", log_file)
@@ -582,8 +587,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 				last_data_id += max_queryable
 
-			with done_flag.get_lock():
-				done_flag.value = True
+			done_flag.value = True
 		except Exception as e:
 			print(''.join(traceback.TracebackException.from_exception(e).format()))
 
