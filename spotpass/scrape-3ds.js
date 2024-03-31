@@ -2,7 +2,6 @@ const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
 const database = require('./database');
-const { create: xmlParser } = require('xmlbuilder2');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
 const NPDL_URL_BASE = 'https://npdl.cdn.nintendowifi.net/p01/nsa';
