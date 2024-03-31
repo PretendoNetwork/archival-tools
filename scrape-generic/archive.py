@@ -19,6 +19,7 @@ import json
 import queue
 import traceback
 import asyncio
+import gzip
 
 import logging
 logging.basicConfig(level=logging.FATAL)
@@ -368,8 +369,9 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
 
 		try:
+
 			while True:
-				time.sleep(0.01)
+				time.sleep(0.5)
 
 				try:
 					entries = metas_queue.get(block=False)
@@ -410,7 +412,7 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 
 							# TODO store the headers too
 							con.execute("INSERT INTO datastore_data (game, data_id, url, data) values (?, ?, ?, ?)",
-								(pretty_game_id, data_id, url, response.body))
+								(pretty_game_id, data_id, url, gzip.compress(response.body)))
 							con.commit()
 
 							log_lock.acquire()
@@ -418,8 +420,8 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 							print_and_log("Downloaded %d" % data_id, log_file)
 							log_file.close()
 							log_lock.release()
+
 						except RMCError as e:
-							# Usually nintendo.nex.common.RMCError: Ranking::NotFound, ignore
 							print(e)
 							con.execute("INSERT INTO datastore_data (game, data_id, error) values (?, ?, ?)",
 								(pretty_game_id, data_id, str(e)))
@@ -427,8 +429,9 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 				except queue.Empty:
 					None
 
-				if bool(done_flag.value):
-					break
+				with done_flag.get_lock():
+					if bool(done_flag.value) and metas_queue.empty():
+						break
 		except Exception as e:
 			print(e)
 
@@ -461,6 +464,16 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 						last_data_id = None
 						if len(res.result) > 0:
 							last_data_id = res.result[0].data_id
+						else:
+							# Try timestamp method from 2012 as a backup
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(1325401200)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
+
+							if len(res.result) > 0:
+								last_data_id = res.result[0].data_id
 
 						late_time = None
 						late_data_id = None
@@ -490,7 +503,8 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 			last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
 
 			if last_data_id is None:
-				done_flag.value = True
+				with done_flag.get_lock():
+					done_flag.value = True
 				con.close()
 				return
 
@@ -528,6 +542,8 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 				if last_data_id + max_queryable - 1 >= late_data_id:
 					# Have seen late entry, can now end if haven't seen anything
 					have_seen_late_data_id = True
+
+				print(have_seen_late_data_id, last_data_id + max_queryable - 1, late_data_id)
 
 				if len(entries) == 0:
 					if have_seen_late_data_id:
@@ -568,7 +584,8 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 				last_data_id += max_queryable
 
-			done_flag.value = True
+			with done_flag.get_lock():
+				done_flag.value = True
 		except Exception as e:
 			print(''.join(traceback.TracebackException.from_exception(e).format()))
 
