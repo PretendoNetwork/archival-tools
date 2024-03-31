@@ -543,8 +543,6 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 					# Have seen late entry, can now end if haven't seen anything
 					have_seen_late_data_id = True
 
-				print(have_seen_late_data_id, last_data_id + max_queryable - 1, late_data_id)
-
 				if len(entries) == 0:
 					if have_seen_late_data_id:
 						# End here
