@@ -2,7 +2,8 @@
 	{
 		"app_id": "07SSacDlEHc8z0jg",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"MC2NWS"
 		],
 		"title_id": "0004000000155000"
 	},
@@ -69,7 +70,8 @@
 	{
 		"app_id": "2zDwgq1t61PlMaPq",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000012DE00"
 	},
@@ -98,7 +100,8 @@
 	{
 		"app_id": "3t2IUj3ASUzKKEHK",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK01"
 		],
 		"title_id": "00040000001B4100"
 	},
@@ -183,7 +186,8 @@
 	{
 		"app_id": "7knOkHlr5db97LJ6",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK01"
 		],
 		"title_id": "00040000001B4000"
 	},
@@ -231,7 +235,8 @@
 		"tasks": [
 			"FGONLYT",
 			"demotask",
-			"flist"
+			"flist",
+			"test"
 		],
 		"title_id": "unknown"
 	},
@@ -619,7 +624,8 @@
 		"app_id": "JIguVGEJJOhAq2te",
 		"tasks": [
 			"TASK00",
-			"FGONLYT"
+			"FGONLYT",
+			"TASK01"
 		],
 		"title_id": "00040000001A2B00"
 	},
@@ -800,7 +806,8 @@
 	{
 		"app_id": "OFypMD7hNCrRPthA",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000179400"
 	},
@@ -880,7 +887,8 @@
 	{
 		"app_id": "PKeGb0m4S3Gv5jis",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000188E00"
 	},
@@ -980,14 +988,16 @@
 	{
 		"app_id": "RA470KStGjDbVn4O",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000012DC00"
 	},
 	{
 		"app_id": "rdWhyQMMUyKavjb4",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000012DD00"
 	},
@@ -1009,7 +1019,8 @@
 	{
 		"app_id": "RrNiKxhX1QFjyHSS",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000179600"
 	},
@@ -1166,7 +1177,8 @@
 		"app_id": "TVNiiigBTi1WzpnF",
 		"tasks": [
 			"TASK00",
-			"FGONLYT"
+			"FGONLYT",
+			"TASK01"
 		],
 		"title_id": "00040000001C6800"
 	},
@@ -1382,7 +1394,8 @@
 	{
 		"app_id": "YCHNmojskL3NNzNp",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"BNMCASI"
 		],
 		"title_id": "0004000000095C00"
 	},
@@ -1396,7 +1409,8 @@
 	{
 		"app_id": "ylHLOTvdmBIaUX4H",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000179800"
 	},
@@ -1556,7 +1570,9 @@
 		"app_id": "gQ3O9gb9VwvI3is6",
 		"tasks": [
 			"Data",
-			"Data_00"
+			"Data_00",
+			"Data_01",
+			"Info_00"
 		],
 		"title_id": "0004000000182B00"
 	},
@@ -1564,7 +1580,9 @@
 		"app_id": "Yh1oGYQ6MHHRacyR",
 		"tasks": [
 			"Data",
-			"Data_00"
+			"Data_00",
+			"Data_01",
+			"Info_00"
 		],
 		"title_id": "0004000000182C00"
 	},
@@ -2162,7 +2180,8 @@
 	{
 		"app_id": "Ne7L2H9zREHMz0QT",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000017A800"
 	},
@@ -2543,7 +2562,8 @@
 	{
 		"app_id": "wujsRH3kkwPXc5p9",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000179500"
 	},
@@ -2643,7 +2663,8 @@
 	{
 		"app_id": "Bjlq1Q32KdkSazF0",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "0004000000179700"
 	},
@@ -2753,7 +2774,8 @@
 	{
 		"app_id": "40Ox7iM6hyihJOiz",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000016B200"
 	},
@@ -2767,7 +2789,8 @@
 	{
 		"app_id": "Nctmz7ODGZtPf69M",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "unknown"
 	},
@@ -2915,7 +2938,8 @@
 		"tasks": [
 			"girls",
 			"info",
-			"GMTM"
+			"GMTM",
+			"plus"
 		],
 		"title_id": "000400000005D100"
 	},
@@ -3041,7 +3065,8 @@
 	{
 		"app_id": "SXDe1d24jEHW5Ddy",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000017B700"
 	},
@@ -3652,7 +3677,8 @@
 		"app_id": "2qmhIndG8vluZoEO",
 		"tasks": [
 			"lucky01",
-			"lucky03"
+			"lucky03",
+			"lucky02"
 		],
 		"title_id": "000400000008C800"
 	},
@@ -3709,5 +3735,179 @@
 			"amiibo"
 		],
 		"title_id": "0004000000168600"
+	},
+	{
+		"app_id": "xjMBeunnHUfxuK2d",
+		"tasks": [
+			"pnote"
+		],
+		"title_id": "0004000000151F00"
+	},
+	{
+		"app_id": "kuQRrwInvnbJvfa6",
+		"tasks": [
+			"present",
+			"patch"
+		],
+		"title_id": "0004000000143400"
+	},
+	{
+		"app_id": "HWC1oxxoFRhulvSL",
+		"tasks": [
+			"SNZJ"
+		],
+		"title_id": "00040000000B9600"
+	},
+	{
+		"app_id": "cxWp2lsjKrG7diwk",
+		"tasks": [
+			"SNVJ"
+		],
+		"title_id": "00040000000B9200"
+	},
+	{
+		"app_id": "h8S6cmA4FdBvPYZc",
+		"tasks": [
+			"SPBJ"
+		],
+		"title_id": "00040000000EC100"
+	},
+	{
+		"app_id": "i3iGTnVbl4tKi9KW",
+		"tasks": [
+			"SN9J"
+		],
+		"title_id": "00040000000EBF00"
+	},
+	{
+		"app_id": "NxEAqX0zZl4f0Im0",
+		"tasks": [
+			"weekly"
+		],
+		"title_id": "00040000000FA500"
+	},
+	{
+		"app_id": "N6VoGN3wJ698hOiI",
+		"tasks": [
+			"SPHJ"
+		],
+		"title_id": "0004000000106000"
+	},
+	{
+		"app_id": "9SCQWB4mFxhoXyQK",
+		"tasks": [
+			"SHOLMES"
+		],
+		"title_id": "00040000001AE200"
+	},
+	{
+		"app_id": "pdR21q4ZRkxaSeVJ",
+		"tasks": [
+			"JJSJ"
+		],
+		"title_id": "000400000006BC00"
+	},
+	{
+		"app_id": "3BraiaIl0mpnuoOA",
+		"tasks": [
+			"MAJ"
+		],
+		"title_id": "00040000000AA000"
+	},
+	{
+		"app_id": "YVH4WfoFszQwwG3w",
+		"tasks": [
+			"JFR_LS2",
+			"JFR_NT1",
+			"JFR_NT2",
+			"JFR_NT3",
+			"JFR_AP2"
+		],
+		"title_id": "00040000000CCA00"
+	},
+	{
+		"app_id": "DciJTpUDHw8APohR",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000009AB00"
+	},
+	{
+		"app_id": "HLLrgikagMK0pzbs",
+		"tasks": [
+			"JJ6J"
+		],
+		"title_id": "000400000006B000"
+	},
+	{
+		"app_id": "prddiG9hlRiH8NEC",
+		"tasks": [
+			"JJ7J"
+		],
+		"title_id": "000400000006AF00"
+	},
+	{
+		"app_id": "cmL3N7HUvMJGfGFp",
+		"tasks": [
+			"JJ5J"
+		],
+		"title_id": "000400000006B100"
+	},
+	{
+		"app_id": "Ryh3zAYKR1zjJWc3",
+		"tasks": [
+			"zdltdat"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "HvwgRXicx4vCBFTL",
+		"tasks": [
+			"news",
+			"news_p"
+		],
+		"title_id": "0004000000199000"
+	},
+	{
+		"app_id": "OIC58iiMakdqQSLH",
+		"tasks": [
+			"GMTM"
+		],
+		"title_id": "00040000000C4F00"
+	},
+	{
+		"app_id": "J0ovIyLP9tYaJqaq",
+		"tasks": [
+			"MBE"
+		],
+		"title_id": "00040000000D1C00"
+	},
+	{
+		"app_id": "BAIXhLmD2rGJVAvQ",
+		"tasks": [
+			"MAL"
+		],
+		"title_id": "00040000000AA400"
+	},
+	{
+		"app_id": "AOGimz8AhOCZLJks",
+		"tasks": [
+			"MBD"
+		],
+		"title_id": "00040000000D1B00"
+	},
+	{
+		"app_id": "MSswwTMHhCzsTg4l",
+		"tasks": [
+			"MAK"
+		],
+		"title_id": "00040000000AA300"
+	},
+	{
+		"app_id": "83j0DZ0YuEbd6OTR",
+		"tasks": [
+			"JJXJ"
+		],
+		"title_id": "000400000006B700"
 	}
 ]
