@@ -439,7 +439,7 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 		con.close()
 	anyio.run(run)
 
-def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, password, pretty_game_id, metas_queue, done_flag, process_index, total_num_processes, max_queryable, last_data_id, late_data_id):
+def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, password, pretty_game_id, metas_queue, done_flag, process_index, total_num_processes, max_queryable, last_data_id, late_data_id, num_metas_threads_done):
 	async def run():
 		try:
 			s = settings.default()
@@ -518,7 +518,9 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 				last_data_id += max_queryable * total_num_processes
 
-			done_flag.value = True
+			num_metas_threads_done.value += 1
+			if num_metas_threads_done.value == total_num_processes:
+				done_flag.value = True
 		except Exception as e:
 			print(''.join(traceback.TracebackException.from_exception(e).format()))
 
@@ -1376,10 +1378,11 @@ async def main():
 						log_lock = Lock()
 						metas_queue = Queue()
 						done_flag = Value('i', False)
+						num_metas_threads_done = Value('i', 0)
 
 						processes = []
 						for i in range(num_metas_threads):
-							processes.append(Process(target=get_datastore_metas, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag, i, num_metas_threads, max_queryable, last_data_id, late_data_id)))
+							processes.append(Process(target=get_datastore_metas, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag, i, num_metas_threads, max_queryable, last_data_id, late_data_id, num_metas_threads_done)))
 						for i in range(num_download_threads):
 							processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
 
