@@ -2,6 +2,7 @@ const https = require('node:https');
 const axios = require('axios');
 const fs = require('fs-extra');
 const database = require('./database');
+const { create: xmlParser } = require('xmlbuilder2');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
 const NPDL_URL_BASE = 'https://npdl.cdn.nintendowifi.net/p01/nsa';
@@ -62,28 +63,36 @@ async function scrapeTask(downloadBase, task) {
 		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			continue;
 		}
 
 		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
 			continue;
 		}
 
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
+
+		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+		}
 	}
 }
 
