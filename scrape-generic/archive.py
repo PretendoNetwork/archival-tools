@@ -1408,5 +1408,4 @@ async def main():
 if __name__ == '__main__':
 	if sys.platform == "linux" or sys.platform == "linux2":
 		multiprocessing.set_start_method("spawn")
-	else:
-		anyio.run(main)
+	anyio.run(main)
