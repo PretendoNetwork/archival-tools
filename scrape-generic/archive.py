@@ -444,7 +444,7 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 		con.close()
 	anyio.run(run)
 
-def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, password, pretty_game_id, metas_queue, done_flag):
+def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, password, pretty_game_id, metas_queue, done_flag, process_index, total_num_processes, max_queryable, last_data_id, late_data_id):
 	async def run():
 		try:
 			s = settings.default()
@@ -452,71 +452,9 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 			con = sqlite3.connect(DATASTORE_DB, timeout=3600)
 
-			max_queryable = 100
-
-			async def get_initial_data():
-				async with backend.connect(s, host, port) as be:
-					async with be.login(str(pid), password) as client:
-						store = datastore.DataStoreClient(client)
-
-						param = datastore.DataStoreSearchParam()
-						param.result_range.offset = 0
-						param.result_range.size = 1
-						param.result_option = 0xFF
-						res = await store.search_object(param)
-
-						last_data_id = None
-						if len(res.result) > 0:
-							last_data_id = res.result[0].data_id
-						else:
-							# Try timestamp method from 2012 as a backup
-							param = datastore.DataStoreSearchParam()
-							param.created_after = common.DateTime.fromtimestamp(1325401200)
-							param.result_range.size = 1
-							param.result_option = 0xFF
-							res = await store.search_object(param)
-
-							if len(res.result) > 0:
-								last_data_id = res.result[0].data_id
-
-						late_time = None
-						late_data_id = None
-						timestamp = int(time.time())
-						while True:
-							# Try to find reasonable time going back, starting at current time
-							param = datastore.DataStoreSearchParam()
-							param.created_after = common.DateTime.fromtimestamp(timestamp)
-							param.result_range.size = 1
-							param.result_option = 0xFF
-							res = await store.search_object(param)
-
-							if len(res.result) > 0:
-								late_time = res.result[0].create_time
-								late_data_id = res.result[0].data_id
-								break
-							elif timestamp > 1325401200:
-								# Take off 1 month
-								timestamp -= 2629800
-							else:
-								# Otherwise timestamp is less than 2012, give up
-								break
-
-
-						return (last_data_id, late_time, late_data_id)
-
-			last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
-
-			if last_data_id is None:
-				done_flag.value = True
-				con.close()
-				return
-
-			log_lock.acquire()
-			log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-			print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
-			log_file.close()
-			log_lock.release()
-
+			# Start at offset
+			nonlocal last_data_id
+			last_data_id += process_index * max_queryable
 			have_seen_late_data_id = False
 
 			while True:
@@ -553,7 +491,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 						log_lock.acquire()
 						log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
-						print_and_log("Finished with metas", log_file)
+						print_and_log("Finished with metas for process %d" % process_index, log_file)
 						log_file.close()
 						log_lock.release()
 						break
@@ -585,7 +523,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 						[(pretty_game_id, entry.data_id, 1, str(recipient)) for entry in entries for recipient in entry.delete_permission.recipients])
 					con.commit()
 
-				last_data_id += max_queryable
+				last_data_id += max_queryable * total_num_processes
 
 			done_flag.value = True
 		except Exception as e:
@@ -1386,21 +1324,82 @@ async def main():
 				if await retry_if_rmc_error(does_search_work):
 					print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
 
-					num_threads = 32
+					max_queryable = 100
 
-					log_lock = Lock()
-					metas_queue = Queue()
-					done_flag = Value('i', False)
+					async def get_initial_data():
+						s = settings.default()
+						s.configure(game["key"], nex_version)
+						async with backend.connect(s, nex_token.host, nex_token.port) as be:
+							async with be.login(str(nex_token.pid), nex_token.password) as client:
+								store = datastore.DataStoreClient(client)
 
-					processes = []
-					processes.append(Process(target=get_datastore_metas, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
-					for i in range(num_threads - 1):
-						processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+								param = datastore.DataStoreSearchParam()
+								param.result_range.offset = 0
+								param.result_range.size = 1
+								param.result_option = 0xFF
+								res = await store.search_object(param)
 
-					for p in processes:
-						p.start()
-					for p in processes:
-						p.join()
+								last_data_id = None
+								if len(res.result) > 0:
+									last_data_id = res.result[0].data_id
+								else:
+									# Try timestamp method from 2012 as a backup
+									param = datastore.DataStoreSearchParam()
+									param.created_after = common.DateTime.fromtimestamp(1325401200)
+									param.result_range.size = 1
+									param.result_option = 0xFF
+									res = await store.search_object(param)
+
+									if len(res.result) > 0:
+										last_data_id = res.result[0].data_id
+
+								late_time = None
+								late_data_id = None
+								timestamp = int(time.time())
+								while True:
+									# Try to find reasonable time going back, starting at current time
+									param = datastore.DataStoreSearchParam()
+									param.created_after = common.DateTime.fromtimestamp(timestamp)
+									param.result_range.size = 1
+									param.result_option = 0xFF
+									res = await store.search_object(param)
+
+									if len(res.result) > 0:
+										late_time = res.result[0].create_time
+										late_data_id = res.result[0].data_id
+										break
+									elif timestamp > 1325401200:
+										# Take off 1 month
+										timestamp -= 2629800
+									else:
+										# Otherwise timestamp is less than 2012, give up
+										break
+									
+									
+								return (last_data_id, late_time, late_data_id)
+
+					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
+
+					if last_data_id is not None:
+						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+
+						num_metas_threads = 32
+						num_download_threads = 32
+
+						log_lock = Lock()
+						metas_queue = Queue()
+						done_flag = Value('i', False)
+
+						processes = []
+						for i in range(num_metas_threads):
+							processes.append(Process(target=get_datastore_metas, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag, i, num_metas_threads, max_queryable, last_data_id, late_data_id)))
+						for i in range(num_download_threads):
+							processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+
+						for p in processes:
+							p.start()
+						for p in processes:
+							p.join()
 
 				else:
 					print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
@@ -1408,4 +1407,7 @@ async def main():
 		log_file.close()
 
 if __name__ == '__main__':
-	anyio.run(main)
+	if sys.platform == "linux" or sys.platform == "linux2":
+		multiprocessing.set_start_method("spawn")
+	else:
+		anyio.run(main)
