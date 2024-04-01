@@ -50,6 +50,7 @@ async function scrapeTask(downloadBase, task) {
 
 	const ts_response = await axios.get(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, {
 		validateStatus: () => {
+			return true;
 		},
 		httpsAgent
 	});
