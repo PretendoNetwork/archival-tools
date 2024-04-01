@@ -3724,7 +3724,8 @@
 	{
 		"app_id": "2hZYkL2D64eCrTzg",
 		"tasks": [
-			"MESSAGE"
+			"MESSAGE",
+			"DL"
 		],
 		"title_id": "unknown"
 	},
