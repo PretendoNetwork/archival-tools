@@ -39,6 +39,8 @@ async function scrapeTask(downloadBase, task) {
 
 	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
 	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, response.data);
+	const ts_headersString = JSON.stringify(response.headers, null, 2);
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml_headers.txt`, ts_headersString);
 
 	const data = xmlParser(response.data).toObject();
 
