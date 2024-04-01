@@ -45,14 +45,20 @@ RANKING_LOG = "ranking_log_IMPROVED.txt"
 DATASTORE_DB = "datastore_IMPROVED.db"
 DATASTORE_LOG = "datastore_log_IMPROVED.txt"
 
-async def retry_if_rmc_error(func):
+async def retry_if_rmc_error(func, s, host, port, pid, password):
 	try:
-		return await func()
+		async with backend.connect(s, host, port) as be:
+			try:
+				async with be.login(str(pid), password) as client:
+					return await func(client)
+			except RuntimeError:
+				print("\"PRUDP connection failed\" encountered")
+				# Reattempt until success recursively
+				return await retry_if_rmc_error(func, s, host, port, pid, password)
 	except RuntimeError:
-		# Only ever indicates RMC error
 		print("\"RMC connection is closed\" encountered")
 		# Reattempt until success recursively
-		return await retry_if_rmc_error(func)
+		return await retry_if_rmc_error(func, s, host, port, pid, password)
 
 
 # Category testing thread
@@ -138,25 +144,23 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 		# One request to get first PID and number of rankings, just in case offset based fails on first request
 		try:
-			async def get_start_data():
-				async with backend.connect(s, host, port) as be:
-					async with be.login(str(pid), password) as client:
-						ranking_client = ranking.RankingClient(client)
+			async def get_start_data(client):
+				ranking_client = ranking.RankingClient(client)
 
-						order_param = ranking.RankingOrderParam()
-						order_param.offset = 0
-						order_param.count = 1
+				order_param = ranking.RankingOrderParam()
+				order_param.offset = 0
+				order_param.count = 1
 
-						rankings = await ranking_client.get_ranking(
-							ranking.RankingMode.GLOBAL, # Get the global leaderboard
-							category,
-							order_param,
-							0, 0
-						)
+				rankings = await ranking_client.get_ranking(
+					ranking.RankingMode.GLOBAL, # Get the global leaderboard
+					category,
+					order_param,
+					0, 0
+				)
 
-						return (rankings, rankings.data[0].pid, rankings.data[0].unique_id)
+				return (rankings, rankings.data[0].pid, rankings.data[0].unique_id)
 
-			rankings, last_pid_seen, last_id_seen = await retry_if_rmc_error(get_start_data)
+			rankings, last_pid_seen, last_id_seen = await retry_if_rmc_error(get_start_data, s, host, port, pid, password)
 		except Exception as e:
 				# Protocol is likely incorrect
 				log_lock.acquire()
@@ -182,26 +186,24 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 			finish_after_this_one = False
 			while True:
 				try:
-					async def get_rankings():
-						async with backend.connect(s, host, port) as be:
-							async with be.login(str(pid), password) as client:
-								ranking_client = ranking.RankingClient(client)
+					async def get_rankings(client):
+						ranking_client = ranking.RankingClient(client)
 
-								order_param = ranking.RankingOrderParam()
-								order_param.order_calc = ORDINAL_RANKING
-								order_param.offset = cur_offset
-								order_param.count = offset_interval
+						order_param = ranking.RankingOrderParam()
+						order_param.order_calc = ORDINAL_RANKING
+						order_param.offset = cur_offset
+						order_param.count = offset_interval
 
-								rankings = await ranking_client.get_ranking(
-									ranking.RankingMode.GLOBAL, # Get the global leaderboard
-									category,
-									order_param,
-									0, 0
-								)
+						rankings = await ranking_client.get_ranking(
+							ranking.RankingMode.GLOBAL, # Get the global leaderboard
+							category,
+							order_param,
+							0, 0
+						)
 
-								return rankings
+						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
 
 					await add_rankings(category, s, host, port, pid, password, log_lock, rankings, pretty_game_id, has_datastore, con)
 
@@ -239,26 +241,24 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 			# For games that limit to 1000 try mode = 1 approach (around specific player)
 			while True:
 				try:
-					async def get_rankings():
-						async with backend.connect(s, host, port) as be:
-							async with be.login(str(pid), password) as client:
-								ranking_client = ranking.RankingClient(client)
+					async def get_rankings(client):
+						ranking_client = ranking.RankingClient(client)
 
-								order_param = ranking.RankingOrderParam()
-								order_param.order_calc = ORDINAL_RANKING
-								order_param.offset = 0
-								order_param.count = offset_interval
+						order_param = ranking.RankingOrderParam()
+						order_param.order_calc = ORDINAL_RANKING
+						order_param.offset = 0
+						order_param.count = offset_interval
 
-								rankings = await ranking_client.get_ranking(
-									ranking.RankingMode.GLOBAL_AROUND_SELF, # Get the leaderboard around this player
-									category,
-									order_param,
-									last_id_seen, last_pid_seen
-								)
+						rankings = await ranking_client.get_ranking(
+							ranking.RankingMode.GLOBAL_AROUND_SELF, # Get the leaderboard around this player
+							category,
+							order_param,
+							last_id_seen, last_pid_seen
+						)
 
-								return rankings
+						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
 
 					rankings.data = list(filter(lambda entry: entry.rank > last_rank_seen, rankings.data))
 
@@ -303,26 +303,24 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 			# Only use around_self for this
 			while True:
 				try:
-					async def get_rankings():
-						async with backend.connect(s, host, port) as be:
-							async with be.login(str(pid), password) as client:
-								ranking_client = ranking.RankingClient(client)
+					async def get_rankings(client):
+						ranking_client = ranking.RankingClient(client)
 
-								order_param = ranking.RankingOrderParam()
-								order_param.order_calc = ORDINAL_RANKING
-								order_param.offset = 0
-								order_param.count = offset_interval
+						order_param = ranking.RankingOrderParam()
+						order_param.order_calc = ORDINAL_RANKING
+						order_param.offset = 0
+						order_param.count = offset_interval
 
-								rankings = await ranking_client.get_ranking(
-									ranking.RankingMode.GLOBAL_AROUND_SELF, # Get the leaderboard around this player
-									category,
-									order_param,
-									last_id_seen, last_pid_seen
-								)
+						rankings = await ranking_client.get_ranking(
+							ranking.RankingMode.GLOBAL_AROUND_SELF, # Get the leaderboard around this player
+							category,
+							order_param,
+							last_id_seen, last_pid_seen
+						)
 
-								return rankings
+						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
 
 					rankings.data = list(filter(lambda entry: entry.rank > last_rank_seen, rankings.data))
 
@@ -395,20 +393,18 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 
 							start = time.perf_counter()
 
-							async def get_req_info():
-								async with backend.connect(s, host, port) as be:
-									async with be.login(str(pid), password) as client:
-										store = datastore.DataStoreClient(client)
+							async def get_req_info(client):
+								store = datastore.DataStoreClient(client)
 
-										get_param = datastore.DataStorePrepareGetParam()
-										get_param.data_id = data_id
+								get_param = datastore.DataStorePrepareGetParam()
+								get_param.data_id = data_id
 
-										req_info = await store.prepare_get_object(get_param)
-										headers = {header.key: header.value for header in req_info.headers}
+								req_info = await store.prepare_get_object(get_param)
+								headers = {header.key: header.value for header in req_info.headers}
 
-										return (req_info.url, req_info, headers)
+								return (req_info.url, req_info, headers)
 
-							url, req_info, headers = await retry_if_rmc_error(get_req_info)
+							url, req_info, headers = await retry_if_rmc_error(get_req_info, s, host, port, pid, password)
 
 							async with httpx.AsyncClient() as client:
 								response = await client.get("https://%s" % req_info.url, headers=headers, timeout=(60 * 10))
@@ -463,18 +459,16 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 				log_file.close()
 				log_lock.release()
 
-				async def get_res():
-					async with backend.connect(s, host, port) as be:
-						async with be.login(str(pid), password) as client:
-							store = datastore.DataStoreClient(client)
+				async def get_res(client):
+					store = datastore.DataStoreClient(client)
 
-							param = datastore.DataStoreGetMetaParam()
-							param.result_option = 0xFF
-							res = await store.get_metas(list(range(last_data_id, last_data_id + max_queryable)), param)
+					param = datastore.DataStoreGetMetaParam()
+					param.result_option = 0xFF
+					res = await store.get_metas(list(range(last_data_id, last_data_id + max_queryable)), param)
 
-							return res
+					return res
 
-				res = await retry_if_rmc_error(get_res)
+				res = await retry_if_rmc_error(get_res, s, host, port, pid, password)
 
 				# Remove invalid
 				entries = [entry for i, entry in enumerate(res.info) if res.results[i].is_success()]
@@ -1312,72 +1306,66 @@ async def main():
 				continue
 				"""
 
-				async def does_search_work():
-					s = settings.default()
-					s.configure(game["key"], nex_version)
-					async with backend.connect(s, nex_token.host, nex_token.port) as be:
-						async with be.login(str(nex_token.pid), nex_token.password) as client:
-							store = datastore.DataStoreClient(client)
-							return await search_works(store)
+				async def does_search_work(client):
+					store = datastore.DataStoreClient(client)
+					return await search_works(store)
 
-				if await retry_if_rmc_error(does_search_work):
+				s = settings.default()
+				s.configure(game["key"], nex_version)
+				if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, nex_token.pid, nex_token.password):
 					print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
 
 					max_queryable = 100
 
-					async def get_initial_data():
-						s = settings.default()
-						s.configure(game["key"], nex_version)
-						async with backend.connect(s, nex_token.host, nex_token.port) as be:
-							async with be.login(str(nex_token.pid), nex_token.password) as client:
-								store = datastore.DataStoreClient(client)
+					async def get_initial_data(client):
+						store = datastore.DataStoreClient(client)
 
-								param = datastore.DataStoreSearchParam()
-								param.result_range.offset = 0
-								param.result_range.size = 1
-								param.result_option = 0xFF
-								res = await store.search_object(param)
+						param = datastore.DataStoreSearchParam()
+						param.result_range.offset = 0
+						param.result_range.size = 1
+						param.result_option = 0xFF
+						res = await store.search_object(param)
 
-								last_data_id = None
-								if len(res.result) > 0:
-									last_data_id = res.result[0].data_id
-								else:
-									# Try timestamp method from 2012 as a backup
-									param = datastore.DataStoreSearchParam()
-									param.created_after = common.DateTime.fromtimestamp(1325401200)
-									param.result_range.size = 1
-									param.result_option = 0xFF
-									res = await store.search_object(param)
+						last_data_id = None
+						if len(res.result) > 0:
+							last_data_id = res.result[0].data_id
+						else:
+							# Try timestamp method from 2012 as a backup
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(1325401200)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
 
-									if len(res.result) > 0:
-										last_data_id = res.result[0].data_id
+							if len(res.result) > 0:
+								last_data_id = res.result[0].data_id
 
-								late_time = None
-								late_data_id = None
-								timestamp = int(time.time())
-								while True:
-									# Try to find reasonable time going back, starting at current time
-									param = datastore.DataStoreSearchParam()
-									param.created_after = common.DateTime.fromtimestamp(timestamp)
-									param.result_range.size = 1
-									param.result_option = 0xFF
-									res = await store.search_object(param)
+						late_time = None
+						late_data_id = None
+						timestamp = int(time.time())
+						while True:
+							# Try to find reasonable time going back, starting at current time
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(timestamp)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
 
-									if len(res.result) > 0:
-										late_time = res.result[0].create_time
-										late_data_id = res.result[0].data_id
-										break
-									elif timestamp > 1325401200:
-										# Take off 1 month
-										timestamp -= 2629800
-									else:
-										# Otherwise timestamp is less than 2012, give up
-										break
-									
-									
-								return (last_data_id, late_time, late_data_id)
+							if len(res.result) > 0:
+								late_time = res.result[0].create_time
+								late_data_id = res.result[0].data_id
+								break
+							elif timestamp > 1325401200:
+								# Take off 1 month
+								timestamp -= 2629800
+							else:
+								# Otherwise timestamp is less than 2012, give up
+								break
+							
+							
+						return (last_data_id, late_time, late_data_id)
 
-					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data)
+					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, nex_token.pid, nex_token.password)
 
 					if last_data_id is not None:
 						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
