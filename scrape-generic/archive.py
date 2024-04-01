@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 from nintendo.nex import backend, ranking, datastore, settings, prudp, authentication, rmc, common
 from nintendo.nex.common import RMCError
 from nintendo import nnas
-from anynet import udp, tls, websocket, util, \
-	scheduler, crypto, streams, http
+from anynet import http
 import hashlib
 import hmac
 import struct
