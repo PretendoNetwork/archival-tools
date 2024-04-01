@@ -1,4 +1,5 @@
 .env
+wiiu
 *.db
 *.db-journal
 *.txt
