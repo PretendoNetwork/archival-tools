@@ -5,6 +5,7 @@ const database = require('./database');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
 const NPDL_URL_BASE = 'https://npdl.cdn.nintendowifi.net/p01/nsa';
+const TASK_SHEET_URL_BASE = 'https://npts.app.nintendo.net/p01/tasksheet/1';
 
 const httpsAgent = new https.Agent({
 	rejectUnauthorized: false,
@@ -40,8 +41,23 @@ async function scrapeTask(downloadBase, task) {
 	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
 	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/filelist.txt`, response.data);
 
+	const headersString = JSON.stringify(response.headers, null, 2);
+	
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/filelist_headers.txt`, headersString);
+
 	const lines = response.data.split('\r\n').filter(line => line);
 	const files = lines.splice(2)
+
+	const ts_response = await axios.get(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, {
+		validateStatus: () => {
+		},
+		httpsAgent
+	});
+
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, ts_response.data);
+	const ts_headersString = JSON.stringify(ts_response.headers, null, 2);
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml_headers.txt`, ts_headersString);
+	
 
 	// * There's like 5 ways the 3DS can format these download URLs, just pray this works I guess.
 	// * Not sure any better way to do this.
