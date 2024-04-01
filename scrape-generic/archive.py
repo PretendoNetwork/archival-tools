@@ -606,7 +606,8 @@ def timestamp_if_not_null(t):
 		return t
 
 async def add_rankings(category, s, host, port, pid, password, log_lock, rankings, pretty_game_id, has_datastore, con):
-	if has_datastore:
+	# Since this is part of the datastore scrape instead simply ignore
+	if has_datastore and False:
 		for entry in rankings.data:
 			if entry.param:
 				result = None
