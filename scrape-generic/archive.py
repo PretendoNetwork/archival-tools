@@ -1405,10 +1405,9 @@ async def main():
 
 		log_file.close()
 
-	if sys.argv[1] == "datastore_3ds":
+	if sys.argv[1] == "datastore_use_db":
 		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
-		cur = con.cursor()
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta (
 		game TEXT,
 		data_id INTEGER,
@@ -1429,13 +1428,13 @@ async def main():
 		referred_time INTEGER,
 		expire_time INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_tag (
 		game TEXT NOT NULL,
 		data_id INTEGER,
 		tag TEXT
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_rating (
 		game TEXT,
 		data_id INTEGER,
@@ -1444,7 +1443,7 @@ async def main():
 		count INTEGER,
 		initial_value INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_data (
 		game TEXT,
 		data_id INTEGER,
@@ -1452,7 +1451,215 @@ async def main():
 		url TEXT,
 		data BLOB
 	)""")
-		cur.execute("""
+		con.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+		game TEXT,
+		data_id INTEGER,
+		is_delete INTEGER,
+		recipient TEXT
+	)""")
+		con.commit()
+
+		f = open('../find-nex-servers/nexwiiu.json')
+		nex_wiiu_games = json.load(f)["games"][int(sys.argv[3]):]
+		f.close()
+
+		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
+
+		log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+		for i, game in enumerate(nex_wiiu_games):
+			if i == int(sys.argv[4]):
+				print("Reached intended end")
+				break
+
+			# Check if nexds is loaded
+			has_datastore = bool([g for g in wiiu_games if g['aid'] == game['aid']][0]['nexds'])
+
+			if has_datastore:
+				print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i + int(sys.argv[3]), len(nex_wiiu_games)), log_file)
+
+				pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
+
+				nas = nnas.NNASClient()
+				nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+				nas.set_title(game["aid"], game["av"])
+				nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
+
+				access_token = await nas.login(USERNAME, PASSWORD)
+
+				nex_token = await nas.get_nex_token(access_token.token, game["id"])
+
+				nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+
+				"""
+				# Run everything in processes
+				num_processes = 8
+				range_size = int(pow(2, 32) / num_processes)
+
+				found_queue = Queue()
+				num_tested_queue = Queue()
+
+				processes = [Process(target=range_test_category,
+					args=(game["key"], nex_version, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password, i * range_size, i * range_size + 1000, found_queue, num_tested_queue)) for i in range(num_processes)]
+				# Queue for printing number tested and found categories
+				processes.append(Process(target=print_categories, args=(num_processes, found_queue, num_tested_queue)))
+				for p in processes:
+					p.start()
+				for p in processes:
+					p.join()
+
+				continue
+				"""
+
+				async def does_search_work(client):
+					store = datastore.DataStoreClient(client)
+					return await search_works(store)
+
+				s = settings.default()
+				s.configure(game["key"], nex_version)
+				if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password):
+					print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
+
+					max_queryable = 100
+
+					async def get_initial_data(client):
+						store = datastore.DataStoreClient(client)
+
+						param = datastore.DataStoreSearchParam()
+						param.result_range.offset = 0
+						param.result_range.size = 1
+						param.result_option = 0xFF
+						res = await store.search_object(param)
+
+						last_data_id = None
+						if len(res.result) > 0:
+							last_data_id = res.result[0].data_id
+						else:
+							# Try timestamp method from 2012 as a backup
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(1325401200)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
+
+							if len(res.result) > 0:
+								last_data_id = res.result[0].data_id
+
+						if last_data_id is None or last_data_id > 900000:
+							# Just start here anyway lol
+							last_data_id = 900000
+
+						late_time = None
+						late_data_id = None
+						timestamp = int(time.time())
+						while True:
+							# Try to find reasonable time going back, starting at current time
+							param = datastore.DataStoreSearchParam()
+							param.created_after = common.DateTime.fromtimestamp(timestamp)
+							param.result_range.size = 1
+							param.result_option = 0xFF
+							res = await store.search_object(param)
+
+							if len(res.result) > 0:
+								late_time = res.result[0].create_time
+								late_data_id = res.result[0].data_id
+								break
+							elif timestamp > 1325401200:
+								# Take off 1 month
+								timestamp -= 2629800
+							else:
+								# Otherwise timestamp is less than 2012, give up
+								break
+							
+							
+						return (last_data_id, late_time, late_data_id)
+
+					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
+
+					if last_data_id is not None and late_data_id is not None:
+						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+
+						num_download_threads = 16
+
+						log_lock = Lock()
+						metas_queue = Queue()
+						done_flag = Value('i', True)
+						num_metas_threads_done = Value('i', 0)
+
+						# Get all data IDs to download
+						entries = con.cursor().execute("SELECT data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE game = ? AND size > 0 AND data IS NULL", (pretty_game_id,)).fetchall()
+
+						print_and_log("%s done reading from DB" % game["name"].replace('\n', ' '), log_file)
+
+						while True:
+							metas_queue.put([(int(entry[0]), int(entry[1])) for entry in entries[:100]])
+							entries = entries[100:]
+
+							if len(entries) == 0:
+								break
+
+						processes = []
+						for i in range(num_download_threads):
+							processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+
+						for p in processes:
+							p.start()
+						for p in processes:
+							p.join()
+
+				else:
+					print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
+
+		log_file.close()
+
+	if sys.argv[1] == "datastore_3ds":
+		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+		con.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta (
+		game TEXT,
+		data_id INTEGER,
+		owner_id TEXT,
+		size INTEGER,
+		name TEXT,
+		data_type INTEGER,
+		meta_binary BLOB,
+		permission INTEGER,
+		delete_permission INTEGER,
+		create_time INTEGER,
+		update_time INTEGER,
+		period INTEGER,
+		status INTEGER,
+		referred_count INTEGER,
+		refer_data_id INTEGER,
+		flag INTEGER,
+		referred_time INTEGER,
+		expire_time INTEGER
+	)""")
+		con.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+		game TEXT NOT NULL,
+		data_id INTEGER,
+		tag TEXT
+	)""")
+		con.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+		game TEXT,
+		data_id INTEGER,
+		slot INTEGER,
+		total_value INTEGER,
+		count INTEGER,
+		initial_value INTEGER
+	)""")
+		con.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_data (
+		game TEXT,
+		data_id INTEGER,
+		error TEXT,
+		url TEXT,
+		data BLOB
+	)""")
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
 		game TEXT,
 		data_id INTEGER,
@@ -1600,8 +1807,7 @@ async def main():
 
 	if sys.argv[1] == "datastore_specific":
 		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
-		cur = con.cursor()
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta (
 		game TEXT,
 		data_id INTEGER,
@@ -1622,13 +1828,13 @@ async def main():
 		referred_time INTEGER,
 		expire_time INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_tag (
 		game TEXT NOT NULL,
 		data_id INTEGER,
 		tag TEXT
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_rating (
 		game TEXT,
 		data_id INTEGER,
@@ -1637,7 +1843,7 @@ async def main():
 		count INTEGER,
 		initial_value INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_data (
 		game TEXT,
 		data_id INTEGER,
@@ -1645,7 +1851,7 @@ async def main():
 		url TEXT,
 		data BLOB
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
 		game TEXT,
 		data_id INTEGER,
