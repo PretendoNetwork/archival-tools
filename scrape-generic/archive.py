@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from nintendo.nex import backend, ranking, datastore, settings, prudp, authentication, rmc, common
 from nintendo.nex.common import RMCError
 from nintendo import nnas
+from nintendo.nnas import NexToken
 from anynet import http
 import hashlib
 import hmac
@@ -49,7 +50,7 @@ async def retry_if_rmc_error(func, s, host, port, pid, password):
 	try:
 		async with backend.connect(s, host, port) as be:
 			try:
-				async with be.login(str(pid), password) as client:
+				async with be.login(pid, password) as client:
 					return await func(client)
 			except RuntimeError:
 				print("\"PRUDP connection failed\" encountered")
@@ -160,7 +161,7 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 				return (rankings, rankings.data[0].pid, rankings.data[0].unique_id)
 
-			rankings, last_pid_seen, last_id_seen = await retry_if_rmc_error(get_start_data, s, host, port, pid, password)
+			rankings, last_pid_seen, last_id_seen = await retry_if_rmc_error(get_start_data, s, host, port, str(pid), password)
 		except Exception as e:
 				# Protocol is likely incorrect
 				log_lock.acquire()
@@ -203,7 +204,7 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, str(pid), password)
 
 					await add_rankings(category, s, host, port, pid, password, log_lock, rankings, pretty_game_id, has_datastore, con)
 
@@ -258,7 +259,7 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, str(pid), password)
 
 					rankings.data = list(filter(lambda entry: entry.rank > last_rank_seen, rankings.data))
 
@@ -320,7 +321,7 @@ def run_category_scrape(category, log_lock, s, host, port, pid, password, game, 
 
 						return rankings
 							
-					rankings = await retry_if_rmc_error(get_rankings, s, host, port, pid, password)
+					rankings = await retry_if_rmc_error(get_rankings, s, host, port, str(pid), password)
 
 					rankings.data = list(filter(lambda entry: entry.rank > last_rank_seen, rankings.data))
 
@@ -404,7 +405,7 @@ def get_datastore_data(log_lock, access_key, nex_version, host, port, pid, passw
 
 								return (req_info.url, req_info, headers)
 
-							url, req_info, headers = await retry_if_rmc_error(get_req_info, s, host, port, pid, password)
+							url, req_info, headers = await retry_if_rmc_error(get_req_info, s, host, port, str(pid), password)
 
 							async with httpx.AsyncClient() as client:
 								response = await client.get("https://%s" % req_info.url, headers=headers, timeout=(60 * 10))
@@ -468,7 +469,7 @@ def get_datastore_metas(log_lock, access_key, nex_version, host, port, pid, pass
 
 					return res
 
-				res = await retry_if_rmc_error(get_res, s, host, port, pid, password)
+				res = await retry_if_rmc_error(get_res, s, host, port, str(pid), password)
 
 				# Remove invalid
 				entries = [entry for i, entry in enumerate(res.info) if res.results[i].is_success()]
@@ -1314,7 +1315,7 @@ async def main():
 
 				s = settings.default()
 				s.configure(game["key"], nex_version)
-				if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, nex_token.pid, nex_token.password):
+				if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password):
 					print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
 
 					max_queryable = 100
@@ -1367,7 +1368,7 @@ async def main():
 							
 						return (last_data_id, late_time, late_data_id)
 
-					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, nex_token.pid, nex_token.password)
+					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
 
 					if last_data_id is not None:
 						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
@@ -1395,6 +1396,184 @@ async def main():
 					print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
 
 		log_file.close()
+
+	if sys.argv[1] == "datastore_specific":
+		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+		cur = con.cursor()
+		cur.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta (
+		game TEXT,
+		data_id INTEGER,
+		owner_id TEXT,
+		size INTEGER,
+		name TEXT,
+		data_type INTEGER,
+		meta_binary BLOB,
+		permission INTEGER,
+		delete_permission INTEGER,
+		create_time INTEGER,
+		update_time INTEGER,
+		period INTEGER,
+		status INTEGER,
+		referred_count INTEGER,
+		refer_data_id INTEGER,
+		flag INTEGER,
+		referred_time INTEGER,
+		expire_time INTEGER
+	)""")
+		cur.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+		game TEXT NOT NULL,
+		data_id INTEGER,
+		tag TEXT
+	)""")
+		cur.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+		game TEXT,
+		data_id INTEGER,
+		slot INTEGER,
+		total_value INTEGER,
+		count INTEGER,
+		initial_value INTEGER
+	)""")
+		cur.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_data (
+		game TEXT,
+		data_id INTEGER,
+		error TEXT,
+		url TEXT,
+		data BLOB
+	)""")
+		cur.execute("""
+	CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+		game TEXT,
+		data_id INTEGER,
+		is_delete INTEGER,
+		recipient TEXT
+	)""")
+
+		log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+		class NexToken3DS:
+			def __init__(self):
+				self.host = None
+				self.port = None
+				self.pid = None
+				self.password = None
+
+		nex_token = NexToken3DS()
+		nex_token.host = sys.argv[2]
+		nex_token.port = sys.argv[3]
+		nex_token.pid = sys.argv[4]
+		nex_token.password = sys.argv[5]
+
+		game_key = sys.argv[6]
+		nex_version = int(sys.argv[7])
+
+		pretty_game_id = sys.argv[8]
+
+		async def does_search_work(client):
+			store = datastore.DataStoreClient(client)
+			return await search_works(store)
+
+		s = settings.default()
+		s.configure(game_key, nex_version)
+		if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password):
+			print_and_log("This game DOES support search", log_file)
+
+			max_queryable = 100
+
+			async def get_initial_data(client):
+				store = datastore.DataStoreClient(client)
+
+				param = datastore.DataStoreSearchParam()
+				param.result_range.offset = 0
+				param.result_range.size = 1
+				param.result_option = 0xFF
+				res = await store.search_object(param)
+
+				last_data_id = None
+				if len(res.result) > 0:
+					last_data_id = res.result[0].data_id
+				else:
+					# Try timestamp method from 2012 as a backup
+					param = datastore.DataStoreSearchParam()
+					param.created_after = common.DateTime.fromtimestamp(1325401200)
+					param.result_range.size = 1
+					param.result_option = 0xFF
+					res = await store.search_object(param)
+
+					if len(res.result) > 0:
+						last_data_id = res.result[0].data_id
+
+				if last_data_id is None or last_data_id > 900000:
+					last_data_id = 900000
+
+				late_time = None
+				late_data_id = None
+				timestamp = int(time.time())
+				while True:
+					# Try to find reasonable time going back, starting at current time
+					param = datastore.DataStoreSearchParam()
+					param.created_after = common.DateTime.fromtimestamp(timestamp)
+					param.result_range.size = 1
+					param.result_option = 0xFF
+					res = await store.search_object(param)
+
+					if len(res.result) > 0:
+						late_time = res.result[0].create_time
+						late_data_id = res.result[0].data_id
+						break
+					elif timestamp > 1325401200:
+						# Take off 1 month
+						timestamp -= 2629800
+					else:
+						# Otherwise timestamp is less than 2012, give up
+						break
+					
+					
+				return (last_data_id, late_time, late_data_id)
+
+			last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
+
+			if last_data_id is not None:
+				print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+
+				num_metas_threads = 16
+				num_download_threads = 16
+
+				log_lock = Lock()
+				metas_queue = Queue()
+				done_flag = Value('i', False)
+				num_metas_threads_done = Value('i', 0)
+
+				processes = []
+				for i in range(num_metas_threads):
+					processes.append(Process(target=get_datastore_metas, args=(log_lock, game_key, nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag, i, num_metas_threads, max_queryable, last_data_id, late_data_id, num_metas_threads_done)))
+				for i in range(num_download_threads):
+					processes.append(Process(target=get_datastore_data, args=(log_lock, game_key, nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+
+				for p in processes:
+					p.start()
+				for p in processes:
+					p.join()
+
+		else:
+			print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
+
+		log_file.close()
+
+	if sys.argv[1] == "category_scrape":
+		games = set([])
+
+		nex_wiiu_games = json.load(f)["games"]
+		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
+
+		log_file = open("category_scrape.txt", "a", encoding="utf-8")
+
+		for i, game in enumerate(nex_wiiu_games):
+			if game['aid'] in games:
+				None
 
 if __name__ == '__main__':
 	if sys.platform == "linux" or sys.platform == "linux2":
