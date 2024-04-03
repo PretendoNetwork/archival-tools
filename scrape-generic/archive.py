@@ -1588,7 +1588,7 @@ async def main():
 						num_metas_threads_done = Value('i', 0)
 
 						# Get all data IDs to download
-						entries = con.cursor().execute("SELECT data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE game = ? AND size > 0 AND data IS NULL", (pretty_game_id,)).fetchall()
+						entries = con.cursor().execute("SELECT datastore_meta.data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE game = ? AND size > 0 AND data IS NULL", (pretty_game_id,)).fetchall()
 
 						print_and_log("%s done reading from DB" % game["name"].replace('\n', ' '), log_file)
 
