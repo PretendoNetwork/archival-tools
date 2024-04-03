@@ -4,7 +4,7 @@ import anyio
 import requests
 from dotenv import load_dotenv
 from nintendo.nex import backend, ranking, datastore, settings, prudp, authentication, rmc
-from nintendo import nnas
+from nintendo import nnas, nasc
 from anynet import udp, tls, websocket, util, \
 	scheduler, crypto, streams, queue
 import hashlib
@@ -14,6 +14,7 @@ import threading
 import time
 from multiprocessing import Process, Lock, Queue, Array
 import json
+import base64
 
 import logging
 logging.basicConfig(level=logging.FATAL)
@@ -29,6 +30,17 @@ LANGUAGE = os.getenv('LANGUAGE')
 
 USERNAME = os.getenv('NEX_USERNAME')
 PASSWORD = os.getenv('NEX_PASSWORD')
+
+SERIAL_NUMBER_3DS = os.getenv('3DS_SERIAL_NUMBER')
+MAC_ADDRESS_3DS = os.getenv('3DS_MAC_ADDRESS')
+FCD_CERT_3DS = bytes.fromhex(os.getenv('3DS_FCD_CERT'))
+USERNAME_3DS = int(os.getenv('3DS_USERNAME'))
+USERNAME_HMAC_3DS = os.getenv('3DS_USERNAME_HMAC')
+
+REGION_3DS=int(os.getenv('3DS_REGION'))
+LANGUAGE_3DS=int(os.getenv('3DS_LANG'))
+
+LIST_PATH="3ds_list.txt"
 
 class SynPacket:
 	def __init__(self):
@@ -61,7 +73,7 @@ def range_test_access_key(i, syn_packet, host, port, title_id, num_tested_queue,
 		if test_access_key(string_key, syn_packet):
 			entry = '%s, %s, %s, %s, (%d)' % (hex(title_id)[2:].upper().rjust(16, "0"), hex(title_id)[-8:].upper(), string_key, host, port)
 
-			list_file = open("list.txt", "a")
+			list_file = open(LIST_PATH, "a")
 			list_file.write('%s\n' % entry)
 			list_file.flush()
 			list_file.close()
@@ -208,7 +220,145 @@ async def main():
 						if test_access_key(string_key, syn_packet):
 							entry = '%s, %s, %s, %s, (%d)' % (hex(game['aid'])[2:].upper().rjust(16, "0"), hex(game['aid'])[-8:].upper(), string_key, nex_token.host, nex_token.port)
 
-							list_file = open("list.txt", "a")
+							list_file = open(LIST_PATH, "a")
+							list_file.write('%s\n' % entry)
+							list_file.flush()
+							list_file.close()
+
+							print(entry)
+							done = True
+							break
+
+					if not done:
+						# Run everything in processes
+						num_tested_queue = Queue()
+
+						found_key_lock = Lock()
+						found_key = Array('c', 10, lock = found_key_lock)
+
+						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(8)]
+						# Queue for printing number tested
+						processes.append(Process(target=print_number_tested, args=(num_tested_queue,)))
+						for p in processes:
+							p.start()
+						for p in processes:
+							p.join()
+
+						if found_key.value:
+							possible_access_keys.add(found_key.value.decode("utf-8"))
+				else:
+					print("No SYN packet found")
+
+			checked_games.add((game['aid'], nex_version))
+	
+	if sys.argv[1] == "get_access_keys_3ds":
+		ds3_games = requests.get('https://raw.githubusercontent.com/DaniElectra/kinnay-title-list/3ds/data/3ds.json').json()['games']
+		nex_ds3_games = requests.get('https://raw.githubusercontent.com/PretendoNetwork/nex-viewer/8dec0a64276bd508734276f3443639b68b808366/src/titles.json').json()
+		up_to_date_title_versions = requests.get('https://raw.githubusercontent.com/PretendoNetwork/archival-tools/master/idbe/title-versions.json').json()
+
+		# Get NEX games
+		nex_games = []
+		for game in ds3_games:
+			if game['nex']:
+				# This server connects to NEX
+				nex_games.append(game)
+
+		# get possible access keys
+		possible_access_keys = set()
+		for game in nex_ds3_games:
+			if game['access_key']:
+				possible_access_keys.add(game['access_key'])
+
+		# Checked games
+		checked_games = set()
+
+		for game in nex_games:
+			print("Attempting " + hex(game['aid'])[2:].upper())
+
+			nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+
+			if (game['aid'], nex_version) in checked_games:
+				continue
+
+			# Kinnay JSON is not up to date
+			title_version = max(up_to_date_title_versions[hex(game['aid'])[2:].upper().rjust(16, "0")])
+
+			nas = nasc.NASCClient()
+			nas.set_title(game['aid'], title_version)
+			nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
+			nas.set_locale(REGION_3DS, LANGUAGE_3DS)
+			nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
+
+			guess_game_server_id = game['aid'] & 0xFFFFFFFF
+
+			nex_token = await nas.login(guess_game_server_id)
+
+			# Fake key to get SYN packet
+			s = settings.default()
+			s.configure("aaaaaaaa", nex_version)
+
+			# Firstly, obtain one SYN packet
+			syn_packet = SynPacket()
+			syn_packet_lock = threading.Lock()
+			syn_packet_lock.acquire()
+
+			# WiiU is UDP
+			async with udp.connect(nex_token.host, nex_token.port) as socket:
+				async with util.create_task_group() as group:
+					transport = prudp.PRUDPClientTransport(s, socket, group)
+
+					async def process_incoming():
+						while True:
+							data = await transport.socket.recv()
+
+							with util.catch(Exception):
+								packets = transport.packet_encoder.decode(data)
+								for packet in packets:
+									if packet.type == prudp.TYPE_SYN:
+										syn_packet.packet = packet
+										syn_packet.syn_packet_options = transport.packet_encoder.encode_options(packet)
+										syn_packet.syn_packet_header = transport.packet_encoder.encode_header(packet, len(syn_packet.syn_packet_options))
+										syn_packet.syn_packet_payload = packet.payload
+										syn_packet.syn_packet_signature = packet.signature
+									else:
+										await transport.process_packet(packet)
+
+					transport.group.start_soon(process_incoming)
+
+					client = prudp.PRUDPClient(s, transport, s["prudp.version"])
+					with transport.ports.bind(client, type=10) as local_port:
+						client.bind(socket.local_address(), local_port, 10)
+						client.connect(socket.remote_address(), 1, 10)
+
+						async with client:
+							client.scheduler = scheduler.Scheduler(group)
+							client.scheduler.start()
+
+							client.resend_timeout = 0.05
+							client.resend_limit = 0
+
+							try:
+								await client.send_syn()
+								await client.handshake_event.wait()
+
+								if client.state == prudp.STATE_CONNECTED:
+									None
+
+								syn_packet_lock.release()
+							except RuntimeError:
+								None
+
+				syn_packet_lock.acquire()
+				syn_packet_lock.release()
+
+				done = False
+				if syn_packet.syn_packet_header:
+					# First test known keys
+					for string_key in possible_access_keys:
+						if test_access_key(string_key, syn_packet):
+							entry = '%s, %s, %s, %s, (%d)' % (hex(game['aid'])[2:].upper().rjust(16, "0"), hex(game['aid'])[-8:].upper(), string_key, nex_token.host, nex_token.port)
+
+							list_file = open(LIST_PATH, "a")
 							list_file.write('%s\n' % entry)
 							list_file.flush()
 							list_file.close()
@@ -240,7 +390,7 @@ async def main():
 			checked_games.add((game['aid'], nex_version))
 
 	if sys.argv[1] == "complete_list":
-		list_file = open("list.txt", "r")
+		list_file = open(LIST_PATH, "r")
 		list_lines = list_file.readlines()
 		list_file.close()
 
@@ -454,7 +604,7 @@ async def main():
 						if test_access_key(string_key, syn_packet):
 							entry = '%s, %s, %s, %s, (%d)' % (hex(game['aid'])[2:].upper().rjust(16, "0"), hex(game['aid'])[-8:].upper(), string_key, nex_token.host, nex_token.port)
 
-							list_file = open("list.txt", "a")
+							list_file = open(LIST_PATH, "a")
 							list_file.write('%s\n' % entry)
 							list_file.flush()
 							list_file.close()
