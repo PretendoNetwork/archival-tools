@@ -1592,6 +1592,13 @@ async def main():
 
 						print_and_log("%s done reading from DB" % game["name"].replace('\n', ' '), log_file)
 
+						processes = []
+						for i in range(num_download_threads):
+							processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+
+						for p in processes:
+							p.start()
+
 						while True:
 							metas_queue.put([(int(entry[0]), int(entry[1])) for entry in entries[:100]])
 							entries = entries[100:]
@@ -1599,12 +1606,6 @@ async def main():
 							if len(entries) == 0:
 								break
 
-						processes = []
-						for i in range(num_download_threads):
-							processes.append(Process(target=get_datastore_data, args=(log_lock, game["key"], nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
-
-						for p in processes:
-							p.start()
 						for p in processes:
 							p.join()
 
