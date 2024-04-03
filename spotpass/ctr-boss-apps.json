@@ -442,7 +442,8 @@
 	{
 		"app_id": "FNY6HPPbPj2jIErD",
 		"tasks": [
-			"Amb_eu"
+			"Amb_eu",
+			"Amb"
 		],
 		"title_id": "0004000000072400"
 	},
@@ -925,7 +926,8 @@
 	{
 		"app_id": "qAM6zmNEtT45AgUa",
 		"tasks": [
-			"Amb_jp"
+			"Amb_jp",
+			"Amb"
 		],
 		"title_id": "0004000000072300"
 	},
@@ -959,7 +961,8 @@
 	{
 		"app_id": "QfJQIU7IDmkaUuLt",
 		"tasks": [
-			"Amb_us"
+			"Amb_us",
+			"Amb"
 		],
 		"title_id": "0004000000072500"
 	},
@@ -3620,7 +3623,8 @@
 	{
 		"app_id": "YqwaX4YDDsNecFub",
 		"tasks": [
-			"miku_01"
+			"miku_01",
+			"miku"
 		],
 		"title_id": "unknown"
 	},
