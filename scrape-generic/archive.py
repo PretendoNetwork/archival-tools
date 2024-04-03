@@ -43,8 +43,8 @@ ORDINAL_RANKING = 1 # 1234 rather than 1224
 RANKING_DB = "ranking_IMPROVED.db"
 RANKING_LOG = "ranking_log_IMPROVED.txt"
 
-DATASTORE_DB = "datastore_IMPROVED.db"
-DATASTORE_LOG = "datastore_log_IMPROVED.txt"
+DATASTORE_DB = "%s.db" % sys.argv[2]
+DATASTORE_LOG = "%s_log.txt" % sys.argv[2]
 
 async def retry_if_rmc_error(func, s, host, port, pid, password):
 	try:
@@ -1208,8 +1208,7 @@ async def main():
 
 	if sys.argv[1] == "datastore":
 		con = sqlite3.connect(DATASTORE_DB, timeout=3600)
-		cur = con.cursor()
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta (
 		game TEXT,
 		data_id INTEGER,
@@ -1230,13 +1229,13 @@ async def main():
 		referred_time INTEGER,
 		expire_time INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_tag (
 		game TEXT NOT NULL,
 		data_id INTEGER,
 		tag TEXT
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_meta_rating (
 		game TEXT,
 		data_id INTEGER,
@@ -1245,7 +1244,7 @@ async def main():
 		count INTEGER,
 		initial_value INTEGER
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_data (
 		game TEXT,
 		data_id INTEGER,
@@ -1253,16 +1252,17 @@ async def main():
 		url TEXT,
 		data BLOB
 	)""")
-		cur.execute("""
+		con.execute("""
 	CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
 		game TEXT,
 		data_id INTEGER,
 		is_delete INTEGER,
 		recipient TEXT
 	)""")
+		con.commit()
 
 		f = open('../find-nex-servers/nexwiiu.json')
-		nex_wiiu_games = json.load(f)["games"]
+		nex_wiiu_games = json.load(f)["games"][int(sys.argv[3]):]
 		f.close()
 
 		wiiu_games = requests.get('https://kinnay.github.io/data/wiiu.json').json()['games']
@@ -1270,11 +1270,15 @@ async def main():
 		log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
 
 		for i, game in enumerate(nex_wiiu_games):
+			if i == int(sys.argv[4]):
+				print("Reached intended end")
+				break
+
 			# Check if nexds is loaded
 			has_datastore = bool([g for g in wiiu_games if g['aid'] == game['aid']][0]['nexds'])
 
 			if has_datastore:
-				print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i, len(nex_wiiu_games)), log_file)
+				print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i + int(sys.argv[3]), len(nex_wiiu_games)), log_file)
 
 				pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
 
@@ -1343,6 +1347,10 @@ async def main():
 							if len(res.result) > 0:
 								last_data_id = res.result[0].data_id
 
+						if last_data_id is None or last_data_id > 900000:
+							# Just start here anyway lol
+							last_data_id = 900000
+
 						late_time = None
 						late_data_id = None
 						timestamp = int(time.time())
@@ -1370,11 +1378,11 @@ async def main():
 
 					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
 
-					if last_data_id is not None:
+					if last_data_id is not None and late_data_id is not None:
 						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
 
-						num_metas_threads = 32
-						num_download_threads = 32
+						num_metas_threads = 8
+						num_download_threads = 8
 
 						log_lock = Lock()
 						metas_queue = Queue()
