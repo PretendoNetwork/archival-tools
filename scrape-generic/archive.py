@@ -43,8 +43,9 @@ ORDINAL_RANKING = 1 # 1234 rather than 1224
 RANKING_DB = "ranking_IMPROVED.db"
 RANKING_LOG = "ranking_log_IMPROVED.txt"
 
-DATASTORE_DB = "%s.db" % sys.argv[2]
-DATASTORE_LOG = "%s_log.txt" % sys.argv[2]
+if "datastore" in sys.argv[1]:
+	DATASTORE_DB = "%s.db" % sys.argv[2]
+	DATASTORE_LOG = "%s_log.txt" % sys.argv[2]
 
 async def retry_if_rmc_error(func, s, host, port, pid, password):
 	try:
@@ -1187,6 +1188,9 @@ async def main():
 
 						if num_tested % 10 == 0:
 							print_and_log("Tested %d categories" % num_tested, log_file)
+
+			if game['aid'] == 1407375153317888:
+				valid_categories.extend([0x5DD7E214,0x13759B11,0xE3123FD0,0x912DF205,0x9E391E6D,0x5B41DCD6,0x403CF15E,0x9A479BC2,0x5A8C9203,0x27E351EC,0xB2F30301,0xC3701F2C,0xC44FE9B2,0x169BCB49,0x893EB726,0x1D46C990,0x428E1F5B,0x421F85DE,0x980638CD,0x9A9E4578,0x529F713C,0x229D4B34,0xDEB25266,0x9F206066,0xAD56AF59,0xDADEB14A,0xA1137287,0xC5BE4809,0xFE7E5473,0x7FE2A8DC,0x80469829,0xD26D5AAA,0xDC9C0EED,0x997FB4A2,0x12C3F595,0xC484D676,0xA002D295,0xECC83B64,0x8A33A8A9,0xF0E2800E,0x431B4770,0x6DBE41C2,0x5CC03A6F,0x13AE214C,0x773204C6,0xC4262903,0xFE5FD35F,0xE4CB3C45,0xADBE9415,0xC0D23671,0xCBDC7006,0x4EEB52FF,0xF03B8ADE,0x6A46C6B5,0x3603775F,0x954ABE27,0xCBB12D65,0x4BEAF6F6,0x37082275,0xD94FD2F6,0xB1C43F16,0xDE28ED26,0xBC0CD164])
 
 			subgroup_size = 32
 			subgroup_size_groups = [valid_categories[i:i+subgroup_size] for i in range(0, len(valid_categories), subgroup_size)]

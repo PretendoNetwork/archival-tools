@@ -1,4 +1,3 @@
 .env
-list.txt
-nexwiiu.json
-nex3ds.json
+*.txt
+*.json

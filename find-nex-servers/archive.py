@@ -42,6 +42,9 @@ LANGUAGE_3DS=int(os.getenv('3DS_LANG'))
 
 LIST_PATH="3ds_list.txt"
 
+sys.stdin.reconfigure(encoding='utf-8')
+sys.stdout.reconfigure(encoding='utf-8')
+
 class SynPacket:
 	def __init__(self):
 		self.packet = None
@@ -63,8 +66,8 @@ def test_access_key(string_key, syn_packet):
 
 # Test ALL keys
 def range_test_access_key(i, syn_packet, host, port, title_id, num_tested_queue, found_key):
-	for number_key_base in range(536870912):
-		number_key = number_key_base + i * 536870912
+	for number_key_base in range(134217728):
+		number_key = number_key_base + i * 134217728
 
 		if number_key_base % 1000000 == 0:
 			num_tested_queue.put(1000000)
@@ -185,6 +188,8 @@ async def main():
 									else:
 										await transport.process_packet(packet)
 
+
+
 					transport.group.start_soon(process_incoming)
 
 					client = prudp.PRUDPClient(s, transport, s["prudp.version"])
@@ -236,7 +241,7 @@ async def main():
 						found_key_lock = Lock()
 						found_key = Array('c', 10, lock = found_key_lock)
 
-						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(8)]
+						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(16)]
 						# Queue for printing number tested
 						processes.append(Process(target=print_number_tested, args=(num_tested_queue,)))
 						for p in processes:
@@ -273,7 +278,7 @@ async def main():
 		checked_games = set()
 
 		for game in nex_games:
-			print("Attempting " + hex(game['aid'])[2:].upper())
+			print("Attempting " + hex(game['aid'])[2:].upper() + ", " + game['name'])
 
 			nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
 
@@ -281,7 +286,12 @@ async def main():
 				continue
 
 			# Kinnay JSON is not up to date
-			title_version = max(up_to_date_title_versions[hex(game['aid'])[2:].upper().rjust(16, "0")])
+			key = hex(game['aid'])[2:].upper().rjust(16, "0")
+
+			if not key in up_to_date_title_versions:
+				continue
+
+			title_version = max(up_to_date_title_versions[key])
 
 			nas = nasc.NASCClient()
 			nas.set_title(game['aid'], title_version)
@@ -291,16 +301,23 @@ async def main():
 
 			guess_game_server_id = game['aid'] & 0xFFFFFFFF
 
-			nex_token = await nas.login(guess_game_server_id)
+			try:
+				nex_token = await nas.login(guess_game_server_id)
+			except nasc.NASCError:
+				continue
 
 			# Fake key to get SYN packet
-			s = settings.default()
-			s.configure("aaaaaaaa", nex_version)
+			s = settings.load("3ds")
+			s.configure("aaaaaaaa", nex_version, 1)
+			s["prudp.version"] = 1
 
 			# Firstly, obtain one SYN packet
 			syn_packet = SynPacket()
 			syn_packet_lock = threading.Lock()
 			syn_packet_lock.acquire()
+
+			if nex_token.host == "0.0.0.0" and nex_token.port == 0:
+				continue
 
 			# WiiU is UDP
 			async with udp.connect(nex_token.host, nex_token.port) as socket:
@@ -335,7 +352,7 @@ async def main():
 							client.scheduler.start()
 
 							client.resend_timeout = 0.05
-							client.resend_limit = 0
+							client.resend_limit = 10
 
 							try:
 								await client.send_syn()
@@ -374,7 +391,7 @@ async def main():
 						found_key_lock = Lock()
 						found_key = Array('c', 10, lock = found_key_lock)
 
-						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(8)]
+						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(16)]
 						# Queue for printing number tested
 						processes.append(Process(target=print_number_tested, args=(num_tested_queue,)))
 						for p in processes:
@@ -620,7 +637,7 @@ async def main():
 						found_key_lock = Lock()
 						found_key = Array('c', 10, lock = found_key_lock)
 
-						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(8)]
+						processes = [Process(target=range_test_access_key, args=(i, syn_packet, nex_token.host, nex_token.port, game['aid'], num_tested_queue, found_key)) for i in range(16)]
 						# Queue for printing number tested
 						processes.append(Process(target=print_number_tested, args=(num_tested_queue,)))
 						for p in processes:
