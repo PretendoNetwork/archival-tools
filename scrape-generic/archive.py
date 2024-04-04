@@ -1330,7 +1330,7 @@ async def main():
 
 					max_entry = con.cursor().execute("SELECT MAX(data_id) FROM datastore_meta WHERE game = ?", (pretty_game_id,)).fetchall()
 					max_entry_data_id = None
-					if len(max_entry) > 0:
+					if max_entry is not None and len(max_entry) > 0:
 						max_entry_data_id = int(max_entry[0][0])
 
 					async def get_initial_data(client):
