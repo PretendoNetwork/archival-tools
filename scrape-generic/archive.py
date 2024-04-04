@@ -1328,6 +1328,11 @@ async def main():
 
 					max_queryable = 100
 
+					max_entry = con.cursor().execute("SELECT MAX(data_id) FROM datastore_meta WHERE game = ?", (pretty_game_id,)).fetchall()
+					max_entry_data_id = None
+					if len(max_entry) > 0:
+						max_entry_data_id = int(max_entry[0][0])
+
 					async def get_initial_data(client):
 						store = datastore.DataStoreClient(client)
 
@@ -1382,8 +1387,16 @@ async def main():
 
 					last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
 
+					if last_data_id == None or last_data_id < max_entry_data_id:
+						last_data_id = max_entry_data_id
+
 					if last_data_id is not None and late_data_id is not None:
 						print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+
+						# Get all data IDs to download (earlier data IDs)
+						download_entries = con.cursor().execute("SELECT datastore_meta.data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE datastore_meta.game = ? AND size > 0 AND data IS NULL", (pretty_game_id,)).fetchall()
+
+						print_and_log("%s done reading from DB" % game["name"].replace('\n', ' '), log_file)
 
 						num_metas_threads = 8
 						num_download_threads = 8
@@ -1392,6 +1405,12 @@ async def main():
 						metas_queue = Queue()
 						done_flag = Value('i', False)
 						num_metas_threads_done = Value('i', 0)
+
+						while True:
+							metas_queue.put([(int(entry[0]), int(entry[1])) for entry in download_entries[:100]])
+							download_entries = download_entries[100:]
+							if len(download_entries) == 0:
+								break
 
 						processes = []
 						for i in range(num_metas_threads):
