@@ -4258,5 +4258,21 @@
 			"present"
 		],
 		"title_id": "0004000000143300"
+	},
+	{
+		"app_id": "MLJEOnEgGcwd5uaP",
+		"tasks": [
+			"news"
+		],
+		"title_id": "00040000000F7C00"
+	},
+	{
+		"app_id": "1j4M12R6obSARq8y",
+		"tasks": [
+			"news",
+			"pnews",
+			"FGONLYT"
+		],
+		"title_id": "0004000000086500"
 	}
 ]
