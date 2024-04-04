@@ -51,7 +51,7 @@ USERNAME_HMAC_3DS = os.getenv("3DS_USERNAME_HMAC")
 REGION_3DS = int(os.getenv("3DS_REGION"))
 LANGUAGE_3DS = int(os.getenv("3DS_LANG"))
 
-LIST_PATH = "3ds_list_testing.txt"
+LIST_PATH = "3ds_list.txt"
 
 sys.stdin.reconfigure(encoding="utf-8")
 sys.stdout.reconfigure(encoding="utf-8")
@@ -76,15 +76,6 @@ def test_access_key(string_key, syn_packet):
     mac.update(syn_packet.syn_packet_options)
     mac.update(syn_packet.syn_packet_payload)
 
-    print(
-        len(
-            syn_packet.syn_packet_header[4:]
-            + struct.pack("<I", sum(string_key.encode()))
-            + syn_packet.syn_packet_options
-            + syn_packet.syn_packet_payload
-        )
-    )
-
     return mac.digest() == syn_packet.syn_packet_signature
 
 
@@ -92,8 +83,8 @@ def test_access_key(string_key, syn_packet):
 def range_test_access_key(
     i, syn_packet, host, port, title_id, num_tested_queue, found_key
 ):
-    for number_key_base in range(134217728):
-        number_key = number_key_base + i * 134217728
+    for number_key_base in range(268435456):
+        number_key = number_key_base + i * 268435456
 
         if number_key_base % 1000000 == 0:
             num_tested_queue.put(1000000)
@@ -362,14 +353,32 @@ async def main():
         # Checked games
         checked_games = set()
 
+        # Checked games AID
+        list_file = open(LIST_PATH, "r")
+        checked_games_aid = set(
+            [int(line.split(",")[0].strip(), 16) for line in list_file.readlines()]
+        )
+        list_file.close()
+
+        start_now = False
+
         for game in nex_games:
             print("Attempting " + hex(game["aid"])[2:].upper() + ", " + game["name"])
+
+            if game["aid"] == 1125899908239360:
+                start_now = True
+
+            if not start_now:
+                continue
 
             nex_version = (
                 game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
             )
 
             if (game["aid"], nex_version) in checked_games:
+                continue
+
+            if game["aid"] in checked_games_aid:
                 continue
 
             # Kinnay JSON is not up to date
