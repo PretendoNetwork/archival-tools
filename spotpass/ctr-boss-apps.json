@@ -591,7 +591,9 @@
 			"dlvexb",
 			"news",
 			"news_p",
-			"pnews"
+			"pnews",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086300"
 	},
@@ -1860,7 +1862,9 @@
 			"news",
 			"news_p",
 			"FGONLYT",
-			"pnews"
+			"pnews",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086400"
 	},
@@ -1961,7 +1965,9 @@
 			"news",
 			"news_p",
 			"dlvexb",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198E00"
 	},
@@ -2033,7 +2039,9 @@
 			"news_p",
 			"dlvexb",
 			"news",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198F00"
 	},
@@ -2441,7 +2449,9 @@
 			"news",
 			"news_p",
 			"pnews",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086200"
 	},
@@ -2583,7 +2593,9 @@
 		"tasks": [
 			"news",
 			"news_p",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198D00"
 	},
@@ -3869,7 +3881,10 @@
 		"app_id": "HvwgRXicx4vCBFTL",
 		"tasks": [
 			"news",
-			"news_p"
+			"news_p",
+			"dream",
+			"dream_p",
+			"FGONLYT"
 		],
 		"title_id": "0004000000199000"
 	},
@@ -4271,7 +4286,10 @@
 		"tasks": [
 			"news",
 			"pnews",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p",
+			"news_p"
 		],
 		"title_id": "0004000000086500"
 	}
