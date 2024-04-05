@@ -21,7 +21,7 @@ import struct
 import threading
 import time
 import multiprocessing
-from multiprocessing import Process, Lock, Queue, Array
+from multiprocessing import Process, Lock, Queue, Array, Value
 import json
 import base64
 import logging
@@ -53,6 +53,8 @@ LANGUAGE_3DS = int(os.getenv("3DS_LANG"))
 
 LIST_PATH = "3ds_list.txt"
 
+NUM_PROCESSES = 16
+
 sys.stdin.reconfigure(encoding="utf-8")
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -81,13 +83,18 @@ def test_access_key(string_key, syn_packet):
 
 # Test ALL keys
 def range_test_access_key(
-    i, syn_packet, host, port, title_id, num_tested_queue, found_key
+    i, syn_packet, host, port, title_id, num_tested_queue, found_key, done_flag
 ):
-    for number_key_base in range(268435456):
-        number_key = number_key_base + i * 268435456
+    interval = int(pow(2, 32) / NUM_PROCESSES)
+
+    for number_key_base in range(interval):
+        number_key = number_key_base + i * interval
 
         if number_key_base % 1000000 == 0:
             num_tested_queue.put(1000000)
+
+            if done_flag.value:
+                return
 
         string_key = hex(number_key)[2:].rjust(8, "0")
         if test_access_key(string_key, syn_packet):
@@ -108,23 +115,28 @@ def range_test_access_key(
 
             found_key.value = ("%s" % string_key).encode()
 
+            done_flag.value = True
+
             num_tested_queue.put(-1)
             break
 
     num_tested_queue.put(-1)
 
 
-def print_number_tested(num_tested_queue):
+def print_number_tested(num_tested_queue, done_flag):
     begin = time.perf_counter()
     num_tested = 0
     num_sentinels = 0
     while True:
         num_tested_add = num_tested_queue.get()
 
+        if done_flag.value:
+            return
+
         # Use sentinels
         if num_tested_add == -1:
             num_sentinels += 1
-            if num_sentinels == 8:
+            if num_sentinels == NUM_PROCESSES:
                 break
 
         num_tested += num_tested_add
@@ -306,7 +318,7 @@ async def main():
                                     found_key,
                                 ),
                             )
-                            for i in range(16)
+                            for i in range(NUM_PROCESSES)
                         ]
                         # Queue for printing number tested
                         processes.append(
@@ -337,6 +349,17 @@ async def main():
             "https://raw.githubusercontent.com/PretendoNetwork/archival-tools/master/idbe/title-versions.json"
         ).json()
 
+        # Add these games to that
+        for game in nex_ds3_games:
+            for title_id in game["title_ids"]:
+                ds3_games.append(
+                    {
+                        "aid": int(title_id, 16),
+                        "nex": [[int(x) for x in game["nex_version"].split(".")]],
+                        "name": game["name"],
+                    }
+                )
+
         # Get NEX games
         nex_games = []
         for game in ds3_games:
@@ -344,32 +367,27 @@ async def main():
                 # This server connects to NEX
                 nex_games.append(game)
 
-        # get possible access keys
-        possible_access_keys = set()
-        for game in nex_ds3_games:
-            if game["access_key"]:
-                possible_access_keys.add(game["access_key"])
-
         # Checked games
         checked_games = set()
 
         # Checked games AID
         list_file = open(LIST_PATH, "r")
+        list_file_lines = list_file.readlines()
         checked_games_aid = set(
-            [int(line.split(",")[0].strip(), 16) for line in list_file.readlines()]
+            [int(line.split(",")[0].strip(), 16) for line in list_file_lines]
+        )
+        possible_access_keys = set(
+            [line.split(",")[2].strip() for line in list_file_lines]
         )
         list_file.close()
 
-        start_now = False
+        # get possible access keys
+        for game in nex_ds3_games:
+            if game["access_key"]:
+                possible_access_keys.add(game["access_key"])
 
         for game in nex_games:
             print("Attempting " + hex(game["aid"])[2:].upper() + ", " + game["name"])
-
-            if game["aid"] == 1125899908239360:
-                start_now = True
-
-            if not start_now:
-                continue
 
             nex_version = (
                 game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
@@ -389,10 +407,6 @@ async def main():
 
             title_version = max(up_to_date_title_versions[key])
 
-            if game["av"] != title_version:
-                print("This one is not the max title version, skip")
-                continue
-
             nas = nasc.NASCClient()
             nas.set_title(game["aid"], title_version)
             nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
@@ -404,6 +418,7 @@ async def main():
             try:
                 nex_token = await nas.login(guess_game_server_id)
             except nasc.NASCError:
+                print("This game couldn't login")
                 continue
 
             # Fake key to get SYN packet
@@ -508,6 +523,7 @@ async def main():
 
                         found_key_lock = Lock()
                         found_key = Array("c", 10, lock=found_key_lock)
+                        done_flag = Value("i", False)
 
                         processes = [
                             Process(
@@ -520,14 +536,16 @@ async def main():
                                     game["aid"],
                                     num_tested_queue,
                                     found_key,
+                                    done_flag,
                                 ),
                             )
-                            for i in range(16)
+                            for i in range(NUM_PROCESSES)
                         ]
                         # Queue for printing number tested
                         processes.append(
                             Process(
-                                target=print_number_tested, args=(num_tested_queue,)
+                                target=print_number_tested,
+                                args=(num_tested_queue, done_flag),
                             )
                         )
                         for p in processes:
@@ -863,9 +881,7 @@ async def main():
                 [g["nex"][0] for g in filtered_games],
                 key=lambda x: tuple(-val for val in x),
             )
-            game_entry = [g for g in filtered_games if g["nex"][0] == max_version][
-                0
-            ]
+            game_entry = [g for g in filtered_games if g["nex"][0] == max_version][0]
 
             nex_version = (
                 game_entry["nex"][0][0] * 10000
@@ -873,19 +889,18 @@ async def main():
                 + game_entry["nex"][0][2]
             )
 
-
             new_list["games"].append(
-                    {
-                        "id": int(game[1], 16),
-                        "aid": int(game[0], 16),
-                        "av": title_version,
-                        "name": game_entry["name"],
-                        "addr": [game[3], int(game[4][1:-1])],
-                        "key": game[2],
-                        "nex": game_entry["nex"],
-                        "has_datastore": "nexds" in game_entry,
-                    }
-                )
+                {
+                    "id": int(game[1], 16),
+                    "aid": int(game[0], 16),
+                    "av": title_version,
+                    "name": game_entry["name"],
+                    "addr": [game[3], int(game[4][1:-1])],
+                    "key": game[2],
+                    "nex": game_entry["nex"],
+                    "has_datastore": "nexds" in game_entry,
+                }
+            )
 
         new_list["games"] = sorted(
             new_list["games"], key=lambda x: x["name"], reverse=False
