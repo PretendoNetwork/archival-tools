@@ -386,7 +386,7 @@ async def main():
             if game["access_key"]:
                 possible_access_keys.add(game["access_key"])
 
-        for game in nex_games:
+        for i, game in enumerate(nex_games):
             print("Attempting " + hex(game["aid"])[2:].upper() + ", " + game["name"])
 
             nex_version = (
@@ -417,8 +417,8 @@ async def main():
 
             try:
                 nex_token = await nas.login(guess_game_server_id)
-            except nasc.NASCError:
-                print("This game couldn't login")
+            except nasc.NASCError as e:
+                print("This game couldn't login", e)
                 continue
 
             # Fake key to get SYN packet
@@ -877,11 +877,25 @@ async def main():
             filtered_games = [
                 g for g in ds3_games if g["aid"] == int(game[0], 16) and g["nex"]
             ]
-            max_version = max(
-                [g["nex"][0] for g in filtered_games],
-                key=lambda x: tuple(-val for val in x),
-            )
-            game_entry = [g for g in filtered_games if g["nex"][0] == max_version][0]
+
+            if len([g["nex"][0] for g in filtered_games]) == 0:
+                for nex_game in nex_ds3_games:
+                    if game[0] in nex_game["title_ids"]:
+                        game_entry = {
+                            "name": nex_game["name"],
+                            "nex": [
+                                [int(x) for x in nex_game["nex_version"].split(".")]
+                            ],
+                        }
+                        break
+            else:
+                max_version = max(
+                    [g["nex"][0] for g in filtered_games],
+                    key=lambda x: tuple(-val for val in x),
+                )
+                game_entry = [g for g in filtered_games if g["nex"][0] == max_version][
+                    0
+                ]
 
             nex_version = (
                 game_entry["nex"][0][0] * 10000
