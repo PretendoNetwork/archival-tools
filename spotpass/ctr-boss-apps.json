@@ -273,7 +273,8 @@
 		"app_id": "AZcAJ2Stxa9P8h7a",
 		"tasks": [
 			"SMVS_EC",
-			"SMVS_SC"
+			"SMVS_SC",
+			"SMVS_PR"
 		],
 		"title_id": "0004000000072A00"
 	},
@@ -442,7 +443,8 @@
 	{
 		"app_id": "FNY6HPPbPj2jIErD",
 		"tasks": [
-			"Amb_eu"
+			"Amb_eu",
+			"Amb"
 		],
 		"title_id": "0004000000072400"
 	},
@@ -590,7 +592,9 @@
 			"dlvexb",
 			"news",
 			"news_p",
-			"pnews"
+			"pnews",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086300"
 	},
@@ -925,7 +929,8 @@
 	{
 		"app_id": "qAM6zmNEtT45AgUa",
 		"tasks": [
-			"Amb_jp"
+			"Amb_jp",
+			"Amb"
 		],
 		"title_id": "0004000000072300"
 	},
@@ -959,7 +964,8 @@
 	{
 		"app_id": "QfJQIU7IDmkaUuLt",
 		"tasks": [
-			"Amb_us"
+			"Amb_us",
+			"Amb"
 		],
 		"title_id": "0004000000072500"
 	},
@@ -1857,7 +1863,9 @@
 			"news",
 			"news_p",
 			"FGONLYT",
-			"pnews"
+			"pnews",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086400"
 	},
@@ -1958,7 +1966,9 @@
 			"news",
 			"news_p",
 			"dlvexb",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198E00"
 	},
@@ -2030,7 +2040,9 @@
 			"news_p",
 			"dlvexb",
 			"news",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198F00"
 	},
@@ -2438,7 +2450,9 @@
 			"news",
 			"news_p",
 			"pnews",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000086200"
 	},
@@ -2580,7 +2594,9 @@
 		"tasks": [
 			"news",
 			"news_p",
-			"FGONLYT"
+			"FGONLYT",
+			"dream",
+			"dream_p"
 		],
 		"title_id": "0004000000198D00"
 	},
@@ -3620,7 +3636,8 @@
 	{
 		"app_id": "YqwaX4YDDsNecFub",
 		"tasks": [
-			"miku_01"
+			"miku_01",
+			"miku"
 		],
 		"title_id": "unknown"
 	},
@@ -3865,7 +3882,10 @@
 		"app_id": "HvwgRXicx4vCBFTL",
 		"tasks": [
 			"news",
-			"news_p"
+			"news_p",
+			"dream",
+			"dream_p",
+			"FGONLYT"
 		],
 		"title_id": "0004000000199000"
 	},
@@ -4246,5 +4266,32 @@
 			"SNPJ"
 		],
 		"title_id": "00040000000A9A00"
+	},
+	{
+		"app_id": "Bo1owHMnKHjFK2Nk",
+		"tasks": [
+			"patch",
+			"present"
+		],
+		"title_id": "0004000000143300"
+	},
+	{
+		"app_id": "MLJEOnEgGcwd5uaP",
+		"tasks": [
+			"news"
+		],
+		"title_id": "00040000000F7C00"
+	},
+	{
+		"app_id": "1j4M12R6obSARq8y",
+		"tasks": [
+			"news",
+			"pnews",
+			"FGONLYT",
+			"dream",
+			"dream_p",
+			"news_p"
+		],
+		"title_id": "0004000000086500"
 	}
 ]
