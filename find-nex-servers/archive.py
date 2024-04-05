@@ -542,6 +542,171 @@ async def main():
 
             checked_games.add((game["aid"], nex_version))
 
+    if sys.argv[1] == "get_access_keys_3ds_no_cracking":
+        ds3_games = requests.get(
+            "https://raw.githubusercontent.com/DaniElectra/kinnay-title-list/3ds/data/3ds.json"
+        ).json()["games"]
+        nex_ds3_games = requests.get(
+            "https://raw.githubusercontent.com/PretendoNetwork/nex-viewer/8dec0a64276bd508734276f3443639b68b808366/src/titles.json"
+        ).json()
+        up_to_date_title_versions = requests.get(
+            "https://raw.githubusercontent.com/PretendoNetwork/archival-tools/master/idbe/title-versions.json"
+        ).json()
+
+        # Get NEX games
+        nex_games = []
+        for game in ds3_games:
+            if game["nex"]:
+                # This server connects to NEX
+                nex_games.append(game)
+
+        # get possible access keys
+        possible_access_keys = set()
+        for game in nex_ds3_games:
+            if game["access_key"]:
+                possible_access_keys.add(game["access_key"])
+
+        # Checked games
+        checked_games = set()
+
+        for game in nex_games:
+            print("Attempting " + hex(game["aid"])[2:].upper() + ", " + game["name"])
+
+            nex_version = (
+                game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
+            )
+
+            if (game["aid"], nex_version) in checked_games:
+                continue
+
+            # Kinnay JSON is not up to date
+            key = hex(game["aid"])[2:].upper().rjust(16, "0")
+
+            if not key in up_to_date_title_versions:
+                continue
+
+            title_version = max(up_to_date_title_versions[key])
+
+            if game["av"] != title_version:
+                print("This one is not the max title version, skip")
+                continue
+
+            nas = nasc.NASCClient()
+            nas.set_title(game["aid"], title_version)
+            nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
+            nas.set_locale(REGION_3DS, LANGUAGE_3DS)
+            nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
+
+            guess_game_server_id = game["aid"] & 0xFFFFFFFF
+
+            try:
+                nex_token = await nas.login(guess_game_server_id)
+            except nasc.NASCError:
+                continue
+
+            # Fake key to get SYN packet
+            s = settings.load("3ds")
+            s.configure("aaaaaaaa", nex_version, 1)
+            s["prudp.version"] = 1
+
+            # Firstly, obtain one SYN packet
+            syn_packet = SynPacket()
+            syn_packet_lock = threading.Lock()
+            syn_packet_lock.acquire()
+
+            if nex_token.host == "0.0.0.0" and nex_token.port == 0:
+                print("This game doesn't actually support nex")
+                continue
+
+            # WiiU is UDP
+            async with udp.connect(nex_token.host, nex_token.port) as socket:
+                async with util.create_task_group() as group:
+                    transport = prudp.PRUDPClientTransport(s, socket, group)
+
+                    async def process_incoming():
+                        while True:
+                            data = await transport.socket.recv()
+
+                            with util.catch(Exception):
+                                packets = transport.packet_encoder.decode(data)
+                                for packet in packets:
+                                    if packet.type == prudp.TYPE_SYN:
+                                        syn_packet.packet = packet
+                                        syn_packet.syn_packet_options = (
+                                            transport.packet_encoder.encode_options(
+                                                packet
+                                            )
+                                        )
+                                        syn_packet.syn_packet_header = (
+                                            transport.packet_encoder.encode_header(
+                                                packet,
+                                                len(syn_packet.syn_packet_options),
+                                            )
+                                        )
+                                        syn_packet.syn_packet_payload = packet.payload
+                                        syn_packet.syn_packet_signature = (
+                                            packet.signature
+                                        )
+                                    else:
+                                        await transport.process_packet(packet)
+
+                    transport.group.start_soon(process_incoming)
+
+                    client = prudp.PRUDPClient(s, transport, s["prudp.version"])
+                    with transport.ports.bind(client, type=10) as local_port:
+                        client.bind(socket.local_address(), local_port, 10)
+                        client.connect(socket.remote_address(), 1, 10)
+
+                        async with client:
+                            client.scheduler = scheduler.Scheduler(group)
+                            client.scheduler.start()
+
+                            client.resend_timeout = 0.05
+                            client.resend_limit = 10
+
+                            try:
+                                await client.send_syn()
+                                await client.handshake_event.wait()
+
+                                if client.state == prudp.STATE_CONNECTED:
+                                    None
+
+                                syn_packet_lock.release()
+                            except RuntimeError:
+                                None
+
+                syn_packet_lock.acquire()
+                syn_packet_lock.release()
+
+                done = False
+                if syn_packet.syn_packet_header:
+                    # First test known keys
+                    for string_key in possible_access_keys:
+                        if test_access_key(string_key, syn_packet):
+                            entry = "%s, %s, %s, %s, (%d)" % (
+                                hex(game["aid"])[2:].upper().rjust(16, "0"),
+                                hex(game["aid"])[-8:].upper(),
+                                string_key,
+                                nex_token.host,
+                                nex_token.port,
+                            )
+
+                            list_file = open(LIST_PATH, "a")
+                            list_file.write("%s\n" % entry)
+                            list_file.flush()
+                            list_file.close()
+
+                            print(entry)
+                            done = True
+                            break
+
+                    if not done:
+                        print("NO CRACKING!")
+                else:
+                    print("No SYN packet found")
+
+            checked_games.add((game["aid"], nex_version))
+
     if sys.argv[1] == "complete_list":
         list_file = open(LIST_PATH, "r")
         list_lines = list_file.readlines()
@@ -654,6 +819,79 @@ async def main():
         )
 
         nex_json = open("nexwiiu.json", "w")
+        nex_json.write(json.dumps(new_list, indent=4))
+        nex_json.close()
+
+    if sys.argv[1] == "complete_list_3ds":
+        list_file = open(LIST_PATH, "r")
+        list_lines = list_file.readlines()
+        list_file.close()
+
+        ds3_games = requests.get(
+            "https://raw.githubusercontent.com/DaniElectra/kinnay-title-list/3ds/data/3ds.json"
+        ).json()["games"]
+        nex_ds3_games = requests.get(
+            "https://raw.githubusercontent.com/PretendoNetwork/nex-viewer/8dec0a64276bd508734276f3443639b68b808366/src/titles.json"
+        ).json()
+        up_to_date_title_versions = requests.get(
+            "https://raw.githubusercontent.com/PretendoNetwork/archival-tools/master/idbe/title-versions.json"
+        ).json()
+
+        # Remove duplicates
+        entries_raw = [
+            [chunk.strip() for chunk in line.split(",")] for line in list_lines
+        ]
+        entries = []
+        games_seen = set([])
+        for entry in entries_raw:
+            if not entry[0] in games_seen:
+                games_seen.add(entry[0])
+                entries.append(entry)
+
+        new_list = {}
+
+        new_list["games"] = []
+
+        for game in entries:
+            title_version = max(up_to_date_title_versions[game[0]])
+
+            # Have to search NEX version
+            filtered_games = [
+                g for g in ds3_games if g["aid"] == int(game[0], 16) and g["nex"]
+            ]
+            max_version = max(
+                [g["nex"][0] for g in filtered_games],
+                key=lambda x: tuple(-val for val in x),
+            )
+            game_entry = [g for g in filtered_games if g["nex"][0] == max_version][
+                0
+            ]
+
+            nex_version = (
+                game_entry["nex"][0][0] * 10000
+                + game_entry["nex"][0][1] * 100
+                + game_entry["nex"][0][2]
+            )
+
+
+            new_list["games"].append(
+                    {
+                        "id": int(game[1], 16),
+                        "aid": int(game[0], 16),
+                        "av": title_version,
+                        "name": game_entry["name"],
+                        "addr": [game[3], int(game[4][1:-1])],
+                        "key": game[2],
+                        "nex": game_entry["nex"],
+                        "has_datastore": "nexds" in game_entry,
+                    }
+                )
+
+        new_list["games"] = sorted(
+            new_list["games"], key=lambda x: x["name"], reverse=False
+        )
+
+        nex_json = open("nex3ds.json", "w")
         nex_json.write(json.dumps(new_list, indent=4))
         nex_json.close()
 
