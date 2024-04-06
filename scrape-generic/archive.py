@@ -1992,6 +1992,8 @@ async def main():
 
             s = settings.load("3ds")
             s.configure(game["key"], nex_version)
+            s["prudp.version"] = 1
+
             async with backend.connect(s, nex_token.host, nex_token.port) as be:
                 async with be.login(str(nex_token.pid), nex_token.password) as client:
                     ranking_client = ranking.RankingClient(client)
