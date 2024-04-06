@@ -4299,5 +4299,19 @@
 			"news_p"
 		],
 		"title_id": "0004000000086500"
+	},
+	{
+		"app_id": "3l15Yk6cOm0AWsSP",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "BUvZ7pfEEhcLt4B2",
+		"tasks": [
+			"news"
+		],
+		"title_id": "unknown"
 	}
 ]
