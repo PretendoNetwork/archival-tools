@@ -871,7 +871,10 @@ async def main():
         new_list["games"] = []
 
         for game in entries:
-            title_version = max(up_to_date_title_versions[game[0]])
+            if len(game) == 6:
+                title_version = int(game[5])
+            else:
+                title_version = max(up_to_date_title_versions[game[0]])
 
             # Have to search NEX version
             filtered_games = [

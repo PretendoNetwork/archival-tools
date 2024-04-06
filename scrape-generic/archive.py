@@ -59,7 +59,7 @@ PASSWORD_3DS = os.getenv("3DS_PASSWORD")
 REGION_3DS = int(os.getenv("3DS_REGION"))
 LANGUAGE_3DS = int(os.getenv("3DS_LANG"))
 
-ORDINAL_RANKING = 1 # 1234 rather than 1224
+ORDINAL_RANKING = 1  # 1234 rather than 1224
 
 RANKING_DB = "3ds_ranking_first_batch.db"
 RANKING_LOG = "3ds_ranking_first_batch_log.txt"
@@ -1844,11 +1844,12 @@ async def main():
                     p.join()
 
         log_file.close()
-    
+
     if sys.argv[1] == "create_3ds":
         con = sqlite3.connect(RANKING_DB, timeout=3600)
         cur = con.cursor()
-        cur.execute("""
+        cur.execute(
+            """
     CREATE TABLE IF NOT EXISTS ranking (
         game TEXT NOT NULL,
         id TEXT NOT NULL,
@@ -1859,8 +1860,10 @@ async def main():
         param TEXT NOT NULL,
         data BLOB,
         update_time INTEGER
-    )""")
-        cur.execute("""
+    )"""
+        )
+        cur.execute(
+            """
     CREATE TABLE IF NOT EXISTS ranking_group (
         game TEXT NOT NULL,
         pid TEXT NOT NULL,
@@ -1868,16 +1871,20 @@ async def main():
         category INTEGER NOT NULL,
         ranking_group INTEGER NOT NULL,
         ranking_index INTEGER NOT NULL
-    )""")
-        cur.execute("""
+    )"""
+        )
+        cur.execute(
+            """
     CREATE TABLE IF NOT EXISTS ranking_param_data (
         game TEXT NOT NULL,
         pid TEXT NOT NULL,
         rank INTEGER NOT NULL,
         category INTEGER NOT NULL,
         data BLOB
-    )""")
-        cur.execute("""
+    )"""
+        )
+        cur.execute(
+            """
     CREATE TABLE IF NOT EXISTS ranking_meta (
         game TEXT NOT NULL,
         pid TEXT NOT NULL,
@@ -1893,21 +1900,30 @@ async def main():
         update_time INTEGER
         -- TODO add tags
         -- TODO add ratings
-    )""")
-        cur.execute("""CREATE INDEX IF NOT EXISTS idx_ranking_game_category ON ranking (game, category)""")
+    )"""
+        )
+        cur.execute(
+            """CREATE INDEX IF NOT EXISTS idx_ranking_game_category ON ranking (game, category)"""
+        )
         cur.execute("""CREATE INDEX IF NOT EXISTS idx_ranking_rank ON ranking (rank)""")
 
-        f = open('../../find-nex-servers/nex3ds.json')
+        f = open("../../find-nex-servers/nex3ds.json")
         nex_3ds_games = json.load(f)["games"]
         f.close()
 
         log_file = open(RANKING_LOG, "a", encoding="utf-8")
 
         for i, game in enumerate(nex_3ds_games):
-            print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i, len(nex_3ds_games)), log_file)
+            print_and_log(
+                "%s (%d out of %d)"
+                % (game["name"].replace("\n", " "), i, len(nex_3ds_games)),
+                log_file,
+            )
 
-            pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
-            title_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+            pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+            title_version = (
+                game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
+            )
 
             nas = nasc.NASCClient()
             nas.set_title(game["aid"], title_version)
@@ -1923,6 +1939,7 @@ async def main():
                     self.port = None
                     self.pid = None
                     self.password = None
+
             nex_token = NexToken3DS()
             nex_token.host = response_token.host
             nex_token.port = response_token.port
@@ -1936,7 +1953,9 @@ async def main():
             auth_info.token_type = 0
             auth_info.server_version = 4004
 
-            nex_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+            nex_version = (
+                game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
+            )
 
             # Check if nexds is loaded
             has_datastore = game["has_datastore"]
@@ -1977,10 +1996,11 @@ async def main():
                             order_param.count = 1
 
                             _ = await ranking_client.get_ranking(
-                                ranking.RankingMode.GLOBAL, #Get the global leaderboard
-                                category, #Category, this is 3-A (Magrove Cove)
+                                ranking.RankingMode.GLOBAL,  # Get the global leaderboard
+                                category,  # Category, this is 3-A (Magrove Cove)
                                 order_param,
-                                0, 0
+                                0,
+                                0,
                             )
 
                             # No exception, this is a valid category
@@ -1994,17 +2014,105 @@ async def main():
                         if num_tested % 10 == 0:
                             print_and_log("Tested %d categories" % num_tested, log_file)
 
-            if game['aid'] == 1407375153317888:
-                valid_categories.extend([0x5DD7E214,0x13759B11,0xE3123FD0,0x912DF205,0x9E391E6D,0x5B41DCD6,0x403CF15E,0x9A479BC2,0x5A8C9203,0x27E351EC,0xB2F30301,0xC3701F2C,0xC44FE9B2,0x169BCB49,0x893EB726,0x1D46C990,0x428E1F5B,0x421F85DE,0x980638CD,0x9A9E4578,0x529F713C,0x229D4B34,0xDEB25266,0x9F206066,0xAD56AF59,0xDADEB14A,0xA1137287,0xC5BE4809,0xFE7E5473,0x7FE2A8DC,0x80469829,0xD26D5AAA,0xDC9C0EED,0x997FB4A2,0x12C3F595,0xC484D676,0xA002D295,0xECC83B64,0x8A33A8A9,0xF0E2800E,0x431B4770,0x6DBE41C2,0x5CC03A6F,0x13AE214C,0x773204C6,0xC4262903,0xFE5FD35F,0xE4CB3C45,0xADBE9415,0xC0D23671,0xCBDC7006,0x4EEB52FF,0xF03B8ADE,0x6A46C6B5,0x3603775F,0x954ABE27,0xCBB12D65,0x4BEAF6F6,0x37082275,0xD94FD2F6,0xB1C43F16,0xDE28ED26,0xBC0CD164])
+            if game["aid"] == 1407375153317888:
+                valid_categories.extend(
+                    [
+                        0x5DD7E214,
+                        0x13759B11,
+                        0xE3123FD0,
+                        0x912DF205,
+                        0x9E391E6D,
+                        0x5B41DCD6,
+                        0x403CF15E,
+                        0x9A479BC2,
+                        0x5A8C9203,
+                        0x27E351EC,
+                        0xB2F30301,
+                        0xC3701F2C,
+                        0xC44FE9B2,
+                        0x169BCB49,
+                        0x893EB726,
+                        0x1D46C990,
+                        0x428E1F5B,
+                        0x421F85DE,
+                        0x980638CD,
+                        0x9A9E4578,
+                        0x529F713C,
+                        0x229D4B34,
+                        0xDEB25266,
+                        0x9F206066,
+                        0xAD56AF59,
+                        0xDADEB14A,
+                        0xA1137287,
+                        0xC5BE4809,
+                        0xFE7E5473,
+                        0x7FE2A8DC,
+                        0x80469829,
+                        0xD26D5AAA,
+                        0xDC9C0EED,
+                        0x997FB4A2,
+                        0x12C3F595,
+                        0xC484D676,
+                        0xA002D295,
+                        0xECC83B64,
+                        0x8A33A8A9,
+                        0xF0E2800E,
+                        0x431B4770,
+                        0x6DBE41C2,
+                        0x5CC03A6F,
+                        0x13AE214C,
+                        0x773204C6,
+                        0xC4262903,
+                        0xFE5FD35F,
+                        0xE4CB3C45,
+                        0xADBE9415,
+                        0xC0D23671,
+                        0xCBDC7006,
+                        0x4EEB52FF,
+                        0xF03B8ADE,
+                        0x6A46C6B5,
+                        0x3603775F,
+                        0x954ABE27,
+                        0xCBB12D65,
+                        0x4BEAF6F6,
+                        0x37082275,
+                        0xD94FD2F6,
+                        0xB1C43F16,
+                        0xDE28ED26,
+                        0xBC0CD164,
+                    ]
+                )
 
             subgroup_size = 32
-            subgroup_size_groups = [valid_categories[i:i+subgroup_size] for i in range(0, len(valid_categories), subgroup_size)]
+            subgroup_size_groups = [
+                valid_categories[i : i + subgroup_size]
+                for i in range(0, len(valid_categories), subgroup_size)
+            ]
 
             log_lock = Lock()
 
             for group in subgroup_size_groups:
                 # Run categories in parallel
-                processes = [Process(target=run_category_scrape, args=(category, log_lock, s, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, game, pretty_game_id, has_datastore, i, nex_3ds_games)) for category in group]
+                processes = [
+                    Process(
+                        target=run_category_scrape,
+                        args=(
+                            category,
+                            log_lock,
+                            s,
+                            nex_token.host,
+                            nex_token.port,
+                            nex_token.pid,
+                            nex_token.password,
+                            game,
+                            pretty_game_id,
+                            has_datastore,
+                            i,
+                            nex_3ds_games,
+                        ),
+                    )
+                    for category in group
+                ]
                 for p in processes:
                     p.start()
                 for p in processes:
@@ -2184,6 +2292,8 @@ async def main():
                         and max_entry[0][0] is not None
                     ):
                         max_entry_data_id = int(max_entry[0][0])
+                    else:
+                        max_entry_data_id = 0
 
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
@@ -2707,8 +2817,8 @@ async def main():
     )"""
         )
 
-        f = open('../../find-nex-servers/nex3ds.json')
-        nex_3ds_games = json.load(f)["games"][int(sys.argv[3]):]
+        f = open("../../find-nex-servers/nex3ds.json")
+        nex_3ds_games = json.load(f)["games"][int(sys.argv[3]) :]
         f.close()
 
         log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
@@ -2728,10 +2838,22 @@ async def main():
             has_datastore = game["has_datastore"]
 
             if has_datastore:
-                print_and_log("%s (%d out of %d)" % (game["name"].replace('\n', ' '), i + int(sys.argv[3]), len(nex_3ds_games)), log_file)
+                print_and_log(
+                    "%s (%d out of %d)"
+                    % (
+                        game["name"].replace("\n", " "),
+                        i + int(sys.argv[3]),
+                        len(nex_3ds_games),
+                    ),
+                    log_file,
+                )
 
-                pretty_game_id = hex(game['aid'])[2:].upper().rjust(16, "0")
-                title_version = game['nex'][0][0] * 10000 + game['nex'][0][1] * 100 + game['nex'][0][2]
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+                title_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
 
                 nas = nasc.NASCClient()
                 nas.set_title(game["aid"], title_version)
@@ -2747,6 +2869,7 @@ async def main():
                         self.port = None
                         self.pid = None
                         self.password = None
+
                 nex_token = NexToken3DS()
                 nex_token.host = nex_token_old.host
                 nex_token.port = nex_token_old.port
@@ -2785,10 +2908,38 @@ async def main():
 
                 s = settings.load("3ds")
                 s.configure(game["key"], nex_version)
-                if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password):
-                    print_and_log("%s DOES support search" % game["name"].replace('\n', ' '), log_file)
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    print_and_log(
+                        "%s DOES support search" % game["name"].replace("\n", " "),
+                        log_file,
+                    )
 
                     max_queryable = 100
+
+                    max_entry = (
+                        con.cursor()
+                        .execute(
+                            "SELECT MAX(data_id) FROM datastore_meta WHERE game = ?",
+                            (pretty_game_id,),
+                        )
+                        .fetchall()
+                    )
+                    max_entry_data_id = None
+                    if (
+                        max_entry is not None
+                        and len(max_entry) > 0
+                        and max_entry[0][0] is not None
+                    ):
+                        max_entry_data_id = int(max_entry[0][0])
+                    else:
+                        max_entry_data_id = 0
 
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
@@ -2838,8 +2989,6 @@ async def main():
                             else:
                                 # Otherwise timestamp is less than 2012, give up
                                 break
-                            
-                        return (last_data_id, late_time, late_data_id)
 
                         return (last_data_id, late_time, late_data_id)
 
@@ -2852,62 +3001,98 @@ async def main():
                         nex_token.password,
                     )
 
-                    num_metas_threads = 8
-                    num_download_threads = 8
+                    if last_data_id is not None and late_data_id is not None:
+                        if last_data_id == None or last_data_id < max_entry_data_id:
+                            last_data_id = max_entry_data_id
 
-                    log_lock = Lock()
-                    metas_queue = Queue()
-                    done_flag = Value("i", False)
-                    num_metas_threads_done = Value("i", 0)
-
-                    processes = []
-                    for i in range(num_metas_threads):
-                        processes.append(
-                            Process(
-                                target=get_datastore_metas,
-                                args=(
-                                    log_lock,
-                                    game["key"],
-                                    nex_version,
-                                    nex_token.host,
-                                    nex_token.port,
-                                    nex_token.pid,
-                                    nex_token.password,
-                                    pretty_game_id,
-                                    metas_queue,
-                                    done_flag,
-                                    i,
-                                    num_metas_threads,
-                                    max_queryable,
-                                    last_data_id,
-                                    late_data_id,
-                                    num_metas_threads_done,
-                                ),
-                            )
-                        )
-                    for i in range(num_download_threads):
-                        processes.append(
-                            Process(
-                                target=get_datastore_data,
-                                args=(
-                                    log_lock,
-                                    game["key"],
-                                    nex_version,
-                                    nex_token.host,
-                                    nex_token.port,
-                                    nex_token.pid,
-                                    nex_token.password,
-                                    pretty_game_id,
-                                    metas_queue,
-                                    done_flag,
-                                ),
-                            )
+                        print_and_log(
+                            "First data id %d Late time %s Late data ID %d"
+                            % (last_data_id, str(late_time), late_data_id),
+                            log_file,
                         )
 
-                    for p in processes:
-                        p.start()
-                    for p in processes:
-                        p.join()
+                        # Get all data IDs to download (earlier data IDs)
+                        download_entries = (
+                            con.cursor()
+                            .execute(
+                                "SELECT datastore_meta.data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE datastore_meta.game = ? AND size > 0 AND data IS NULL",
+                                (pretty_game_id,),
+                            )
+                            .fetchall()
+                        )
+
+                        print_and_log(
+                            "%s done reading from DB" % game["name"].replace("\n", " "),
+                            log_file,
+                        )
+
+                        num_metas_threads = 8
+                        num_download_threads = 8
+
+                        log_lock = Lock()
+                        metas_queue = Queue()
+                        done_flag = Value("i", False)
+                        num_metas_threads_done = Value("i", 0)
+
+                        while True:
+                            metas_queue.put(
+                                [
+                                    (int(entry[0]), int(entry[1]))
+                                    for entry in download_entries[:100]
+                                ]
+                            )
+                            download_entries = download_entries[100:]
+                            if len(download_entries) == 0:
+                                break
+
+                        processes = []
+                        for i in range(num_metas_threads):
+                            processes.append(
+                                Process(
+                                    target=get_datastore_metas,
+                                    args=(
+                                        log_lock,
+                                        game["key"],
+                                        nex_version,
+                                        nex_token.host,
+                                        nex_token.port,
+                                        nex_token.pid,
+                                        nex_token.password,
+                                        pretty_game_id,
+                                        metas_queue,
+                                        done_flag,
+                                        i,
+                                        num_metas_threads,
+                                        max_queryable,
+                                        last_data_id,
+                                        late_data_id,
+                                        num_metas_threads_done,
+                                    ),
+                                )
+                            )
+                        for i in range(num_download_threads):
+                            processes.append(
+                                Process(
+                                    target=get_datastore_data,
+                                    args=(
+                                        log_lock,
+                                        game["key"],
+                                        nex_version,
+                                        nex_token.host,
+                                        nex_token.port,
+                                        nex_token.pid,
+                                        nex_token.password,
+                                        pretty_game_id,
+                                        metas_queue,
+                                        done_flag,
+                                    ),
+                                )
+                            )
+
+                        for p in processes:
+                            p.start()
+                        for p in processes:
+                            p.join()
 
                 else:
                     print_and_log(
@@ -3149,7 +3334,8 @@ async def main():
 
     if sys.argv[1] == "datastore_use_db_specific":
         con = sqlite3.connect(DATASTORE_DB, timeout=3600)
-        con.execute("""
+        con.execute(
+            """
     CREATE TABLE IF NOT EXISTS datastore_meta (
         game TEXT,
         data_id INTEGER,
@@ -3169,14 +3355,18 @@ async def main():
         flag INTEGER,
         referred_time INTEGER,
         expire_time INTEGER
-    )""")
-        con.execute("""
+    )"""
+        )
+        con.execute(
+            """
     CREATE TABLE IF NOT EXISTS datastore_meta_tag (
         game TEXT NOT NULL,
         data_id INTEGER,
         tag TEXT
-    )""")
-        con.execute("""
+    )"""
+        )
+        con.execute(
+            """
     CREATE TABLE IF NOT EXISTS datastore_meta_rating (
         game TEXT,
         data_id INTEGER,
@@ -3184,22 +3374,27 @@ async def main():
         total_value INTEGER,
         count INTEGER,
         initial_value INTEGER
-    )""")
-        con.execute("""
+    )"""
+        )
+        con.execute(
+            """
     CREATE TABLE IF NOT EXISTS datastore_data (
         game TEXT,
         data_id INTEGER,
         error TEXT,
         url TEXT,
         data BLOB
-    )""")
-        con.execute("""
+    )"""
+        )
+        con.execute(
+            """
     CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
         game TEXT,
         data_id INTEGER,
         is_delete INTEGER,
         recipient TEXT
-    )""")
+    )"""
+        )
         con.commit()
 
         log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
@@ -3228,7 +3423,14 @@ async def main():
 
         s = settings.default()
         s.configure(game_key, nex_version)
-        if await retry_if_rmc_error(does_search_work, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password):
+        if await retry_if_rmc_error(
+            does_search_work,
+            s,
+            nex_token.host,
+            nex_token.port,
+            str(nex_token.pid),
+            nex_token.password,
+        ):
             print_and_log("This game DOES support search", log_file)
 
             max_queryable = 100
@@ -3280,35 +3482,71 @@ async def main():
                     else:
                         # Otherwise timestamp is less than 2012, give up
                         break
-                    
+
                 return (last_data_id, late_time, late_data_id)
 
-            last_data_id, late_time, late_data_id = await retry_if_rmc_error(get_initial_data, s, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password)
+            last_data_id, late_time, late_data_id = await retry_if_rmc_error(
+                get_initial_data,
+                s,
+                nex_token.host,
+                nex_token.port,
+                str(nex_token.pid),
+                nex_token.password,
+            )
 
             if last_data_id is not None and late_data_id is not None:
-                print_and_log("First data id %d Late time %s Late data ID %d" % (last_data_id, str(late_time), late_data_id), log_file)
+                print_and_log(
+                    "First data id %d Late time %s Late data ID %d"
+                    % (last_data_id, str(late_time), late_data_id),
+                    log_file,
+                )
 
                 num_download_threads = 16
 
                 log_lock = Lock()
                 metas_queue = Queue()
-                done_flag = Value('i', True)
-                num_metas_threads_done = Value('i', 0)
+                done_flag = Value("i", True)
+                num_metas_threads_done = Value("i", 0)
 
                 # Get all data IDs to download
-                entries = con.cursor().execute("SELECT datastore_meta.data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE datastore_meta.game = ? AND size > 0 AND data IS NULL", (pretty_game_id,)).fetchall()
+                entries = (
+                    con.cursor()
+                    .execute(
+                        "SELECT datastore_meta.data_id, owner_id FROM datastore_meta LEFT JOIN datastore_data ON datastore_meta.data_id = datastore_data.data_id WHERE datastore_meta.game = ? AND size > 0 AND data IS NULL",
+                        (pretty_game_id,),
+                    )
+                    .fetchall()
+                )
 
                 print_and_log("Done reading from DB", log_file)
 
                 processes = []
                 for i in range(num_download_threads):
-                    processes.append(Process(target=get_datastore_data, args=(log_lock, game_key, nex_version, nex_token.host, nex_token.port, nex_token.pid, nex_token.password, pretty_game_id, metas_queue, done_flag)))
+                    processes.append(
+                        Process(
+                            target=get_datastore_data,
+                            args=(
+                                log_lock,
+                                game_key,
+                                nex_version,
+                                nex_token.host,
+                                nex_token.port,
+                                nex_token.pid,
+                                nex_token.password,
+                                pretty_game_id,
+                                metas_queue,
+                                done_flag,
+                            ),
+                        )
+                    )
 
                 for p in processes:
                     p.start()
 
                 while True:
-                    metas_queue.put([(int(entry[0]), int(entry[1])) for entry in entries[:100]])
+                    metas_queue.put(
+                        [(int(entry[0]), int(entry[1])) for entry in entries[:100]]
+                    )
                     entries = entries[100:]
 
                     if len(entries) == 0:
@@ -3318,7 +3556,9 @@ async def main():
                     p.join()
 
         else:
-            print_and_log("%s does not support search" % game["name"].replace('\n', ' '), log_file)
+            print_and_log(
+                "%s does not support search" % game["name"].replace("\n", " "), log_file
+            )
 
         log_file.close()
 
