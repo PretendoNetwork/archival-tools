@@ -69,11 +69,11 @@ if "datastore" in sys.argv[1]:
     DATASTORE_LOG = "%s_log.txt" % sys.argv[2]
 
 
-async def retry_if_rmc_error(func, s, host, port, pid, password):
+async def retry_if_rmc_error(func, s, host, port, pid, password, auth_info=None):
     try:
         async with backend.connect(s, host, port) as be:
             try:
-                async with be.login(pid, password) as client:
+                async with be.login(pid, password, auth_info=auth_info) as client:
                     return await func(client)
             except RuntimeError:
                 print('"PRUDP connection failed" encountered')
@@ -191,6 +191,7 @@ def run_category_scrape(
     has_datastore,
     i,
     nex_wiiu_games,
+    auth_info=None,
 ):
     async def main():
         con = sqlite3.connect(RANKING_DB, timeout=3600)
@@ -284,7 +285,13 @@ def run_category_scrape(
                         return rankings
 
                     rankings = await retry_if_rmc_error(
-                        get_rankings, s, host, port, str(pid), password
+                        get_rankings,
+                        s,
+                        host,
+                        port,
+                        str(pid),
+                        password,
+                        auth_info=auth_info,
                     )
 
                     await add_rankings(
@@ -299,6 +306,7 @@ def run_category_scrape(
                         pretty_game_id,
                         has_datastore,
                         con,
+                        auth_info=auth_info,
                     )
 
                     last_rank_seen = rankings.data[-1].rank
@@ -388,7 +396,13 @@ def run_category_scrape(
                         return rankings
 
                     rankings = await retry_if_rmc_error(
-                        get_rankings, s, host, port, str(pid), password
+                        get_rankings,
+                        s,
+                        host,
+                        port,
+                        str(pid),
+                        password,
+                        auth_info=auth_info,
                     )
 
                     rankings.data = list(
@@ -411,6 +425,7 @@ def run_category_scrape(
                         pretty_game_id,
                         has_datastore,
                         con,
+                        auth_info=auth_info,
                     )
 
                     last_rank_seen = rankings.data[-1].rank
@@ -506,7 +521,13 @@ def run_category_scrape(
                         return rankings
 
                     rankings = await retry_if_rmc_error(
-                        get_rankings, s, host, port, str(pid), password
+                        get_rankings,
+                        s,
+                        host,
+                        port,
+                        str(pid),
+                        password,
+                        auth_info=auth_info,
                     )
 
                     rankings.data = list(
@@ -606,6 +627,7 @@ def get_datastore_data(
     pretty_game_id,
     metas_queue,
     done_flag,
+    auth_info=None,
 ):
     async def run():
         s = settings.default()
@@ -656,7 +678,13 @@ def get_datastore_data(
                                 return (req_info.url, req_info, headers)
 
                             url, req_info, headers = await retry_if_rmc_error(
-                                get_req_info, s, host, port, str(pid), password
+                                get_req_info,
+                                s,
+                                host,
+                                port,
+                                str(pid),
+                                password,
+                                auth_info=auth_info,
                             )
 
                             async with httpx.AsyncClient() as client:
@@ -730,6 +758,7 @@ def get_datastore_metas(
     last_data_id,
     late_data_id,
     num_metas_threads_done,
+    auth_info=None,
 ):
     async def run():
         try:
@@ -762,7 +791,7 @@ def get_datastore_metas(
                     return res
 
                 res = await retry_if_rmc_error(
-                    get_res, s, host, port, str(pid), password
+                    get_res, s, host, port, str(pid), password, auth_info=auth_info
                 )
 
                 # Remove invalid
@@ -922,6 +951,7 @@ async def add_rankings(
     pretty_game_id,
     has_datastore,
     con,
+    auth_info=None,
 ):
     # Since this is part of the datastore scrape instead simply ignore
     if has_datastore and False:
@@ -1914,9 +1944,6 @@ async def main():
         log_file = open(RANKING_LOG, "a", encoding="utf-8")
 
         for i, game in enumerate(nex_3ds_games):
-            if game["aid"] == 1125899907040768:
-                continue
-            
             print_and_log(
                 "%s (%d out of %d)"
                 % (game["name"].replace("\n", " "), i, len(nex_3ds_games)),
@@ -1956,12 +1983,12 @@ async def main():
             nex_token.pid = int(PID_3DS)
             nex_token.password = PASSWORD_3DS
 
-            # TODO add to all requests
-            auth_info = authentication.AuthenticationInfo()
-            auth_info.token = response_token.token
-            auth_info.ngs_version = 4
-            auth_info.token_type = 0
-            auth_info.server_version = 4004
+            if game["aid"] == 1125899907040768:
+                auth_info = authentication.AuthenticationInfo()
+                auth_info.token = nex_token_old.token
+                auth_info.ngs_version = 2
+            else:
+                auth_info = None
 
             nex_version = (
                 game["nex"][0][0] * 10000 + game["nex"][0][1] * 100 + game["nex"][0][2]
@@ -1998,7 +2025,9 @@ async def main():
             s["prudp.version"] = 1
 
             async with backend.connect(s, nex_token.host, nex_token.port) as be:
-                async with be.login(str(nex_token.pid), nex_token.password) as client:
+                async with be.login(
+                    str(nex_token.pid), nex_token.password, auth_info=auth_info
+                ) as client:
                     ranking_client = ranking.RankingClient(client)
 
                     for category in range(1000):
@@ -2121,6 +2150,7 @@ async def main():
                             has_datastore,
                             i,
                             nex_3ds_games,
+                            auth_info,
                         ),
                     )
                     for category in group
@@ -2186,6 +2216,7 @@ async def main():
                     str(nex_token.pid),
                     nex_token.password,
                 ):
+
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
 
@@ -2214,9 +2245,19 @@ async def main():
                             last_data_id = res.result[0].data_id
                             last_data_id_create_time = res.result[0].create_time
 
-                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+                        return (
+                            first_data_id,
+                            first_data_id_create_time,
+                            last_data_id,
+                            last_data_id_create_time,
+                        )
 
-                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                    (
+                        first_data_id,
+                        first_data_id_create_time,
+                        last_data_id,
+                        last_data_id_create_time,
+                    ) = await retry_if_rmc_error(
                         get_initial_data,
                         s,
                         nex_token.host,
@@ -2225,9 +2266,21 @@ async def main():
                         nex_token.password,
                     )
 
-                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                    if (
+                        first_data_id is not None
+                        and first_data_id_create_time is not None
+                        and last_data_id is not None
+                        and last_data_id_create_time is not None
+                    ):
                         print_and_log(
-                            "%s,%d,%d,%d,%d" % (pretty_game_id, first_data_id, first_data_id_create_time.timestamp(), last_data_id, last_data_id_create_time.timestamp()),
+                            "%s,%d,%d,%d,%d"
+                            % (
+                                pretty_game_id,
+                                first_data_id,
+                                first_data_id_create_time.timestamp(),
+                                last_data_id,
+                                last_data_id_create_time.timestamp(),
+                            ),
                             log_file,
                         )
 
@@ -2241,9 +2294,6 @@ async def main():
         log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
 
         for i, game in enumerate(nex_3ds_games):
-            if game["aid"] == 1125899907040768:
-                continue
-
             # Check if nexds is loaded
             has_datastore = game["has_datastore"]
 
@@ -2278,6 +2328,13 @@ async def main():
                 nex_token.pid = int(PID_3DS)
                 nex_token.password = PASSWORD_3DS
 
+                if game["aid"] == 1125899907040768:
+                    auth_info = authentication.AuthenticationInfo()
+                    auth_info.token = nex_token_old.token
+                    auth_info.ngs_version = 2
+                else:
+                    auth_info = None
+
                 nex_version = (
                     game["nex"][0][0] * 10000
                     + game["nex"][0][1] * 100
@@ -2299,7 +2356,9 @@ async def main():
                     nex_token.port,
                     str(nex_token.pid),
                     nex_token.password,
+                    auth_info=auth_info
                 ):
+
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
 
@@ -2328,20 +2387,43 @@ async def main():
                             last_data_id = res.result[0].data_id
                             last_data_id_create_time = res.result[0].create_time
 
-                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+                        return (
+                            first_data_id,
+                            first_data_id_create_time,
+                            last_data_id,
+                            last_data_id_create_time,
+                        )
 
-                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                    (
+                        first_data_id,
+                        first_data_id_create_time,
+                        last_data_id,
+                        last_data_id_create_time,
+                    ) = await retry_if_rmc_error(
                         get_initial_data,
                         s,
                         nex_token.host,
                         nex_token.port,
                         str(nex_token.pid),
                         nex_token.password,
+                        auth_info=auth_info
                     )
 
-                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                    if (
+                        first_data_id is not None
+                        and first_data_id_create_time is not None
+                        and last_data_id is not None
+                        and last_data_id_create_time is not None
+                    ):
                         print_and_log(
-                            "%s,%d,%d,%d,%d" % (pretty_game_id, first_data_id, first_data_id_create_time.timestamp(), last_data_id, last_data_id_create_time.timestamp()),
+                            "%s,%d,%d,%d,%d"
+                            % (
+                                pretty_game_id,
+                                first_data_id,
+                                first_data_id_create_time.timestamp(),
+                                last_data_id,
+                                last_data_id_create_time.timestamp(),
+                            ),
                             log_file,
                         )
 
@@ -2460,6 +2542,7 @@ async def main():
                     str(nex_token.pid),
                     nex_token.password,
                 ):
+
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
 
@@ -2488,9 +2571,19 @@ async def main():
                             last_data_id = res.result[0].data_id
                             last_data_id_create_time = res.result[0].create_time
 
-                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+                        return (
+                            first_data_id,
+                            first_data_id_create_time,
+                            last_data_id,
+                            last_data_id_create_time,
+                        )
 
-                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                    (
+                        first_data_id,
+                        first_data_id_create_time,
+                        last_data_id,
+                        last_data_id_create_time,
+                    ) = await retry_if_rmc_error(
                         get_initial_data,
                         s,
                         nex_token.host,
@@ -2499,7 +2592,12 @@ async def main():
                         nex_token.password,
                     )
 
-                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                    if (
+                        first_data_id is not None
+                        and first_data_id_create_time is not None
+                        and last_data_id is not None
+                        and last_data_id_create_time is not None
+                    ):
                         None
 
         log_file.close()
@@ -2628,6 +2726,7 @@ async def main():
                     str(nex_token.pid),
                     nex_token.password,
                 ):
+
                     async def get_initial_data(client):
                         store = datastore.DataStoreClient(client)
 
@@ -2656,9 +2755,19 @@ async def main():
                             last_data_id = res.result[0].data_id
                             last_data_id_create_time = res.result[0].create_time
 
-                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+                        return (
+                            first_data_id,
+                            first_data_id_create_time,
+                            last_data_id,
+                            last_data_id_create_time,
+                        )
 
-                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                    (
+                        first_data_id,
+                        first_data_id_create_time,
+                        last_data_id,
+                        last_data_id_create_time,
+                    ) = await retry_if_rmc_error(
                         get_initial_data,
                         s,
                         nex_token.host,
@@ -2667,7 +2776,12 @@ async def main():
                         nex_token.password,
                     )
 
-                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                    if (
+                        first_data_id is not None
+                        and first_data_id_create_time is not None
+                        and last_data_id is not None
+                        and last_data_id_create_time is not None
+                    ):
                         None
 
         log_file.close()
@@ -3717,9 +3831,6 @@ async def main():
                 print("Reached intended end")
                 break
 
-            if game["aid"] == 1125899907040768:
-                continue
-
             # Check if nexds is loaded
             has_datastore = game["has_datastore"]
 
@@ -3762,6 +3873,13 @@ async def main():
                 nex_token.pid = int(PID_3DS)
                 nex_token.password = PASSWORD_3DS
 
+                if game["aid"] == 1125899907040768:
+                    auth_info = authentication.AuthenticationInfo()
+                    auth_info.token = nex_token_old.token
+                    auth_info.ngs_version = 2
+                else:
+                    auth_info = None
+
                 nex_version = (
                     game["nex"][0][0] * 10000
                     + game["nex"][0][1] * 100
@@ -3801,6 +3919,7 @@ async def main():
                     nex_token.port,
                     str(nex_token.pid),
                     nex_token.password,
+                    auth_info=auth_info,
                 ):
                     print_and_log(
                         "%s DOES support search" % game["name"].replace("\n", " "),
@@ -3885,6 +4004,7 @@ async def main():
                         nex_token.port,
                         str(nex_token.pid),
                         nex_token.password,
+                        auth_info=auth_info,
                     )
 
                     if last_data_id is not None and late_data_id is not None:
@@ -3953,6 +4073,7 @@ async def main():
                                         last_data_id,
                                         late_data_id,
                                         num_metas_threads_done,
+                                        auth_info,
                                     ),
                                 )
                             )
@@ -3971,6 +4092,7 @@ async def main():
                                         pretty_game_id,
                                         metas_queue,
                                         done_flag,
+                                        auth_info,
                                     ),
                                 )
                             )
@@ -3987,7 +4109,7 @@ async def main():
                     )
 
         log_file.close()
-    
+
     if sys.argv[1] == "datastore_sampling_3ds":
         con = sqlite3.connect(DATASTORE_DB, timeout=3600)
         con.execute(
@@ -4063,9 +4185,6 @@ async def main():
                 print("Reached intended end")
                 break
 
-            if game["aid"] == 1125899907040768:
-                continue
-
             # Check if nexds is loaded
             has_datastore = game["has_datastore"]
 
@@ -4108,6 +4227,13 @@ async def main():
                 nex_token.pid = int(PID_3DS)
                 nex_token.password = PASSWORD_3DS
 
+                if game["aid"] == 1125899907040768:
+                    auth_info = authentication.AuthenticationInfo()
+                    auth_info.token = nex_token_old.token
+                    auth_info.ngs_version = 2
+                else:
+                    auth_info = None
+
                 nex_version = (
                     game["nex"][0][0] * 10000
                     + game["nex"][0][1] * 100
@@ -4147,6 +4273,7 @@ async def main():
                     nex_token.port,
                     str(nex_token.pid),
                     nex_token.password,
+                    auth_info=auth_info
                 ):
                     print_and_log(
                         "%s DOES support search" % game["name"].replace("\n", " "),
@@ -4226,6 +4353,7 @@ async def main():
                         nex_token.port,
                         str(nex_token.pid),
                         nex_token.password,
+                        auth_info=auth_info
                     )
 
                     if last_data_id is not None and late_data_id is not None:
@@ -4294,6 +4422,7 @@ async def main():
                                         last_data_id,
                                         late_data_id,
                                         num_metas_threads_done,
+                                        auth_info
                                     ),
                                 )
                             )
@@ -4312,6 +4441,7 @@ async def main():
                                         pretty_game_id,
                                         metas_queue,
                                         done_flag,
+                                        auth_info
                                     ),
                                 )
                             )
