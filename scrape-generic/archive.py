@@ -1931,7 +1931,11 @@ async def main():
             nas.set_locale(REGION_3DS, LANGUAGE_3DS)
             nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
 
-            response_token = await nas.login(game["aid"] & 0xFFFFFFFF)
+            try:
+                response_token = await nas.login(game["aid"] & 0xFFFFFFFF)
+            except Exception as e:
+                print_and_log("".join(traceback.TracebackException.from_exception(e).format()), log_file)
+                continue
 
             class NexToken3DS:
                 def __init__(self):
