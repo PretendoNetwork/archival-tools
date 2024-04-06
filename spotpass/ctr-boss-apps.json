@@ -156,7 +156,8 @@
 	{
 		"app_id": "5yLkA3wqcXruNE2N",
 		"tasks": [
-			"tmTaskA"
+			"tmTaskA",
+			"tmTaskD"
 		],
 		"title_id": "000400000008C300"
 	},
@@ -3750,14 +3751,16 @@
 		"app_id": "FMhu53ZtDLnz2ZZ1",
 		"tasks": [
 			"NEWS",
-			"amiibo"
+			"amiibo",
+			"FGONLYT"
 		],
 		"title_id": "0004000000168600"
 	},
 	{
 		"app_id": "xjMBeunnHUfxuK2d",
 		"tasks": [
-			"pnote"
+			"pnote",
+			"FGONLYT"
 		],
 		"title_id": "0004000000151F00"
 	},
@@ -3892,7 +3895,9 @@
 	{
 		"app_id": "OIC58iiMakdqQSLH",
 		"tasks": [
-			"GMTM"
+			"GMTM",
+			"girls",
+			"info"
 		],
 		"title_id": "00040000000C4F00"
 	},
@@ -4278,7 +4283,8 @@
 	{
 		"app_id": "MLJEOnEgGcwd5uaP",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F7C00"
 	},
