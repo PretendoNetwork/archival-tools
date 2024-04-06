@@ -1914,6 +1914,9 @@ async def main():
         log_file = open(RANKING_LOG, "a", encoding="utf-8")
 
         for i, game in enumerate(nex_3ds_games):
+            if game["aid"] == 1125899907040768:
+                continue
+            
             print_and_log(
                 "%s (%d out of %d)"
                 % (game["name"].replace("\n", " "), i, len(nex_3ds_games)),
@@ -2131,6 +2134,543 @@ async def main():
 
     if sys.argv[1] == "fix_meta_binary":
         None
+
+    if sys.argv[1] == "datastore_get_info":
+        f = open("../find-nex-servers/nexwiiu.json")
+        nex_wiiu_games = json.load(f)["games"]
+        f.close()
+
+        wiiu_games = requests.get("https://kinnay.github.io/data/wiiu.json").json()[
+            "games"
+        ]
+
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+        for i, game in enumerate(nex_wiiu_games):
+            # Check if nexds is loaded
+            has_datastore = bool(
+                [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
+            )
+
+            if has_datastore:
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+
+                print(pretty_game_id)
+
+                nas = nnas.NNASClient()
+                nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+                nas.set_title(game["aid"], game["av"])
+                nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
+
+                access_token = await nas.login(USERNAME, PASSWORD)
+
+                nex_token = await nas.get_nex_token(access_token.token, game["id"])
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                async def does_search_work(client):
+                    store = datastore.DataStoreClient(client)
+                    return await search_works(store)
+
+                s = settings.default()
+                s.configure(game["key"], nex_version)
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    async def get_initial_data(client):
+                        store = datastore.DataStoreClient(client)
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        res = await store.search_object(param)
+
+                        first_data_id = None
+                        first_data_id_create_time = None
+                        if len(res.result) > 0:
+                            first_data_id = res.result[0].data_id
+                            first_data_id_create_time = res.result[0].create_time
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        param.result_order = 1
+                        res = await store.search_object(param)
+
+                        last_data_id = None
+                        last_data_id_create_time = None
+                        if len(res.result) > 0:
+                            last_data_id = res.result[0].data_id
+                            last_data_id_create_time = res.result[0].create_time
+
+                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+
+                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                        get_initial_data,
+                        s,
+                        nex_token.host,
+                        nex_token.port,
+                        str(nex_token.pid),
+                        nex_token.password,
+                    )
+
+                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                        print_and_log(
+                            "%s,%d,%d,%d,%d" % (pretty_game_id, first_data_id, first_data_id_create_time.timestamp(), last_data_id, last_data_id_create_time.timestamp()),
+                            log_file,
+                        )
+
+        log_file.close()
+
+    if sys.argv[1] == "datastore_get_info_3ds":
+        f = open("../../find-nex-servers/nex3ds.json")
+        nex_3ds_games = json.load(f)["games"]
+        f.close()
+
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+        for i, game in enumerate(nex_3ds_games):
+            if game["aid"] == 1125899907040768:
+                continue
+
+            # Check if nexds is loaded
+            has_datastore = game["has_datastore"]
+
+            if has_datastore:
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+                title_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                print(pretty_game_id)
+
+                nas = nasc.NASCClient()
+                nas.set_title(game["aid"], title_version)
+                nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
+                nas.set_locale(REGION_3DS, LANGUAGE_3DS)
+                nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
+
+                nex_token_old = await nas.login(game["aid"] & 0xFFFFFFFF)
+
+                class NexToken3DS:
+                    def __init__(self):
+                        self.host = None
+                        self.port = None
+                        self.pid = None
+                        self.password = None
+
+                nex_token = NexToken3DS()
+                nex_token.host = nex_token_old.host
+                nex_token.port = nex_token_old.port
+                nex_token.pid = int(PID_3DS)
+                nex_token.password = PASSWORD_3DS
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                async def does_search_work(client):
+                    store = datastore.DataStoreClient(client)
+                    return await search_works(store)
+
+                s = settings.load("3ds")
+                s.configure(game["key"], nex_version)
+                s["prudp.version"] = 1
+
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    async def get_initial_data(client):
+                        store = datastore.DataStoreClient(client)
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        res = await store.search_object(param)
+
+                        first_data_id = None
+                        first_data_id_create_time = None
+                        if len(res.result) > 0:
+                            first_data_id = res.result[0].data_id
+                            first_data_id_create_time = res.result[0].create_time
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        param.result_order = 1
+                        res = await store.search_object(param)
+
+                        last_data_id = None
+                        last_data_id_create_time = None
+                        if len(res.result) > 0:
+                            last_data_id = res.result[0].data_id
+                            last_data_id_create_time = res.result[0].create_time
+
+                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+
+                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                        get_initial_data,
+                        s,
+                        nex_token.host,
+                        nex_token.port,
+                        str(nex_token.pid),
+                        nex_token.password,
+                    )
+
+                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                        print_and_log(
+                            "%s,%d,%d,%d,%d" % (pretty_game_id, first_data_id, first_data_id_create_time.timestamp(), last_data_id, last_data_id_create_time.timestamp()),
+                            log_file,
+                        )
+
+        log_file.close()
+
+    if sys.argv[1] == "datastore_just_metas":
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta (
+        game TEXT,
+        data_id INTEGER,
+        owner_id TEXT,
+        size INTEGER,
+        name TEXT,
+        data_type INTEGER,
+        meta_binary BLOB,
+        permission INTEGER,
+        delete_permission INTEGER,
+        create_time INTEGER,
+        update_time INTEGER,
+        period INTEGER,
+        status INTEGER,
+        referred_count INTEGER,
+        refer_data_id INTEGER,
+        flag INTEGER,
+        referred_time INTEGER,
+        expire_time INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+        game TEXT NOT NULL,
+        data_id INTEGER,
+        tag TEXT
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+        game TEXT,
+        data_id INTEGER,
+        slot INTEGER,
+        total_value INTEGER,
+        count INTEGER,
+        initial_value INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_data (
+        game TEXT,
+        data_id INTEGER,
+        error TEXT,
+        url TEXT,
+        data BLOB
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+        game TEXT,
+        data_id INTEGER,
+        is_delete INTEGER,
+        recipient TEXT
+    )"""
+        )
+        con.commit()
+
+        f = open("../find-nex-servers/nexwiiu.json")
+        nex_wiiu_games = json.load(f)["games"]
+        f.close()
+
+        wiiu_games = requests.get("https://kinnay.github.io/data/wiiu.json").json()[
+            "games"
+        ]
+
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+        for i, game in enumerate(nex_wiiu_games):
+            # Check if nexds is loaded
+            has_datastore = bool(
+                [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
+            )
+
+            if has_datastore:
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+
+                nas = nnas.NNASClient()
+                nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+                nas.set_title(game["aid"], game["av"])
+                nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
+
+                access_token = await nas.login(USERNAME, PASSWORD)
+
+                nex_token = await nas.get_nex_token(access_token.token, game["id"])
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                async def does_search_work(client):
+                    store = datastore.DataStoreClient(client)
+                    return await search_works(store)
+
+                s = settings.default()
+                s.configure(game["key"], nex_version)
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    async def get_initial_data(client):
+                        store = datastore.DataStoreClient(client)
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        res = await store.search_object(param)
+
+                        first_data_id = None
+                        first_data_id_create_time = None
+                        if len(res.result) > 0:
+                            first_data_id = res.result[0].data_id
+                            first_data_id_create_time = res.result[0].create_time
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        param.result_order = 1
+                        res = await store.search_object(param)
+
+                        last_data_id = None
+                        last_data_id_create_time = None
+                        if len(res.result) > 0:
+                            last_data_id = res.result[0].data_id
+                            last_data_id_create_time = res.result[0].create_time
+
+                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+
+                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                        get_initial_data,
+                        s,
+                        nex_token.host,
+                        nex_token.port,
+                        str(nex_token.pid),
+                        nex_token.password,
+                    )
+
+                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                        None
+
+        log_file.close()
+
+    if sys.argv[1] == "datastore_just_metas_3ds":
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta (
+        game TEXT,
+        data_id INTEGER,
+        owner_id TEXT,
+        size INTEGER,
+        name TEXT,
+        data_type INTEGER,
+        meta_binary BLOB,
+        permission INTEGER,
+        delete_permission INTEGER,
+        create_time INTEGER,
+        update_time INTEGER,
+        period INTEGER,
+        status INTEGER,
+        referred_count INTEGER,
+        refer_data_id INTEGER,
+        flag INTEGER,
+        referred_time INTEGER,
+        expire_time INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+        game TEXT NOT NULL,
+        data_id INTEGER,
+        tag TEXT
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+        game TEXT,
+        data_id INTEGER,
+        slot INTEGER,
+        total_value INTEGER,
+        count INTEGER,
+        initial_value INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_data (
+        game TEXT,
+        data_id INTEGER,
+        error TEXT,
+        url TEXT,
+        data BLOB
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+        game TEXT,
+        data_id INTEGER,
+        is_delete INTEGER,
+        recipient TEXT
+    )"""
+        )
+        con.commit()
+
+        f = open("../../find-nex-servers/nex3ds.json")
+        nex_3ds_games = json.load(f)["games"]
+        f.close()
+
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+        for i, game in enumerate(nex_3ds_games):
+            # Check if nexds is loaded
+            has_datastore = game["has_datastore"]
+
+            if has_datastore:
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+                title_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                nas = nasc.NASCClient()
+                nas.set_title(game["aid"], title_version)
+                nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
+                nas.set_locale(REGION_3DS, LANGUAGE_3DS)
+                nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
+
+                nex_token_old = await nas.login(game["aid"] & 0xFFFFFFFF)
+
+                class NexToken3DS:
+                    def __init__(self):
+                        self.host = None
+                        self.port = None
+                        self.pid = None
+                        self.password = None
+
+                nex_token = NexToken3DS()
+                nex_token.host = nex_token_old.host
+                nex_token.port = nex_token_old.port
+                nex_token.pid = int(PID_3DS)
+                nex_token.password = PASSWORD_3DS
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                async def does_search_work(client):
+                    store = datastore.DataStoreClient(client)
+                    return await search_works(store)
+
+                s = settings.load("3ds")
+                s.configure(game["key"], nex_version)
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    async def get_initial_data(client):
+                        store = datastore.DataStoreClient(client)
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        res = await store.search_object(param)
+
+                        first_data_id = None
+                        first_data_id_create_time = None
+                        if len(res.result) > 0:
+                            first_data_id = res.result[0].data_id
+                            first_data_id_create_time = res.result[0].create_time
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        param.result_order = 1
+                        res = await store.search_object(param)
+
+                        last_data_id = None
+                        last_data_id_create_time = None
+                        if len(res.result) > 0:
+                            last_data_id = res.result[0].data_id
+                            last_data_id_create_time = res.result[0].create_time
+
+                        return (first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time)
+
+                    first_data_id, first_data_id_create_time, last_data_id, last_data_id_create_time = await retry_if_rmc_error(
+                        get_initial_data,
+                        s,
+                        nex_token.host,
+                        nex_token.port,
+                        str(nex_token.pid),
+                        nex_token.password,
+                    )
+
+                    if first_data_id is not None and first_data_id_create_time is not None and last_data_id is not None and last_data_id_create_time is not None:
+                        None
+
+        log_file.close()
 
     if sys.argv[1] == "datastore":
         con = sqlite3.connect(DATASTORE_DB, timeout=3600)
@@ -2670,8 +3210,32 @@ async def main():
                             # Just start here anyway lol
                             last_data_id = 900000
 
-                        late_time = common.DateTime.fromtimestamp(1712388918)
-                        late_data_id = last_data_id + 500000
+                        late_time = None
+                        late_data_id = None
+                        timestamp = int(time.time())
+                        while True:
+                            # Try to find reasonable time going back, starting at current time
+                            param = datastore.DataStoreSearchParam()
+                            param.created_after = common.DateTime.fromtimestamp(
+                                timestamp
+                            )
+                            param.result_range.size = 1
+                            param.result_option = 0xFF
+                            res = await store.search_object(param)
+
+                            if len(res.result) > 0:
+                                late_time = res.result[0].create_time
+                                late_data_id = res.result[0].data_id
+                                break
+                            elif timestamp > 1325401200:
+                                # Take off 1 month
+                                timestamp -= 2629800
+                            else:
+                                # Otherwise timestamp is less than 2012, give up
+                                break
+
+                        if late_data_id > (last_data_id + 200000):
+                            late_data_id = last_data_id + 200000
 
                         return (last_data_id, late_time, late_data_id)
 
@@ -3153,10 +3717,7 @@ async def main():
                 print("Reached intended end")
                 break
 
-            if game["name"] == "Animal Crossing: New Leaf":
-                continue
-
-            if game["aid"] == 1125899907668736:
+            if game["aid"] == 1125899907040768:
                 continue
 
             # Check if nexds is loaded
@@ -3502,10 +4063,7 @@ async def main():
                 print("Reached intended end")
                 break
 
-            if game["name"] == "Animal Crossing: New Leaf":
-                continue
-
-            if game["aid"] == 1125899907668736:
+            if game["aid"] == 1125899907040768:
                 continue
 
             # Check if nexds is loaded
@@ -3640,8 +4198,24 @@ async def main():
                             if len(res.result) > 0:
                                 last_data_id = res.result[0].data_id
 
-                        late_time = common.DateTime.fromtimestamp(1712388918)
-                        late_data_id = last_data_id + 500000
+                        if last_data_id is None:
+                            return (None, None, None)
+
+                        param = datastore.DataStoreSearchParam()
+                        param.result_range.offset = 0
+                        param.result_range.size = 1
+                        param.result_option = 0xFF
+                        param.result_order = 1
+                        res = await store.search_object(param)
+
+                        late_time = None
+                        late_data_id = None
+                        if len(res.result) > 0:
+                            late_data_id = res.result[0].data_id
+                            late_time = res.result[0].create_time
+
+                        if late_data_id > (last_data_id + 200000):
+                            late_data_id = last_data_id + 200000
 
                         return (last_data_id, late_time, late_data_id)
 
