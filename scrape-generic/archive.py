@@ -1191,6 +1191,7 @@ def get_datastore_metas_pids(
 
                             params = []
                             for entry in pids:
+                                print(entry)
                                 param = datastore.DataStoreGetMetaParam()
                                 param.persistence_target.owner_id = entry[0]
                                 param.persistence_target.persistence_id = entry[1]
