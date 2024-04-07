@@ -5768,7 +5768,7 @@ async def main():
                     for p in processes:
                         p.start()
 
-                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids[:100]]
+                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids]
                     while True:
                         pids_queue.put(pids[:100])
                         pids = pids[100:]
