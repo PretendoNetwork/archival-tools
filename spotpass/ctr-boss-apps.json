@@ -16,7 +16,16 @@
 			"RNG_NT1",
 			"RNG_NT2",
 			"RNG_GM1",
-			"RNG_AP1"
+			"RNG_AP1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2D00"
 	},
@@ -63,7 +72,18 @@
 			"JFR_DNT",
 			"JFR_DLS",
 			"JFR_DAP",
-			"JFR_DGM"
+			"JFR_DGM",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051700"
 	},
@@ -114,7 +134,16 @@
 			"RNG_NT1",
 			"RNG_NT2",
 			"RNG_GM1",
-			"RNG_AP1"
+			"RNG_AP1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2E00"
 	},
@@ -356,7 +385,18 @@
 			"JFR_DNT",
 			"JFR_DAP",
 			"JFR_DGM",
-			"JFR_GM2"
+			"JFR_GM2",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051800"
 	},
@@ -414,7 +454,9 @@
 	{
 		"app_id": "eH6oowgSM7n662mw",
 		"tasks": [
-			"tmTaskA"
+			"tmTaskA",
+			"tmTaskD",
+			"tmTaskU"
 		],
 		"title_id": "000400000008C400"
 	},
@@ -1632,7 +1674,16 @@
 			"RNG_LS1",
 			"RNG_NT1",
 			"RNG_NT2",
-			"RNG_GM1"
+			"RNG_GM1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2C00"
 	},
@@ -1710,7 +1761,18 @@
 			"JFR_DNT",
 			"JFR_DLS",
 			"JFR_DAP",
-			"JFR_DGM"
+			"JFR_DGM",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051600"
 	},
@@ -3361,7 +3423,17 @@
 			"JFR_NT2",
 			"JFR_NT3",
 			"JFR_LS2",
-			"JFR_AP2"
+			"JFR_AP2",
+			"JFR_DFR",
+			"JFR_GM2",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_UUS"
 		],
 		"title_id": "00040000000CC900"
 	},
@@ -3843,7 +3915,17 @@
 			"JFR_NT1",
 			"JFR_NT2",
 			"JFR_NT3",
-			"JFR_AP2"
+			"JFR_AP2",
+			"JFR_DFR",
+			"JFR_GM2",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_UUS"
 		],
 		"title_id": "00040000000CCA00"
 	},
