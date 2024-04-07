@@ -5745,6 +5745,14 @@ async def main():
 
                     print_and_log("Done reading from DB", log_file)
 
+                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids]
+                    while True:
+                        pids_queue.put(pids[:100])
+                        pids = pids[100:]
+
+                        if len(pids) == 0:
+                            break
+
                     processes = []
                     for i in range(num_download_threads):
                         processes.append(
@@ -5767,15 +5775,6 @@ async def main():
 
                     for p in processes:
                         p.start()
-
-                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids]
-                    while True:
-                        pids_queue.put(pids[:100])
-                        pids = pids[100:]
-
-                        if len(pids) == 0:
-                            break
-
                     for p in processes:
                         p.join()
 
