@@ -1191,7 +1191,6 @@ def get_datastore_metas_pids(
 
                             params = []
                             for entry in pids:
-                                print(entry)
                                 param = datastore.DataStoreGetMetaParam()
                                 param.persistence_target.owner_id = entry[0]
                                 param.persistence_target.persistence_id = entry[1]
@@ -5746,7 +5745,7 @@ async def main():
 
                     print_and_log("Done reading from DB", log_file)
 
-                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids]
+                    pids = [(int(entry[0]), i) for entry in pids for i in range(16)]
                     while True:
                         pids_queue.put(pids[:100])
                         pids = pids[100:]
