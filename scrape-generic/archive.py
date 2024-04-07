@@ -5752,7 +5752,7 @@ async def main():
                                 target=get_datastore_metas_pids,
                                 args=(
                                     log_lock,
-                                    game_key,
+                                    game["key"],
                                     nex_version,
                                     nex_token.host,
                                     nex_token.port,
