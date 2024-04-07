@@ -1373,7 +1373,7 @@ def get_datastore_metas_pids(
                 except queue.Empty:
                     break
         except Exception as e:
-            print(e)
+            print("".join(traceback.TracebackException.from_exception(e).format()))
 
         con.close()
 
