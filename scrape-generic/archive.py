@@ -73,14 +73,14 @@ async def retry_if_rmc_error(func, s, host, port, pid, password, auth_info=None)
     try:
         async with backend.connect(s, host, port) as be:
             try:
-                async with be.login(pid, password, auth_info=auth_info) as client:
+                async with be.login(pid, password, auth_info) as client:
                     return await func(client)
-            except RuntimeError:
-                print('"PRUDP connection failed" encountered')
+            except RuntimeError as e:
+                print('"PRUDP connection failed" encountered: ', e)
                 # Reattempt until success recursively
                 return await retry_if_rmc_error(func, s, host, port, pid, password)
-    except RuntimeError:
-        print('"RMC connection is closed" encountered')
+    except RuntimeError as e:
+        print('"RMC connection is closed" encountered: ', e)
         # Reattempt until success recursively
         return await retry_if_rmc_error(func, s, host, port, pid, password)
 
@@ -740,6 +740,233 @@ def get_datastore_data(
 
     anyio.run(run)
 
+def get_datastore_data_and_metas(
+    log_lock,
+    access_key,
+    nex_version,
+    host,
+    port,
+    pid,
+    password,
+    pretty_game_id,
+    metas_queue,
+    done_flag,
+    s,
+    auth_info=None,
+):
+    async def run():
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+
+        try:
+
+            while True:
+                time.sleep(0.5)
+
+                can_download_metas = True
+                can_download_objects = True
+
+                try:
+                    entries = metas_queue.get(block=False)
+
+                    log_lock.acquire()
+                    log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                    print_and_log(
+                        "Start download of %d entries" % len(entries), log_file
+                    )
+                    log_file.close()
+                    log_lock.release()
+
+                    download_entries = None
+                    try:
+                        async def get_res(client):
+                            store = datastore.DataStoreClient(client)
+
+                            param = datastore.DataStoreGetMetaParam()
+                            param.result_option = 0xFF
+                            res = await store.get_metas([x[0] for x in entries], param)
+
+                            return res
+
+                        res = await retry_if_rmc_error(
+                            get_res, s, host, port, str(pid), password, auth_info=auth_info
+                        )
+
+                        # Remove invalid
+                        meta_entries = [
+                            entry
+                            for i, entry in enumerate(res.info)
+                            if res.results[i].is_success()
+                        ]
+
+                        con.executemany(
+                            "INSERT INTO datastore_meta (game, data_id, owner_id, size, name, data_type, meta_binary, permission, delete_permission, create_time, update_time, period, status, referred_count, refer_data_id, flag, referred_time, expire_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            [
+                                (
+                                    pretty_game_id,
+                                    entry.data_id,
+                                    str(entry.owner_id),
+                                    entry.size,
+                                    entry.name,
+                                    entry.data_type,
+                                    entry.meta_binary,
+                                    entry.permission.permission,
+                                    entry.delete_permission.permission,
+                                    timestamp_if_not_null(entry.create_time),
+                                    timestamp_if_not_null(entry.update_time),
+                                    entry.period,
+                                    entry.status,
+                                    entry.referred_count,
+                                    entry.refer_data_id,
+                                    entry.flag,
+                                    timestamp_if_not_null(entry.referred_time),
+                                    timestamp_if_not_null(entry.expire_time),
+                                )
+                                for entry in meta_entries
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_meta_tag (game, data_id, tag) values (?, ?, ?)",
+                            [
+                                (pretty_game_id, entry.data_id, tag)
+                                for entry in meta_entries
+                                for tag in entry.tags
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_meta_rating (game, data_id, slot, total_value, count, initial_value) values (?, ?, ?, ?, ?, ?)",
+                            [
+                                (
+                                    pretty_game_id,
+                                    entry.data_id,
+                                    rating.slot,
+                                    rating.info.total_value,
+                                    rating.info.count,
+                                    rating.info.initial_value,
+                                )
+                                for entry in meta_entries
+                                for rating in entry.ratings
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
+                            [
+                                (pretty_game_id, entry.data_id, 0, str(recipient))
+                                for entry in meta_entries
+                                for recipient in entry.permission.recipients
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
+                            [
+                                (pretty_game_id, entry.data_id, 1, str(recipient))
+                                for entry in meta_entries
+                                for recipient in entry.delete_permission.recipients
+                            ],
+                        )
+                        con.commit()
+
+                        download_entries = [(entry.data_id, 0) for entry in meta_entries if entry.size > 0]
+                    except RMCError as e:
+                        log_lock.acquire()
+                        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                        print_and_log("This game doesn't seem to support get_metas: %s" % str(e), log_file)
+                        log_file.close()
+                        log_lock.release()
+
+                        download_entries = entries
+                        can_download_metas = False
+
+                    if len(download_entries) == 0:
+                        can_download_metas = False
+                        can_download_objects = False
+
+                    for entry in download_entries:
+                        try:
+                            data_id, owner_id = entry
+
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log("Start %d" % data_id, log_file)
+                            log_file.close()
+                            log_lock.release()
+
+                            start = time.perf_counter()
+
+                            async def get_req_info(client):
+                                store = datastore.DataStoreClient(client)
+
+                                get_param = datastore.DataStorePrepareGetParam()
+                                get_param.data_id = data_id
+
+                                req_info = await store.prepare_get_object(get_param)
+                                headers = {
+                                    header.key: header.value
+                                    for header in req_info.headers
+                                }
+
+                                return (req_info.url, req_info, headers)
+
+                            url, req_info, headers = await retry_if_rmc_error(
+                                get_req_info,
+                                s,
+                                host,
+                                port,
+                                str(pid),
+                                password,
+                                auth_info=auth_info,
+                            )
+
+                            async with httpx.AsyncClient() as client:
+                                response = await client.get(
+                                    "https://%s" % req_info.url,
+                                    headers=headers,
+                                    timeout=(60 * 10),
+                                )
+
+                            # TODO store the headers too
+                            con.execute(
+                                "INSERT INTO datastore_data (game, data_id, url, data) values (?, ?, ?, ?)",
+                                (
+                                    pretty_game_id,
+                                    data_id,
+                                    url,
+                                    gzip.compress(response.content),
+                                ),
+                            )
+                            con.commit()
+
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log(
+                                "Downloaded %d in %f seconds"
+                                % (data_id, time.perf_counter() - start),
+                                log_file,
+                            )
+                            log_file.close()
+                            log_lock.release()
+
+                        except RMCError as e:
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log("This game doesn't seem to support prepare_get_object: %s" % str(e), log_file)
+                            log_file.close()
+                            log_lock.release()
+
+                            can_download_objects = False
+                            break
+                except queue.Empty:
+                    if bool(done_flag.value):
+                        break
+
+                if not can_download_metas and not can_download_objects:
+                    break
+        except Exception as e:
+            print(e)
+
+        con.close()
+
+    anyio.run(run)
+
 
 def get_datastore_metas(
     log_lock,
@@ -920,6 +1147,233 @@ def get_datastore_metas(
                 done_flag.value = True
         except Exception as e:
             print("".join(traceback.TracebackException.from_exception(e).format()))
+
+        con.close()
+
+    anyio.run(run)
+
+def get_datastore_metas_pids(
+    log_lock,
+    access_key,
+    nex_version,
+    host,
+    port,
+    pid,
+    password,
+    pretty_game_id,
+    pids_queue,
+    s,
+    auth_info=None,
+):
+    async def run():
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+
+        try:
+
+            while True:
+                time.sleep(0.5)
+
+                try:
+                    pids = pids_queue.get(block=False)
+
+                    log_lock.acquire()
+                    log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                    print_and_log(
+                        "Start download of %d pids" % len(pids), log_file
+                    )
+                    log_file.close()
+                    log_lock.release()
+
+                    download_entries = None
+                    try:
+                        async def get_res(client):
+                            store = datastore.DataStoreClient(client)
+
+                            params = []
+                            for entry in pids:
+                                param = datastore.DataStoreGetMetaParam()
+                                param.persistence_target.owner_id = entry[0]
+                                param.persistence_target.persistence_id = entry[1]
+                                param.result_option = 0xFF
+                                params.append(param)
+
+                            res = await store.get_metas_multiple_param(params)
+
+                            return res
+
+                        res = await retry_if_rmc_error(
+                            get_res, s, host, port, str(pid), password, auth_info=auth_info
+                        )
+
+                        # Remove invalid and add persistence info
+                        meta_entries = [
+                            (entry, pids[i])
+                            for i, entry in enumerate(res.infos)
+                            if res.results[i].is_success()
+                        ]
+
+                        con.executemany(
+                            "INSERT INTO datastore_persistent (game, owner_id, persistence_id, data_id) values (?, ?, ?, ?)",
+                            [
+                                (
+                                    pretty_game_id,
+                                    entry[1][0],
+                                    entry[1][1],
+                                    entry[0].data_id,
+                                )
+                                for entry in meta_entries
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_meta (game, data_id, owner_id, size, name, data_type, meta_binary, permission, delete_permission, create_time, update_time, period, status, referred_count, refer_data_id, flag, referred_time, expire_time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            [
+                                (
+                                    pretty_game_id,
+                                    entry[0].data_id,
+                                    str(entry[0].owner_id),
+                                    entry[0].size,
+                                    entry[0].name,
+                                    entry[0].data_type,
+                                    entry[0].meta_binary,
+                                    entry[0].permission.permission,
+                                    entry[0].delete_permission.permission,
+                                    timestamp_if_not_null(entry[0].create_time),
+                                    timestamp_if_not_null(entry[0].update_time),
+                                    entry[0].period,
+                                    entry[0].status,
+                                    entry[0].referred_count,
+                                    entry[0].refer_data_id,
+                                    entry[0].flag,
+                                    timestamp_if_not_null(entry[0].referred_time),
+                                    timestamp_if_not_null(entry[0].expire_time),
+                                )
+                                for entry in meta_entries
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_meta_tag (game, data_id, tag) values (?, ?, ?)",
+                            [
+                                (pretty_game_id, entry[0].data_id, tag)
+                                for entry in meta_entries
+                                for tag in entry[0].tags
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_meta_rating (game, data_id, slot, total_value, count, initial_value) values (?, ?, ?, ?, ?, ?)",
+                            [
+                                (
+                                    pretty_game_id,
+                                    entry[0].data_id,
+                                    rating.slot,
+                                    rating.info.total_value,
+                                    rating.info.count,
+                                    rating.info.initial_value,
+                                )
+                                for entry in meta_entries
+                                for rating in entry[0].ratings
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
+                            [
+                                (pretty_game_id, entry[0].data_id, 0, str(recipient))
+                                for entry in meta_entries
+                                for recipient in entry[0].permission.recipients
+                            ],
+                        )
+                        con.executemany(
+                            "INSERT INTO datastore_permission_recipients (game, data_id, is_delete, recipient) values (?, ?, ?, ?)",
+                            [
+                                (pretty_game_id, entry[0].data_id, 1, str(recipient))
+                                for entry in meta_entries
+                                for recipient in entry[0].delete_permission.recipients
+                            ],
+                        )
+                        con.commit()
+
+                        download_entries = [(entry[0].data_id, 0) for entry in meta_entries if entry[0].size > 0]
+                    except RMCError as e:
+                        log_lock.acquire()
+                        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                        print_and_log("Small issue: %s" % str(e), log_file)
+                        log_file.close()
+                        log_lock.release()
+
+                    for entry in download_entries:
+                        try:
+                            data_id, owner_id = entry
+
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log("Start %d" % data_id, log_file)
+                            log_file.close()
+                            log_lock.release()
+
+                            start = time.perf_counter()
+
+                            async def get_req_info(client):
+                                store = datastore.DataStoreClient(client)
+
+                                get_param = datastore.DataStorePrepareGetParam()
+                                get_param.data_id = data_id
+
+                                req_info = await store.prepare_get_object(get_param)
+                                headers = {
+                                    header.key: header.value
+                                    for header in req_info.headers
+                                }
+
+                                return (req_info.url, req_info, headers)
+
+                            url, req_info, headers = await retry_if_rmc_error(
+                                get_req_info,
+                                s,
+                                host,
+                                port,
+                                str(pid),
+                                password,
+                                auth_info=auth_info,
+                            )
+
+                            async with httpx.AsyncClient() as client:
+                                response = await client.get(
+                                    "https://%s" % req_info.url,
+                                    headers=headers,
+                                    timeout=(60 * 10),
+                                )
+
+                            # TODO store the headers too
+                            con.execute(
+                                "INSERT INTO datastore_data (game, data_id, url, data) values (?, ?, ?, ?)",
+                                (
+                                    pretty_game_id,
+                                    data_id,
+                                    url,
+                                    gzip.compress(response.content),
+                                ),
+                            )
+                            con.commit()
+
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log(
+                                "Downloaded %d in %f seconds"
+                                % (data_id, time.perf_counter() - start),
+                                log_file,
+                            )
+                            log_file.close()
+                            log_lock.release()
+
+                        except RMCError as e:
+                            log_lock.acquire()
+                            log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+                            print_and_log("Small issue: %s" % str(e), log_file)
+                            log_file.close()
+                            log_lock.release()
+                except queue.Empty:
+                    break
+        except Exception as e:
+            print(e)
 
         con.close()
 
@@ -2162,6 +2616,188 @@ async def main():
 
         log_file.close()
 
+    if sys.argv[1] == "datastore_from_ranking_3ds":
+        ranking_con = sqlite3.connect(RANKING_DB, timeout=3600)
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta (
+        game TEXT,
+        data_id INTEGER,
+        owner_id TEXT,
+        size INTEGER,
+        name TEXT,
+        data_type INTEGER,
+        meta_binary BLOB,
+        permission INTEGER,
+        delete_permission INTEGER,
+        create_time INTEGER,
+        update_time INTEGER,
+        period INTEGER,
+        status INTEGER,
+        referred_count INTEGER,
+        refer_data_id INTEGER,
+        flag INTEGER,
+        referred_time INTEGER,
+        expire_time INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+        game TEXT NOT NULL,
+        data_id INTEGER,
+        tag TEXT
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+        game TEXT,
+        data_id INTEGER,
+        slot INTEGER,
+        total_value INTEGER,
+        count INTEGER,
+        initial_value INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_data (
+        game TEXT,
+        data_id INTEGER,
+        error TEXT,
+        url TEXT,
+        data BLOB
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+        game TEXT,
+        data_id INTEGER,
+        is_delete INTEGER,
+        recipient TEXT
+    )"""
+        )
+        con.commit()
+
+        f = open("../../find-nex-servers/nex3ds.json")
+        nex_3ds_games = json.load(f)["games"]
+        f.close()
+
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
+
+        for i, game in enumerate(nex_3ds_games):
+            # Check if nexds is loaded
+            has_datastore = game["has_datastore"]
+
+            if has_datastore:
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+                title_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                nas = nasc.NASCClient()
+                nas.set_title(game["aid"], title_version)
+                nas.set_device(SERIAL_NUMBER_3DS, MAC_ADDRESS_3DS, FCD_CERT_3DS, "")
+                nas.set_locale(REGION_3DS, LANGUAGE_3DS)
+                nas.set_user(USERNAME_3DS, USERNAME_HMAC_3DS)
+
+                nex_token_old = await nas.login(game["aid"] & 0xFFFFFFFF)
+
+                class NexToken3DS:
+                    def __init__(self):
+                        self.host = None
+                        self.port = None
+                        self.pid = None
+                        self.password = None
+
+                nex_token = NexToken3DS()
+                nex_token.host = nex_token_old.host
+                nex_token.port = nex_token_old.port
+                nex_token.pid = int(PID_3DS)
+                nex_token.password = PASSWORD_3DS
+
+                if game["aid"] == 1125899907040768:
+                    auth_info = authentication.AuthenticationInfo()
+                    auth_info.token = nex_token_old.token
+                    auth_info.ngs_version = 2
+                else:
+                    auth_info = None
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                s = settings.load("3ds")
+                s.configure(game["key"], nex_version)
+
+                # Get everything to download
+                download_entries = (
+                            ranking_con.cursor()
+                            .execute(
+                                "SELECT param, 0 as owner_id FROM ranking WHERE game = ?",
+                                (pretty_game_id,),
+                            )
+                            .fetchall()
+                        )
+                
+                print_and_log(
+                    "%s done reading from DB" % game["name"].replace("\n", " "),
+                    log_file,
+                )
+
+                num_download_threads = 16
+
+                log_lock = Lock()
+                metas_queue = Queue()
+                done_flag = Value("i", True)
+
+                while True:
+                    metas_queue.put(
+                        [
+                            (int(entry[0]), int(entry[1]))
+                            for entry in download_entries[:100]
+                        ]
+                    )
+                    download_entries = download_entries[100:]
+                    if len(download_entries) == 0:
+                        break
+
+                processes = []
+                for i in range(num_download_threads):
+                    processes.append(
+                        Process(
+                            target=get_datastore_data_and_metas,
+                            args=(
+                                log_lock,
+                                game["key"],
+                                nex_version,
+                                nex_token.host,
+                                nex_token.port,
+                                nex_token.pid,
+                                nex_token.password,
+                                pretty_game_id,
+                                metas_queue,
+                                done_flag,
+                                s,
+                                auth_info
+                            ),
+                        )
+                    )
+
+                for p in processes:
+                    p.start()
+                for p in processes:
+                    p.join()
+
+        log_file.close()
+
     if sys.argv[1] == "fix_meta_binary":
         None
 
@@ -2305,7 +2941,7 @@ async def main():
                     + game["nex"][0][2]
                 )
 
-                print(pretty_game_id)
+                print(pretty_game_id, title_version)
 
                 nas = nasc.NASCClient()
                 nas.set_title(game["aid"], title_version)
@@ -2347,7 +2983,6 @@ async def main():
 
                 s = settings.load("3ds")
                 s.configure(game["key"], nex_version)
-                s["prudp.version"] = 1
 
                 if await retry_if_rmc_error(
                     does_search_work,
@@ -3319,6 +3954,9 @@ async def main():
 
                             if len(res.result) > 0:
                                 last_data_id = res.result[0].data_id
+
+                        if last_data_id is None:
+                            return (None, None, None)
 
                         if last_data_id is None or last_data_id > 900000:
                             # Just start here anyway lol
@@ -4533,15 +5171,15 @@ async def main():
                 self.password = None
 
         nex_token = NexToken3DS()
-        nex_token.host = sys.argv[2]
-        nex_token.port = sys.argv[3]
-        nex_token.pid = sys.argv[4]
-        nex_token.password = sys.argv[5]
+        nex_token.host = sys.argv[3]
+        nex_token.port = sys.argv[4]
+        nex_token.pid = sys.argv[5]
+        nex_token.password = sys.argv[6]
 
-        game_key = sys.argv[6]
-        nex_version = int(sys.argv[7])
+        game_key = sys.argv[7]
+        nex_version = int(sys.argv[8])
 
-        pretty_game_id = sys.argv[8]
+        pretty_game_id = sys.argv[9]
 
         async def does_search_work(client):
             store = datastore.DataStoreClient(client)
@@ -4919,22 +5557,235 @@ async def main():
 
         log_file.close()
 
-    if sys.argv[1] == "category_scrape":
-        games = set([])
-
-    if sys.argv[1] == "category_scrape":
-        games = set([])
-
+    if sys.argv[1] == "check_overlap":
+        f = open("../find-nex-servers/nexwiiu.json")
         nex_wiiu_games = json.load(f)["games"]
+        f.close()
+
+        f = open("../find-nex-servers/nex3ds.json")
+        nex_3ds_games = json.load(f)["games"]
+        f.close()
+
+        print(set([game["aid"] for game in nex_wiiu_games]).intersection(set([game["aid"] for game in nex_3ds_games])))
+
+    if sys.argv[1] == "datastore_persistence":
+        con = sqlite3.connect(DATASTORE_DB, timeout=3600)
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta (
+        game TEXT,
+        data_id INTEGER,
+        owner_id TEXT,
+        size INTEGER,
+        name TEXT,
+        data_type INTEGER,
+        meta_binary BLOB,
+        permission INTEGER,
+        delete_permission INTEGER,
+        create_time INTEGER,
+        update_time INTEGER,
+        period INTEGER,
+        status INTEGER,
+        referred_count INTEGER,
+        refer_data_id INTEGER,
+        flag INTEGER,
+        referred_time INTEGER,
+        expire_time INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_tag (
+        game TEXT NOT NULL,
+        data_id INTEGER,
+        tag TEXT
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_meta_rating (
+        game TEXT,
+        data_id INTEGER,
+        slot INTEGER,
+        total_value INTEGER,
+        count INTEGER,
+        initial_value INTEGER
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_data (
+        game TEXT,
+        data_id INTEGER,
+        error TEXT,
+        url TEXT,
+        data BLOB
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_permission_recipients (
+        game TEXT,
+        data_id INTEGER,
+        is_delete INTEGER,
+        recipient TEXT
+    )"""
+        )
+        con.execute(
+            """
+    CREATE TABLE IF NOT EXISTS datastore_persistent (
+        game TEXT,
+        owner_id TEXT,
+        persistence_id INTEGER,
+        data_id INTEGER
+    )"""
+        )
+        con.commit()
+
+        f = open("../find-nex-servers/nexwiiu.json")
+        nex_wiiu_games = json.load(f)["games"][int(sys.argv[3]) :]
+        f.close()
+
         wiiu_games = requests.get("https://kinnay.github.io/data/wiiu.json").json()[
             "games"
         ]
 
-        log_file = open("category_scrape.txt", "a", encoding="utf-8")
+        log_file = open(DATASTORE_LOG, "a", encoding="utf-8")
 
         for i, game in enumerate(nex_wiiu_games):
-            if game["aid"] in games:
-                None
+            if i == int(sys.argv[4]):
+                print("Reached intended end")
+                break
+
+            # Check if nexds is loaded
+            has_datastore = bool(
+                [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
+            )
+
+            if has_datastore:
+                print_and_log(
+                    "%s (%d out of %d)"
+                    % (
+                        game["name"].replace("\n", " "),
+                        i + int(sys.argv[3]),
+                        len(nex_wiiu_games),
+                    ),
+                    log_file,
+                )
+
+                pretty_game_id = hex(game["aid"])[2:].upper().rjust(16, "0")
+
+                nas = nnas.NNASClient()
+                nas.set_device(DEVICE_ID, SERIAL_NUMBER, SYSTEM_VERSION)
+                nas.set_title(game["aid"], game["av"])
+                nas.set_locale(REGION_ID, COUNTRY_NAME, LANGUAGE)
+
+                access_token = await nas.login(USERNAME, PASSWORD)
+
+                nex_token = await nas.get_nex_token(access_token.token, game["id"])
+
+                nex_version = (
+                    game["nex"][0][0] * 10000
+                    + game["nex"][0][1] * 100
+                    + game["nex"][0][2]
+                )
+
+                """
+                # Run everything in processes
+                num_processes = 8
+                range_size = int(pow(2, 32) / num_processes)
+
+                found_queue = Queue()
+                num_tested_queue = Queue()
+
+                processes = [Process(target=range_test_category,
+                    args=(game["key"], nex_version, nex_token.host, nex_token.port, str(nex_token.pid), nex_token.password, i * range_size, i * range_size + 1000, found_queue, num_tested_queue)) for i in range(num_processes)]
+                # Queue for printing number tested and found categories
+                processes.append(Process(target=print_categories, args=(num_processes, found_queue, num_tested_queue)))
+                for p in processes:
+                    p.start()
+                for p in processes:
+                    p.join()
+
+                continue
+                """
+
+                async def does_search_work(client):
+                    store = datastore.DataStoreClient(client)
+                    return await search_works(store)
+
+                s = settings.default()
+                s.configure(game["key"], nex_version)
+                if await retry_if_rmc_error(
+                    does_search_work,
+                    s,
+                    nex_token.host,
+                    nex_token.port,
+                    str(nex_token.pid),
+                    nex_token.password,
+                ):
+                    print_and_log(
+                        "%s DOES support search" % game["name"].replace("\n", " "),
+                        log_file,
+                    )
+
+                    num_download_threads = 16
+
+                    log_lock = Lock()
+                    pids_queue = Queue()
+
+                    pids = (
+                        con.cursor()
+                        .execute(
+                            "SELECT DISTINCT owner_id FROM datastore_meta WHERE game = ?",
+                            (pretty_game_id,),
+                        )
+                        .fetchall()
+                    )
+
+                    print_and_log("Done reading from DB", log_file)
+
+                    processes = []
+                    for i in range(num_download_threads):
+                        processes.append(
+                            Process(
+                                target=get_datastore_metas_pids,
+                                args=(
+                                    log_lock,
+                                    game_key,
+                                    nex_version,
+                                    nex_token.host,
+                                    nex_token.port,
+                                    nex_token.pid,
+                                    nex_token.password,
+                                    pretty_game_id,
+                                    pids_queue,
+                                    s,
+                                ),
+                            )
+                        )
+
+                    for p in processes:
+                        p.start()
+
+                    pids = [[(int(entry[0]), i) for i in range(16)] for entry in pids[:100]]
+                    while True:
+                        pids_queue.put(pids[:100])
+                        pids = pids[100:]
+
+                        if len(pids) == 0:
+                            break
+
+                    for p in processes:
+                        p.join()
+
+                else:
+                    print_and_log(
+                        "%s does not support search" % game["name"].replace("\n", " "),
+                        log_file,
+                    )
+
+        log_file.close()
 
 
 if __name__ == "__main__":
