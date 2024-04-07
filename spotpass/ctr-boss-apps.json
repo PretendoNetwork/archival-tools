@@ -113,7 +113,8 @@
 			"RNG_MD1",
 			"RNG_NT1",
 			"RNG_NT2",
-			"RNG_GM1"
+			"RNG_GM1",
+			"RNG_AP1"
 		],
 		"title_id": "00040000001A2E00"
 	},
