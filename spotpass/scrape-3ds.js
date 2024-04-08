@@ -5,6 +5,7 @@ const database = require('./database');
 
 const NPFL_URL_BASE = 'https://npfl.c.app.nintendowifi.net/p01/filelist';
 const NPDL_URL_BASE = 'https://npdl.cdn.nintendowifi.net/p01/nsa';
+const TASK_SHEET_URL_BASE = 'https://npts.app.nintendo.net/p01/tasksheet/1';
 
 const httpsAgent = new https.Agent({
 	rejectUnauthorized: false,
@@ -40,16 +41,32 @@ async function scrapeTask(downloadBase, task) {
 	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
 	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/filelist.txt`, response.data);
 
+	const headersString = JSON.stringify(response.headers, null, 2);
+	
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/filelist_headers.txt`, headersString);
+
 	const lines = response.data.split('\r\n').filter(line => line);
 	const files = lines.splice(2)
 
-	// * There's like 4 ways the 3DS can format these download URLs, just pray this works I guess.
+	const ts_response = await axios.get(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`, {
+		validateStatus: () => {
+			return true;
+		},
+		httpsAgent
+	});
+
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, ts_response.data);
+	const ts_headersString = JSON.stringify(ts_response.headers, null, 2);
+	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml_headers.txt`, ts_headersString);
+	
+
+	// * There's like 5 ways the 3DS can format these download URLs, just pray this works I guess.
 	// * Not sure any better way to do this.
 	for (const file of files) {
 		const parts = file.split('\t');
 		const fileName = parts[0];
 
-		// * There are 4 possible formats for NPDL URLs.
+		// * There are 5 possible formats for NPDL URLs.
 		// * This tries all of them, one after the other, from least
 		// * specific to most specific. This should result in the most
 		// * specific version of each file being downloaded, overwriting
@@ -57,36 +74,45 @@ async function scrapeTask(downloadBase, task) {
 		// * we just have to try them all and pray.
 		// * This is pretty slow, but it at least should get all the data.
 		const downloadPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss`;
+		const headersPath = `${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${fileName}.boss_headers.txt`;
 
-		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath);
-
-		if (success) {
-			return;
-		}
-
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath);
+		let success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${task.language}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
-			return
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+			continue;
 		}
 
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}_${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
-			return
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+			continue;
 		}
 
-		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.country}/${fileName}`, downloadPath, headersPath);
 
 		if (success) {
-			return
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+			continue;
 		}
 
-		await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath);
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${task.language}/${fileName}`, downloadPath, headersPath);
+
+		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+			continue;
+		}
+
+		success = await downloadContentFile(`${NPDL_URL_BASE}/${task.app_id}/${task.task}/${fileName}`, downloadPath, headersPath);
+
+		if (success) {
+			fs.appendFile('scrape_data_3ds.csv', (`${task.app_id},${task.task},${fileName},${task.country},${task.language}\n`));
+		}
 	}
 }
 
-async function downloadContentFile(url, downloadPath) {
+async function downloadContentFile(url, downloadPath, headersPath) {
 	const response = await axios.get(url, {
 		responseType: 'arraybuffer',
 		validateStatus: () => {
@@ -100,8 +126,10 @@ async function downloadContentFile(url, downloadPath) {
 	}
 
 	const fileData = Buffer.from(response.data, 'binary');
+	const headersString = JSON.stringify(response.headers, null, 2);
 
 	fs.writeFileSync(downloadPath, fileData);
+	fs.writeFileSync(headersPath, headersString);
 
 	return true;
 }

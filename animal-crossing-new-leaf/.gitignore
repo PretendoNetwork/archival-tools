@@ -141,3 +141,5 @@ cython_debug/
 objects
 .env
 last-checked-offset.txt
+*.db
+*.db-journal

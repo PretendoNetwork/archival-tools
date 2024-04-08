@@ -12,7 +12,7 @@ const httpsAgent = new https.Agent({
 	key: fs.readFileSync('./certs/wiiu-common.key'),
 });
 
-async function scrapeWiiU(downloadBase) {
+async function urlGenWiiU(downloadBase) {
 	let batch = await database.getNextBatch('wup');
 
 	while (batch.length !== 0) {
@@ -36,11 +36,10 @@ async function scrapeTask(downloadBase, task) {
 	if (!response.headers['content-type'] || !response.headers['content-type'].startsWith('application/xml')) {
 		return;
 	}
+	console.log(`${TASK_SHEET_URL_BASE}/${task.app_id}/${task.task}?c=${task.country}&l=${task.language}`)
 
-	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
-	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, response.data);
-	const ts_headersString = JSON.stringify(response.headers, null, 2);
-	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml_headers.txt`, ts_headersString);
+	fs.ensureDirSync(`${downloadBase}_fl/${task.country}/${task.language}/${task.app_id}/${task.task}`);
+	fs.writeFileSync(`${downloadBase}_fl/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, response.data);
 
 	const data = xmlParser(response.data).toObject();
 
@@ -55,20 +54,16 @@ async function scrapeTask(downloadBase, task) {
 	} else {
 		files.push(data.TaskSheet.Files.File);
 	}
-	let titleID = data.TaskSheet.TitleId.toUpperCase();
 
 	for (const file of files) {
-		const response = await axios.get(file.Url, {
-			responseType: 'arraybuffer',
-			httpsAgent
-		});
-		const fileData = Buffer.from(response.data, 'binary');
-		const headersString = JSON.stringify(response.headers, null, 2);
-
-		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss`, fileData);
-		fs.appendFile('scrape_data_wiiu.csv', (`${titleID},${task.app_id},${task.task},${file.Filename},${task.country},${task.language}\n`));
-		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss_headers.txt`, headersString);
+		await console.log(file.Url);
 	}
 }
 
-module.exports = scrapeWiiU;
+async function main() {
+	await database.connect();
+	await urlGenWiiU();
+	await database.close();
+}
+
+main();
