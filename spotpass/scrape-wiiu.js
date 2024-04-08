@@ -39,8 +39,6 @@ async function scrapeTask(downloadBase, task) {
 
 	fs.ensureDirSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}`);
 	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml`, response.data);
-	const ts_headersString = JSON.stringify(response.headers, null, 2);
-	fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/tasksheet.xml_headers.txt`, ts_headersString);
 
 	const data = xmlParser(response.data).toObject();
 
@@ -55,7 +53,6 @@ async function scrapeTask(downloadBase, task) {
 	} else {
 		files.push(data.TaskSheet.Files.File);
 	}
-	let titleID = data.TaskSheet.TitleId.toUpperCase();
 
 	for (const file of files) {
 		const response = await axios.get(file.Url, {
@@ -63,11 +60,8 @@ async function scrapeTask(downloadBase, task) {
 			httpsAgent
 		});
 		const fileData = Buffer.from(response.data, 'binary');
-		const headersString = JSON.stringify(response.headers, null, 2);
 
 		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss`, fileData);
-		fs.appendFile('scrape_data_wiiu.csv', (`${titleID},${task.app_id},${task.task},${file.Filename},${task.country},${task.language}\n`));
-		fs.writeFileSync(`${downloadBase}/${task.country}/${task.language}/${task.app_id}/${task.task}/${file.Filename}.boss_headers.txt`, headersString);
 	}
 }
 

@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const apps = require('./ctr-boss-apps.json');
 
-const REGEX = /(?:(?:npdl|npfl)\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/)?(?:nsa|filelist)\/([A-z0-9]{16})\/(\w*)/g;
+const REGEX = /(?:npdl|npfl)\.(?:cdn|c\.app)\.nintendowifi\.net\/p01\/(?:nsa|filelist)\/([A-z0-9]{16})\/(\w*)/g;
 
 const db = fs.readFileSync('./partitionA.bin', {
 	encoding: 'utf8'
