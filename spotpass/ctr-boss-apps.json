@@ -16,7 +16,16 @@
 			"RNG_NT1",
 			"RNG_NT2",
 			"RNG_GM1",
-			"RNG_AP1"
+			"RNG_AP1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2D00"
 	},
@@ -63,7 +72,18 @@
 			"JFR_DNT",
 			"JFR_DLS",
 			"JFR_DAP",
-			"JFR_DGM"
+			"JFR_DGM",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051700"
 	},
@@ -113,7 +133,17 @@
 			"RNG_MD1",
 			"RNG_NT1",
 			"RNG_NT2",
-			"RNG_GM1"
+			"RNG_GM1",
+			"RNG_AP1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2E00"
 	},
@@ -156,7 +186,8 @@
 	{
 		"app_id": "5yLkA3wqcXruNE2N",
 		"tasks": [
-			"tmTaskA"
+			"tmTaskA",
+			"tmTaskD"
 		],
 		"title_id": "000400000008C300"
 	},
@@ -354,7 +385,18 @@
 			"JFR_DNT",
 			"JFR_DAP",
 			"JFR_DGM",
-			"JFR_GM2"
+			"JFR_GM2",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051800"
 	},
@@ -412,7 +454,9 @@
 	{
 		"app_id": "eH6oowgSM7n662mw",
 		"tasks": [
-			"tmTaskA"
+			"tmTaskA",
+			"tmTaskD",
+			"tmTaskU"
 		],
 		"title_id": "000400000008C400"
 	},
@@ -1630,7 +1674,16 @@
 			"RNG_LS1",
 			"RNG_NT1",
 			"RNG_NT2",
-			"RNG_GM1"
+			"RNG_GM1",
+			"RNG_DFR",
+			"RNG_U01",
+			"RNG_U02",
+			"RNG_U03",
+			"RNG_U04",
+			"RNG_U05",
+			"RNG_U06",
+			"RNG_U07",
+			"RNG_UUS"
 		],
 		"title_id": "00040000001A2C00"
 	},
@@ -1708,7 +1761,18 @@
 			"JFR_DNT",
 			"JFR_DLS",
 			"JFR_DAP",
-			"JFR_DGM"
+			"JFR_DGM",
+			"JFR_DFR",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_U08",
+			"JFR_U09",
+			"JFR_U10"
 		],
 		"title_id": "0004000000051600"
 	},
@@ -2157,7 +2221,8 @@
 		"app_id": "h06QNObaOsEeWbLS",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "0004000000034D00"
 	},
@@ -3167,7 +3232,8 @@
 	{
 		"app_id": "4zQ0tSdYf0MbtMcf",
 		"tasks": [
-			"3MD"
+			"3MD",
+			"3MD2"
 		],
 		"title_id": "00040000000C9500"
 	},
@@ -3295,7 +3361,8 @@
 		"app_id": "9DLWs8Zl50qCaWxp",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "0004000000040200"
 	},
@@ -3359,7 +3426,17 @@
 			"JFR_NT2",
 			"JFR_NT3",
 			"JFR_LS2",
-			"JFR_AP2"
+			"JFR_AP2",
+			"JFR_DFR",
+			"JFR_GM2",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_UUS"
 		],
 		"title_id": "00040000000CC900"
 	},
@@ -3422,7 +3499,8 @@
 		"app_id": "L7j0ivgZfXSskmmY",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "unknown"
 	},
@@ -3750,14 +3828,16 @@
 		"app_id": "FMhu53ZtDLnz2ZZ1",
 		"tasks": [
 			"NEWS",
-			"amiibo"
+			"amiibo",
+			"FGONLYT"
 		],
 		"title_id": "0004000000168600"
 	},
 	{
 		"app_id": "xjMBeunnHUfxuK2d",
 		"tasks": [
-			"pnote"
+			"pnote",
+			"FGONLYT"
 		],
 		"title_id": "0004000000151F00"
 	},
@@ -3839,7 +3919,17 @@
 			"JFR_NT1",
 			"JFR_NT2",
 			"JFR_NT3",
-			"JFR_AP2"
+			"JFR_AP2",
+			"JFR_DFR",
+			"JFR_GM2",
+			"JFR_U01",
+			"JFR_U02",
+			"JFR_U03",
+			"JFR_U04",
+			"JFR_U05",
+			"JFR_U06",
+			"JFR_U07",
+			"JFR_UUS"
 		],
 		"title_id": "00040000000CCA00"
 	},
@@ -3892,7 +3982,9 @@
 	{
 		"app_id": "OIC58iiMakdqQSLH",
 		"tasks": [
-			"GMTM"
+			"GMTM",
+			"girls",
+			"info"
 		],
 		"title_id": "00040000000C4F00"
 	},
@@ -4278,7 +4370,8 @@
 	{
 		"app_id": "MLJEOnEgGcwd5uaP",
 		"tasks": [
-			"news"
+			"news",
+			"FGONLYT"
 		],
 		"title_id": "00040000000F7C00"
 	},
@@ -4293,5 +4386,54 @@
 			"news_p"
 		],
 		"title_id": "0004000000086500"
+	},
+	{
+		"app_id": "3l15Yk6cOm0AWsSP",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "BUvZ7pfEEhcLt4B2",
+		"tasks": [
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "Qq4luhjWR94QqvhX",
+		"tasks": [
+			"daily"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "f9sKNCJ94RghSSyg",
+		"tasks": [
+			"GS5"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "CnnviXAnc0qGGTio",
+		"tasks": [
+			"GS5"
+		],
+		"title_id": "00040000000FEB00"
+	},
+	{
+		"app_id": "fMTQWnFhZQ2BijI5",
+		"tasks": [
+			"TASK00"
+		],
+		"title_id": "000400000017B800"
+	},
+	{
+		"app_id": "Xv543XtNNYZU2OXz",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "unknown"
 	}
 ]
