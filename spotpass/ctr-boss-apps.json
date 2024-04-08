@@ -2221,7 +2221,8 @@
 		"app_id": "h06QNObaOsEeWbLS",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "0004000000034D00"
 	},
@@ -3231,7 +3232,8 @@
 	{
 		"app_id": "4zQ0tSdYf0MbtMcf",
 		"tasks": [
-			"3MD"
+			"3MD",
+			"3MD2"
 		],
 		"title_id": "00040000000C9500"
 	},
@@ -3359,7 +3361,8 @@
 		"app_id": "9DLWs8Zl50qCaWxp",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "0004000000040200"
 	},
@@ -3496,7 +3499,8 @@
 		"app_id": "L7j0ivgZfXSskmmY",
 		"tasks": [
 			"JMCDLC0",
-			"JMCDLC1"
+			"JMCDLC1",
+			"JMCDLC2"
 		],
 		"title_id": "unknown"
 	},
@@ -4403,5 +4407,17 @@
 			"daily"
 		],
 		"title_id": "unknown"
+	},
+	{
+		"app_id": "f9sKNCJ94RghSSyg",
+		"tasks": [
+			"GS5"
+		]
+	},
+	{
+		"app_id": "CnnviXAnc0qGGTio",
+		"tasks": [
+			"GS5"
+		]
 	}
 ]
