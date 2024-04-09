@@ -51,7 +51,7 @@ USERNAME_HMAC_3DS = os.getenv("3DS_USERNAME_HMAC")
 REGION_3DS = int(os.getenv("3DS_REGION"))
 LANGUAGE_3DS = int(os.getenv("3DS_LANG"))
 
-LIST_PATH = "3ds_list.txt"
+LIST_PATH = "list.txt"
 
 NUM_PROCESSES = 16
 

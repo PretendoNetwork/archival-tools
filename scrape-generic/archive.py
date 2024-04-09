@@ -2165,9 +2165,12 @@ async def main():
             )
 
             # Check if nexds is loaded
-            has_datastore = bool(
-                [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
-            )
+            if game["aid"] == 1407435282983680:
+                has_datastore = True
+            else:
+                has_datastore = bool(
+                    [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
+                )
 
             """
             # Run everything in processes
@@ -3502,9 +3505,12 @@ async def main():
                 break
 
             # Check if nexds is loaded
-            has_datastore = bool(
-                [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
-            )
+            if game["aid"] == 1407435282983680:
+                has_datastore = True
+            else:
+                has_datastore = bool(
+                    [g for g in wiiu_games if g["aid"] == game["aid"]][0]["nexds"]
+                )
 
             if has_datastore:
                 print_and_log(
