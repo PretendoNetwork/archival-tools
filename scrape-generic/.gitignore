@@ -1,0 +1,7 @@
+.env
+wiiu
+*.db
+*.db-journal
+*.txt
+*.7z
+remote
