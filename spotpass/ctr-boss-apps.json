@@ -2330,7 +2330,7 @@
 	{
 		"app_id": "KmJKbxqqJ1ISUDgN",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "0004000000155C00"
 	},
@@ -3079,7 +3079,7 @@
 	{
 		"app_id": "Vgw1b4CRc6tTJAuW",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "00040000000F4900"
 	},
@@ -3122,7 +3122,7 @@
 	{
 		"app_id": "SVCHF7ayaPXyV8da",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "000400000012D700"
 	},
@@ -4435,5 +4435,27 @@
 			"FGONLYT"
 		],
 		"title_id": "unknown"
+	},
+	{
+		"app_id": "eyCw6Qph1Hz1uQmC",
+		"tasks": [
+			"JAU"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "jeUQ3nnY70ddJ87q",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000009AE00"
+	},
+	{
+		"app_id": "bRWXguqQXXAT99Th",
+		"tasks": [
+			"TASK00",
+			"FGONLYT"
+		],
+		"title_id": "00040000001BC900"
 	}
 ]
