@@ -4466,7 +4466,10 @@
 	{
 		"app_id": "1XCuNDvhVlp5r7mO",
 		"tasks": [
-			"FGONLYT"
+			"FGONLYT",
+			"PDZDLDG",
+			"PDZDLNP",
+			"PDZDLTI"
 		],
 		"title_id": "00040000000C3900"
 	},
@@ -4557,5 +4560,60 @@
 			"spnt_x"
 		],
 		"title_id": "0004000000106300"
+	},
+	{
+		"app_id": "3V3eHMNiNmweRqQO",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "HFnqrJv4fmyO5ItT",
+		"tasks": [
+			"MO2000",
+			"MO2001"
+		],
+		"title_id": "0004000000091F00"
+	},
+	{
+		"app_id": "IyMJMSHvuD2nC8r1",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "JJVi8mFl1LRVk4gS",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "VQU2jX0YCWHynn03",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "000400000015A700"
+	},
+	{
+		"app_id": "cm0cPPTXpEkGEeII",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "y4Q3Z35IQzh6nWds",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
 	}
 ]
