@@ -1289,7 +1289,8 @@
 		"app_id": "V04RWTNqtHWfOaEB",
 		"tasks": [
 			"FGONLYT",
-			"BNMCASI"
+			"BNMCASI",
+			"BNMCASL"
 		],
 		"title_id": "00040000000EA900"
 	},
@@ -1445,7 +1446,8 @@
 		"app_id": "YCHNmojskL3NNzNp",
 		"tasks": [
 			"FGONLYT",
-			"BNMCASI"
+			"BNMCASI",
+			"BNMCASL"
 		],
 		"title_id": "0004000000095C00"
 	},
@@ -2005,7 +2007,8 @@
 		"app_id": "nTik1y6PI2QheWpi",
 		"tasks": [
 			"FGONLYT",
-			"BNMCASI"
+			"BNMCASI",
+			"BNMCASL"
 		],
 		"title_id": "00040000000D4B00"
 	},
@@ -2330,7 +2333,7 @@
 	{
 		"app_id": "KmJKbxqqJ1ISUDgN",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "0004000000155C00"
 	},
@@ -3079,7 +3082,7 @@
 	{
 		"app_id": "Vgw1b4CRc6tTJAuW",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "00040000000F4900"
 	},
@@ -3122,7 +3125,7 @@
 	{
 		"app_id": "SVCHF7ayaPXyV8da",
 		"tasks": [
-			"add"
+			"add-on"
 		],
 		"title_id": "000400000012D700"
 	},
@@ -4425,7 +4428,8 @@
 	{
 		"app_id": "fMTQWnFhZQ2BijI5",
 		"tasks": [
-			"TASK00"
+			"TASK00",
+			"TASK02"
 		],
 		"title_id": "000400000017B800"
 	},
@@ -4435,5 +4439,201 @@
 			"FGONLYT"
 		],
 		"title_id": "unknown"
+	},
+	{
+		"app_id": "eyCw6Qph1Hz1uQmC",
+		"tasks": [
+			"JAU"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "jeUQ3nnY70ddJ87q",
+		"tasks": [
+			"NadlTsk"
+		],
+		"title_id": "000400000009AE00"
+	},
+	{
+		"app_id": "bRWXguqQXXAT99Th",
+		"tasks": [
+			"TASK00",
+			"FGONLYT",
+			"TASK01"
+		],
+		"title_id": "00040000001BC900"
+	},
+	{
+		"app_id": "1XCuNDvhVlp5r7mO",
+		"tasks": [
+			"FGONLYT",
+			"PDZDLDG",
+			"PDZDLNP",
+			"PDZDLTI"
+		],
+		"title_id": "00040000000C3900"
+	},
+	{
+		"app_id": "7f094kCjE5HDVGlu",
+		"tasks": [
+			"JCTTask"
+		],
+		"title_id": "00040000000CBD00"
+	},
+	{
+		"app_id": "aOJyK9TocYWjxMRR",
+		"tasks": [
+			"ESJ_CNF",
+			"ESJ_MD1",
+			"ESJ_MD2",
+			"ESJ_MD3",
+			"ESJ_MD4"
+		],
+		"title_id": "000400000004A900"
+	},
+	{
+		"app_id": "G0VUurQf4EVYe37v",
+		"tasks": [
+			"0ER_CNF",
+			"1ER_DBN",
+			"2ER_DCM",
+			"3ER_AX1",
+			"4ER_CX1",
+			"5ER_AX2",
+			"6ER_CX2",
+			"7ER_AX3",
+			"8ER_CX3",
+			"9ER_NTD"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "3PSCke6Q3B84IzWl",
+		"tasks": [
+			"task_KR"
+		],
+		"title_id": "0004000000031900"
+	},
+	{
+		"app_id": "XaphN80NdywuA9Ef",
+		"tasks": [
+			"add-on"
+		],
+		"title_id": "0004000000155E00"
+	},
+	{
+		"app_id": "0hYP8YjQTWpdlt0v",
+		"tasks": [
+			"task_KR"
+		],
+		"title_id": "0004000000031400"
+	},
+	{
+		"app_id": "7HXSa828OHpIlsMh",
+		"tasks": [
+			"BNMCASI",
+			"BNMCASL",
+			"FGONLYT"
+		],
+		"title_id": "000400000012C700"
+	},
+	{
+		"app_id": "j3JOMyqvsV4ocbUM",
+		"tasks": [
+			"FGONLYT",
+			"pnote"
+		],
+		"title_id": "0004000000150B00"
+	},
+	{
+		"app_id": "l0BkjqC5MI1bEY29",
+		"tasks": [
+			"Ds2ocTk"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "sKFrnzQCMkGb60y7",
+		"tasks": [
+			"FGONLYT",
+			"spnt_t",
+			"spnt_x"
+		],
+		"title_id": "0004000000106300"
+	},
+	{
+		"app_id": "3V3eHMNiNmweRqQO",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "HFnqrJv4fmyO5ItT",
+		"tasks": [
+			"MO2000",
+			"MO2001"
+		],
+		"title_id": "0004000000091F00"
+	},
+	{
+		"app_id": "IyMJMSHvuD2nC8r1",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "JJVi8mFl1LRVk4gS",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "VQU2jX0YCWHynn03",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "000400000015A700"
+	},
+	{
+		"app_id": "cm0cPPTXpEkGEeII",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "y4Q3Z35IQzh6nWds",
+		"tasks": [
+			"FGONLYT",
+			"news"
+		],
+		"title_id": "unknown"
+	},
+	{
+		"app_id": "aKd4hjqxg87UDbwy",
+		"tasks": [
+			"GS6"
+		],
+		"title_id": "000400000018F900"
+	},
+	{
+		"app_id": "4q11abiKEAOBaBMD",
+		"tasks": [
+			"FGONLYT"
+		],
+		"title_id": "000400000016D100"
+	},
+	{
+		"app_id": "3yire4GGq6BfeD71",
+		"tasks": [
+			"news"
+		]
 	}
 ]
